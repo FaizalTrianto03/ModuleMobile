@@ -1,14 +1,11 @@
 import { component$, QRL } from "@qwik.dev/core";
 import { Link } from "@qwik.dev/router";
-import { ThemeToggle } from "./ThemeToggle";
 import {
   LuHome,
-  LuBookOpen,
   LuFolder,
   LuFileText,
   LuFile,
   LuImage,
-  LuChevronDown,
   LuFileArchive,
 } from "@qwikest/icons/lucide";
 
@@ -33,8 +30,8 @@ export const Sidebar = component$<SidebarProps>(({ open, onClose$ }) => {
           // Mobile: fixed, overlays content, slides in/out
           "bg-base-200 text-base-content rounded-box fixed top-0 left-0 z-50 h-full w-64 p-4 transition-transform duration-300",
           open ? "translate-x-0" : "-translate-x-full",
-          // Desktop: static, part of flex layout, always visible
-          "lg:static lg:w-64 lg:flex-shrink-0 lg:translate-x-0",
+          // Desktop: static, part of flex layout, always visible, full height, no rounded corners
+          "lg:static lg:h-screen lg:w-64 lg:flex-shrink-0 lg:translate-x-0 lg:rounded-none",
         ]}
         style={
           {
@@ -42,22 +39,16 @@ export const Sidebar = component$<SidebarProps>(({ open, onClose$ }) => {
           }
         }
       >
-        <ul class="menu menu-xs min-h-full w-full">
+        <ul class="menu menu-xs min-h-full w-full lg:h-full">
           <li>
             <Link href="/">
               <LuHome class="h-4 w-4" /> Home
             </Link>
           </li>
           <li>
-            <Link href="/blog">
-              <LuBookOpen class="h-4 w-4" /> Blog
-            </Link>
-          </li>
-          <li>
             <details open>
               <summary>
                 <LuFolder class="h-4 w-4" /> Modul{" "}
-                <LuChevronDown class="inline h-3 w-3" />
               </summary>
               <ul>
                 {[1, 2, 3, 4, 5, 6].map((modul) => (
@@ -74,7 +65,6 @@ export const Sidebar = component$<SidebarProps>(({ open, onClose$ }) => {
             <details>
               <summary>
                 <LuFileArchive class="h-4 w-4" /> Resources{" "}
-                <LuChevronDown class="inline h-3 w-3" />
               </summary>
               <ul>
                 <li>
@@ -86,7 +76,6 @@ export const Sidebar = component$<SidebarProps>(({ open, onClose$ }) => {
                   <details open>
                     <summary>
                       <LuFolder class="h-4 w-4" /> My Files{" "}
-                      <LuChevronDown class="inline h-3 w-3" />
                     </summary>
                     <ul>
                       <li>
@@ -103,7 +92,6 @@ export const Sidebar = component$<SidebarProps>(({ open, onClose$ }) => {
                         <details open>
                           <summary>
                             <LuImage class="h-4 w-4" /> Images{" "}
-                            <LuChevronDown class="inline h-3 w-3" />
                           </summary>
                           <ul>
                             <li>
@@ -120,7 +108,6 @@ export const Sidebar = component$<SidebarProps>(({ open, onClose$ }) => {
                               <details open>
                                 <summary>
                                   <LuFolder class="h-4 w-4" /> Others{" "}
-                                  <LuChevronDown class="inline h-3 w-3" />
                                 </summary>
                                 <ul>
                                   <li>
@@ -145,9 +132,6 @@ export const Sidebar = component$<SidebarProps>(({ open, onClose$ }) => {
                 </li>
               </ul>
             </details>
-          </li>
-          <li class="mt-4">
-            <ThemeToggle />
           </li>
         </ul>
       </aside>

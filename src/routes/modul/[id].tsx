@@ -1,7 +1,7 @@
 import { component$, useResource$, Resource } from "@qwik.dev/core";
 import { useLocation } from "@qwik.dev/router";
 import { getModulById } from "~/utils/mdx";
-import ModulLayout from "./(modules)/layout";
+import ModulLayout from "./(contents)/layout";
 
 export default component$(() => {
   const loc = useLocation();

@@ -44,7 +44,7 @@ export default component$(() => {
             open={sidebarOpen.value}
             onClose$={$(() => (sidebarOpen.value = false))}
           />
-          <main class="flex-1">
+          <main class="container mx-auto flex-1 px-4 py-6">
             <RouterOutlet />
           </main>
         </div>

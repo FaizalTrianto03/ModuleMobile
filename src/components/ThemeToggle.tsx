@@ -1,5 +1,7 @@
 import { component$, useSignal, $ } from "@qwik.dev/core";
 
+import { LuSun, LuMoon, LuLaptop } from "@qwikest/icons/lucide";
+
 const themes = [
   { name: "Light", value: "light" },
   { name: "Dark", value: "dark" },
@@ -38,26 +40,26 @@ export const ThemeToggle = component$(() => {
         class="btn btn-ghost btn-circle"
         aria-label="Toggle theme"
       >
-        <svg
-          class="h-5 w-5"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          viewBox="0 0 24 24"
-        >
-          <path d="M12 3v1m0 16v1m8.66-13.66l-.71.71M4.05 19.95l-.71.71M21 12h-1M4 12H3m16.95 7.05l-.71-.71M4.05 4.05l-.71-.71" />
-        </svg>
+        {/* Show icon based on current theme */}
+        {theme.value === "light" && <LuSun class="h-5 w-5" />}
+        {theme.value === "dark" && <LuMoon class="h-5 w-5" />}
+        {theme.value === "system" && <LuLaptop class="h-5 w-5" />}
       </button>
       <ul class="dropdown-content menu bg-base-100 rounded-box z-[1] mt-2 w-36 p-2 shadow">
-        {themes.map((t) => (
-          <li key={t.value}>
+        {themes.map(({ name, value }) => (
+          <li key={value}>
             <button
-              class={theme.value === t.value ? "active" : ""}
+              class={theme.value === value ? "active" : ""}
               onClick$={async () => {
-                await setTheme(t.value);
+                await setTheme(value);
               }}
             >
-              {t.name}
+              <span class="flex items-center gap-2">
+                {value === "light" && <LuSun class="h-4 w-4" />}
+                {value === "dark" && <LuMoon class="h-4 w-4" />}
+                {value === "system" && <LuLaptop class="h-4 w-4" />}
+                {name}
+              </span>
             </button>
           </li>
         ))}

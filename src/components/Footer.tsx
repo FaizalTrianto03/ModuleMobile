@@ -1,5 +1,4 @@
 import { component$ } from "@qwik.dev/core";
-import { ThemeToggle } from "./ThemeToggle";
 
 export const Footer = component$(() => (
   <>
@@ -50,10 +49,7 @@ export const Footer = component$(() => (
           Cookie policy
         </button>
       </nav>
-      <nav>
-        <h6 class="footer-title">Theme</h6>
-        <ThemeToggle />
-      </nav>
+      <nav></nav>
     </footer>
     <footer class="footer bg-base-200 text-base-content border-base-300 border-t px-10 py-4">
       <aside class="grid-flow-col items-center">

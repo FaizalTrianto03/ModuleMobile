@@ -13,9 +13,9 @@ const modules = [
 export default component$(() => {
   return (
     <>
-      <section class="hero bg-base-200 mb-8 min-h-[40vh]">
+      <section class="hero bg-base-200 mb-8">
         <div class="hero-content text-center">
-          <div class="max-w-2xl">
+          <div class="mx-auto max-w-2xl">
             <h1 class="mb-4 text-5xl font-bold">Modul Praktikum Mobile</h1>
             <p class="mb-6 text-lg">
               Selamat datang di website resmi modul pembelajaran praktikum
@@ -23,13 +23,10 @@ export default component$(() => {
               untuk memulai pembelajaran, atau kunjungi blog untuk materi
               tambahan.
             </p>
-            <Link href="/blog" class="btn btn-primary mt-2">
-              Lihat Blog
-            </Link>
           </div>
         </div>
       </section>
-      <div class="container mx-auto px-4">
+      <div>
         <h2 class="mt-8 mb-6 text-center text-3xl font-bold">
           Daftar Modul Praktikum
         </h2>

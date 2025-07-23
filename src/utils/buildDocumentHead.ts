@@ -9,7 +9,7 @@ interface DocumentHeadOptions {
 export function buildDocumentHead({ title, description }: DocumentHeadOptions) {
   return {
     title: title,
-    author: "Evan Douglass",
+    author: "Lab. Informatika UMM",
     meta: [
       {
         name: "description",
