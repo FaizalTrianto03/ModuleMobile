@@ -1,112 +1,54 @@
-import type { DocumentHead } from "@qwik.dev/router";
 import { component$ } from "@qwik.dev/core";
+import { Link } from "@qwik.dev/router";
 
-import Counter from "../components/starter/counter/counter";
-import Hero from "../components/starter/hero/hero";
-import Infobox from "../components/starter/infobox/infobox";
-import Starter from "../components/starter/next-steps/next-steps";
+const modules = [
+  { id: 1, title: "Modul 1", desc: "Pengenalan & Setup Lingkungan Mobile" },
+  { id: 2, title: "Modul 2", desc: "Dasar-dasar Pemrograman Mobile" },
+  { id: 3, title: "Modul 3", desc: "UI/UX Mobile & Komponen Dasar" },
+  { id: 4, title: "Modul 4", desc: "Networking & API di Mobile" },
+  { id: 5, title: "Modul 5", desc: "State Management & Storage" },
+  { id: 6, title: "Modul 6", desc: "Deployment & Testing Mobile App" },
+];
 
 export default component$(() => {
   return (
     <>
-      <Hero />
-      <Starter />
-
-      <div role="presentation" class="ellipsis"></div>
-      <div role="presentation" class="ellipsis ellipsis-purple"></div>
-
-      <div class="container container-center container-spacing-xl">
-        <h3>
-          You can <span class="highlight">count</span>
-          <br /> on me
-        </h3>
-        <Counter />
-      </div>
-
-      <div class="container container-flex">
-        <Infobox>
-          <div q:slot="title" class="icon icon-cli">
-            CLI Commands
+      <section class="hero bg-base-200 mb-8 min-h-[40vh]">
+        <div class="hero-content text-center">
+          <div class="max-w-2xl">
+            <h1 class="mb-4 text-5xl font-bold">Modul Praktikum Mobile</h1>
+            <p class="mb-6 text-lg">
+              Selamat datang di website resmi modul pembelajaran praktikum
+              Laboratorium Informatika UMM. Pilih salah satu modul di bawah
+              untuk memulai pembelajaran, atau kunjungi blog untuk materi
+              tambahan.
+            </p>
+            <Link href="/blog" class="btn btn-primary mt-2">
+              Lihat Blog
+            </Link>
           </div>
-          <>
-            <p>
-              <code>npm run dev</code>
-              <br />
-              Starts the development server and watches for changes
-            </p>
-            <p>
-              <code>npm run preview</code>
-              <br />
-              Creates production build and starts a server to preview it
-            </p>
-            <p>
-              <code>npm run build</code>
-              <br />
-              Creates production build
-            </p>
-            <p>
-              <code>npm run qwik add</code>
-              <br />
-              Runs the qwik CLI to add integrations
-            </p>
-          </>
-        </Infobox>
-
-        <div>
-          <Infobox>
-            <div q:slot="title" class="icon icon-apps">
-              Example Apps
+        </div>
+      </section>
+      <div class="container mx-auto px-4">
+        <h2 class="mt-8 mb-6 text-center text-3xl font-bold">
+          Daftar Modul Praktikum
+        </h2>
+        <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {modules.map((modul) => (
+            <div class="card bg-base-100 shadow-xl" key={modul.id}>
+              <div class="card-body flex flex-col justify-between">
+                <h3 class="card-title">{modul.title}</h3>
+                <p class="mb-4">{modul.desc}</p>
+                <div class="card-actions justify-end">
+                  <Link href={`/modul/${modul.id}`} class="btn btn-secondary">
+                    Buka Modul
+                  </Link>
+                </div>
+              </div>
             </div>
-            <p>
-              Have a look at the <a href="/demo/flower">Flower App</a> or the{" "}
-              <a href="/demo/todolist">Todo App</a>.
-            </p>
-          </Infobox>
-
-          <Infobox>
-            <div q:slot="title" class="icon icon-community">
-              Community
-            </div>
-            <ul>
-              <li>
-                <span>Questions or just want to say hi? </span>
-                <a href="https://qwik.dev/chat" target="_blank">
-                  Chat on discord!
-                </a>
-              </li>
-              <li>
-                <span>Follow </span>
-                <a href="https://twitter.com/QwikDev" target="_blank">
-                  @QwikDev
-                </a>
-                <span> on Twitter</span>
-              </li>
-              <li>
-                <span>Open issues and contribute on </span>
-                <a href="https://github.com/QwikDev/qwik" target="_blank">
-                  GitHub
-                </a>
-              </li>
-              <li>
-                <span>Watch </span>
-                <a href="https://qwik.dev/media/" target="_blank">
-                  Presentations, Podcasts, Videos, etc.
-                </a>
-              </li>
-            </ul>
-          </Infobox>
+          ))}
         </div>
       </div>
     </>
   );
 });
-
-export const head: DocumentHead = {
-  title: "Welcome to Qwik",
-  meta: [
-    {
-      name: "description",
-      content: "Qwik site description",
-    },
-  ],
-};
