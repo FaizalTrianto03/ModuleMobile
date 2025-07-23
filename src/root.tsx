@@ -1,4 +1,4 @@
-import { component$ } from "@qwik.dev/core";
+import { component$, useSignal, $ } from "@qwik.dev/core";
 import {
   QwikRouterProvider,
   RouterOutlet,
@@ -6,21 +6,17 @@ import {
 } from "@qwik.dev/router";
 import { RouterHead } from "./components/router-head/router-head";
 import { Navbar } from "./components/Navbar";
-
+import { Sidebar } from "./components/Sidebar";
 import { Footer } from "./components/Footer";
 import "./global.css";
 
 export default component$(() => {
-  /**
-   * The root of a QwikCity site always start with the <QwikCityProvider> component,
-   * immediately followed by the document's <head> and <body>.
-   *
-   * Don't remove the `<head>` and `<body>` elements.
-   */
+  const sidebarOpen = useSignal(false);
+
   return (
     <QwikRouterProvider>
       <head>
-        <meta charSet="utf-8" />
+        <meta charset="utf-8" />
         <link rel="manifest" href="/manifest.json" />
         {/* Inline theme script to prevent flicker */}
         <script
@@ -41,9 +37,17 @@ export default component$(() => {
         />
         <RouterHead />
       </head>
-      <body lang="en">
-        <Navbar />
-        <RouterOutlet />
+      <body lang="en" class="flex min-h-screen flex-col">
+        <Navbar onMenuClick$={$(() => (sidebarOpen.value = true))} />
+        <div class="flex w-full flex-1">
+          <Sidebar
+            open={sidebarOpen.value}
+            onClose$={$(() => (sidebarOpen.value = false))}
+          />
+          <main class="flex-1">
+            <RouterOutlet />
+          </main>
+        </div>
         <ServiceWorkerRegister />
         <Footer />
       </body>

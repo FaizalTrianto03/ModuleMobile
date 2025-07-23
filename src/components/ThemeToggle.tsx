@@ -33,8 +33,8 @@ export const ThemeToggle = component$(() => {
 
   return (
     <div class="dropdown dropdown-end">
-      <label
-        tabIndex={0}
+      <button
+        type="button"
         class="btn btn-ghost btn-circle"
         aria-label="Toggle theme"
       >
@@ -47,11 +47,8 @@ export const ThemeToggle = component$(() => {
         >
           <path d="M12 3v1m0 16v1m8.66-13.66l-.71.71M4.05 19.95l-.71.71M21 12h-1M4 12H3m16.95 7.05l-.71-.71M4.05 4.05l-.71-.71" />
         </svg>
-      </label>
-      <ul
-        tabIndex={0}
-        class="dropdown-content menu bg-base-100 rounded-box z-[1] mt-2 w-36 p-2 shadow"
-      >
+      </button>
+      <ul class="dropdown-content menu bg-base-100 rounded-box z-[1] mt-2 w-36 p-2 shadow">
         {themes.map((t) => (
           <li key={t.value}>
             <button
