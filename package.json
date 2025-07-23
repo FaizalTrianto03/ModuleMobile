@@ -1,6 +1,6 @@
 {
-  "name": "my-qwik-basic-starter",
-  "description": "Demo app with sample routes",
+  "name": "module-mobile",
+  "description": "Modul Pemrograman Mobile 2025 LAB IT UMM",
   "engines": {
     "node": "^18.17.0 || ^20.3.0 || >=21.0.0"
   },
@@ -11,6 +11,7 @@
     "build": "qwik build",
     "build.client": "vite build",
     "build.preview": "vite build --ssr src/entry.preview.tsx",
+    "build.server": "vite build -c adapters/bun/vite.config.mts",
     "build.types": "tsc --incremental --noEmit",
     "deploy": "echo 'Run \"npm run qwik add\" to install a server adapter'",
     "dev": "vite --mode ssr",
@@ -19,6 +20,7 @@
     "fmt.check": "prettier --check .",
     "lint": "eslint \"src/**/*.ts*\"",
     "preview": "qwik build preview && vite preview --open",
+    "serve": "bun server/entry.bun.js",
     "start": "vite --open --mode ssr",
     "qwik": "qwik"
   },
@@ -26,6 +28,7 @@
     "@eslint/js": "latest",
     "@qwik.dev/core": "^2.0.0-beta.5",
     "@qwik.dev/router": "^2.0.0-beta.5",
+    "@types/bun": "^1.2.19",
     "@types/node": "24.0.4",
     "eslint": "9.25.1",
     "eslint-plugin-qwik": "^2.0.0-beta.5",
@@ -34,7 +37,7 @@
     "typescript": "5.8.3",
     "typescript-eslint": "8.26.1",
     "typescript-plugin-css-modules": "latest",
-    "vite": "7.0.0",
-    "vite-tsconfig-paths": "^4.2.1"
+    "vite": "^7.0.5",
+    "vite-tsconfig-paths": "^5.1.4"
   }
 }
