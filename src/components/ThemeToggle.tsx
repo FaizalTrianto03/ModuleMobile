@@ -1,4 +1,4 @@
-import { component$, useSignal, useVisibleTask$, $ } from "@qwik.dev/core";
+import { component$, useSignal, $ } from "@qwik.dev/core";
 
 const themes = [
   { name: "Light", value: "light" },
@@ -7,7 +7,19 @@ const themes = [
 ];
 
 export const ThemeToggle = component$(() => {
-  const theme = useSignal("system");
+  // Read the current theme from the DOM or localStorage, fallback to "system"
+  let initialTheme = "system";
+  if (typeof document !== "undefined") {
+    const attr = document.documentElement.getAttribute("data-theme");
+    if (attr === "light" || attr === "dark" || attr) {
+      initialTheme = attr;
+    }
+    const saved = localStorage.getItem("theme");
+    if (saved) {
+      initialTheme = saved;
+    }
+  }
+  const theme = useSignal(initialTheme);
 
   const setTheme = $((value: string) => {
     if (value === "system") {
@@ -16,17 +28,7 @@ export const ThemeToggle = component$(() => {
       document.documentElement.setAttribute("data-theme", value);
     }
     localStorage.setItem("theme", value);
-  });
-
-  useVisibleTask$(async () => {
-    // On mount, set theme from localStorage or system
-    const saved = localStorage.getItem("theme");
-    if (saved) {
-      theme.value = saved;
-      await setTheme(saved);
-    } else {
-      await setTheme("system");
-    }
+    theme.value = value;
   });
 
   return (
@@ -55,7 +57,6 @@ export const ThemeToggle = component$(() => {
             <button
               class={theme.value === t.value ? "active" : ""}
               onClick$={async () => {
-                theme.value = t.value;
                 await setTheme(t.value);
               }}
             >

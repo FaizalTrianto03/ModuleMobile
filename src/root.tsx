@@ -22,6 +22,23 @@ export default component$(() => {
       <head>
         <meta charSet="utf-8" />
         <link rel="manifest" href="/manifest.json" />
+        {/* Inline theme script to prevent flicker */}
+        <script
+          dangerouslySetInnerHTML={`
+          (function() {
+            try {
+              var theme = localStorage.getItem('theme');
+              if (theme && theme !== 'system') {
+                document.documentElement.setAttribute('data-theme', theme);
+              } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+              } else {
+                document.documentElement.setAttribute('data-theme', 'light');
+              }
+            } catch(e) {}
+          })();
+        `}
+        />
         <RouterHead />
       </head>
       <body lang="en">
