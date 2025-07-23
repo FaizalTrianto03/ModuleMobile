@@ -1,14 +1,227 @@
 ---
-title: "Modul 6: Deployment & Testing Mobile App"
-description: "Belajar deployment dan testing aplikasi mobile."
+title: "Modul 6: Asynchronous Computing"
+description: "Belajar asynchronous programming di Flutter: Future, async/await, Stream, dan integrasi dengan GetX."
 ---
 
-# Modul 6: Deployment & Testing Mobile App
+# Modul 6: Asynchronous Computing
 
-Selamat datang di **Modul 6**. Di sini Anda akan belajar tentang deployment dan testing aplikasi mobile.
+## 1. Pengantar Asynchronous Programming di Dart/Flutter
 
-> Konten modul akan segera tersedia.
+Asynchronous programming memungkinkan aplikasi menjalankan operasi berat (misal: network, file, database) tanpa membekukan UI. Di Dart/Flutter, konsep utama:
 
-- Proses deployment aplikasi mobile
-- Tools untuk testing
-- Praktik terbaik deployment & testing
+- **Future**: Representasi operasi yang hasilnya tersedia di masa depan.
+- **async/await**: Sintaks untuk menulis kode asynchronous yang mudah dibaca.
+- **Stream**: Representasi data yang mengalir secara berkelanjutan (real-time).
+
+---
+
+## 2. Future dan async/await
+
+### 2.1. Contoh Future
+
+```dart
+Future<String> fetchData() async {
+  await Future.delayed(const Duration(seconds: 2));
+  return 'Data berhasil diambil!';
+}
+```
+
+### 2.2. Menggunakan async/await di UI
+
+```dart
+import 'package:flutter/material.dart';
+
+class FuturePage extends StatefulWidget {
+  const FuturePage({super.key});
+
+  @override
+  State<FuturePage> createState() => _FuturePageState();
+}
+
+class _FuturePageState extends State<FuturePage> {
+  String? data;
+
+  void getData() async {
+    data = await fetchData();
+    setState(() {});
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Future Example')),
+      body: Center(
+        child: data == null
+            ? ElevatedButton(
+                onPressed: getData,
+                child: const Text('Ambil Data'),
+              )
+            : Text(data!, style: const TextStyle(fontSize: 24)),
+      ),
+    );
+  }
+}
+```
+
+---
+
+## 3. Stream di Flutter
+
+### 3.1. Contoh Stream
+
+```dart
+Stream<int> counterStream() async* {
+  for (int i = 1; i <= 5; i++) {
+    await Future.delayed(const Duration(seconds: 1));
+    yield i;
+  }
+}
+```
+
+### 3.2. Menggunakan StreamBuilder di UI
+
+```dart
+import 'package:flutter/material.dart';
+
+class StreamPage extends StatelessWidget {
+  const StreamPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Stream Example')),
+      body: Center(
+        child: StreamBuilder<int>(
+          stream: counterStream(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const CircularProgressIndicator();
+            }
+            if (snapshot.hasData) {
+              return Text('Angka: ${snapshot.data}', style: const TextStyle(fontSize: 32));
+            }
+            return const Text('Selesai');
+          },
+        ),
+      ),
+    );
+  }
+}
+```
+
+---
+
+## 4. Integrasi Asynchronous dengan GetX
+
+### 4.1. Future di GetX Controller
+
+```dart
+import 'package:get/get.dart';
+
+class AsyncController extends GetxController {
+  var data = ''.obs;
+  var isLoading = false.obs;
+
+  Future<void> fetchData() async {
+    isLoading.value = true;
+    await Future.delayed(const Duration(seconds: 2));
+    data.value = 'Data dari Future!';
+    isLoading.value = false;
+  }
+}
+```
+
+### 4.2. Stream di GetX Controller
+
+```dart
+import 'package:get/get.dart';
+
+class StreamControllerX extends GetxController {
+  var count = 0.obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    counterStream().listen((val) {
+      count.value = val;
+    });
+  }
+}
+```
+
+---
+
+## 5. Studi Kasus: Fetch Data dan Update UI
+
+### 5.1. Controller
+
+```dart
+import 'package:get/get.dart';
+
+class DataController extends GetxController {
+  var data = ''.obs;
+  var isLoading = false.obs;
+
+  Future<void> fetchData() async {
+    isLoading.value = true;
+    await Future.delayed(const Duration(seconds: 2));
+    data.value = 'Data async berhasil!';
+    isLoading.value = false;
+  }
+}
+```
+
+### 5.2. UI
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'data_controller.dart';
+
+class DataPage extends StatelessWidget {
+  final DataController c = Get.put(DataController());
+
+  DataPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Async Data')),
+      body: Center(
+        child: Obx(() {
+          if (c.isLoading.value) {
+            return const CircularProgressIndicator();
+          }
+          return Text(c.data.value, style: const TextStyle(fontSize: 24));
+        }),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: c.fetchData,
+        child: const Icon(Icons.download),
+      ),
+    );
+  }
+}
+```
+
+---
+
+## 6. Best Practice Asynchronous Programming
+
+- Gunakan async/await untuk operasi yang membutuhkan waktu lama (network, file, dsb).
+- Gunakan Stream untuk data real-time atau berkelanjutan.
+- Update UI secara reaktif dengan GetX (`Obx`, `.obs`).
+- Tangani error dengan try-catch.
+- Jangan blokir main thread/UI.
+
+---
+
+## 7. Referensi
+
+- [Dart Asynchronous Programming](https://dart.dev/codelabs/async-await)
+- [Flutter Future & Stream](https://docs.flutter.dev/cookbook/networking/fetch-data)
+- [GetX Documentation](https://pub.dev/packages/get)
+
+---
+
+**Dengan memahami asynchronous computing, Anda dapat membangun aplikasi Flutter yang responsif, efisien, dan siap untuk kebutuhan real-time. Selamat, Anda telah menyelesaikan seluruh modul pemrograman mobile Flutter!**

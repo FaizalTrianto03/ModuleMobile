@@ -1,14 +1,279 @@
 ---
-title: "Modul 1: Pengenalan & Setup Lingkungan Mobile"
-description: "Dasar pengenalan pemrograman mobile dan setup lingkungan pengembangan."
+title: "Modul 1: User Interface, Arsitektur, dan State Management"
+description: "Belajar UI, arsitektur aplikasi Flutter, dan state management menggunakan GetX."
 ---
 
-# Modul 1: Pengenalan & Setup Lingkungan Mobile
+# Modul 1: User Interface, Arsitektur, dan State Management
 
-Selamat datang di **Modul 1**. Di sini Anda akan belajar tentang pengenalan pemrograman mobile dan cara setup lingkungan pengembangan.
+## 1. Pengantar User Interface (UI) di Flutter
 
-> Konten modul akan segera tersedia.
+Flutter menggunakan konsep **Widget** sebagai elemen dasar UI. Setiap tampilan, baik itu teks, gambar, tombol, maupun layout, adalah widget.
 
-- Apa itu pemrograman mobile?
-- Tools yang dibutuhkan
-- Cara setup environment
+### 1.1. Jenis Widget
+
+- **StatelessWidget**: Widget tanpa perubahan data (statik).
+- **StatefulWidget**: Widget yang dapat berubah (dinamis).
+
+### 1.2. Layout Dasar
+
+- **Column**: Menyusun widget secara vertikal.
+- **Row**: Menyusun widget secara horizontal.
+- **Container**: Widget serbaguna untuk styling, padding, margin, dll.
+- **Scaffold**: Struktur dasar aplikasi (AppBar, Body, FloatingActionButton, dll).
+
+### 1.3. Contoh UI Sederhana
+
+```dart
+import 'package:flutter/material.dart';
+
+void main() => runApp(const MyApp());
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(title: const Text('Contoh UI Flutter')),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: const [
+              Text('Halo, Flutter!'),
+              SizedBox(height: 20),
+              Icon(Icons.android, size: 50),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+```
+
+---
+
+## 2. Arsitektur Aplikasi Flutter
+
+Arsitektur aplikasi penting untuk menjaga kode tetap rapi, mudah dikembangkan, dan scalable.
+
+### 2.1. Pola Arsitektur Populer
+
+- **MVC (Model-View-Controller)**
+- **MVVM (Model-View-ViewModel)**
+- **Clean Architecture**
+- **GetX Pattern** (rekomendasi untuk Flutter modern)
+
+### 2.2. GetX sebagai Arsitektur
+
+GetX menggabungkan state management, dependency injection, dan route management dalam satu package.
+
+---
+
+## 3. State Management dengan GetX
+
+State management adalah cara mengelola data dan perubahan UI dalam aplikasi.
+
+### 3.1. Instalasi GetX
+
+Tambahkan pada `pubspec.yaml`:
+
+```yaml
+dependencies:
+  get: ^4.6.5
+```
+
+### 3.2. Konsep Dasar GetX
+
+- **Reactive State**: Menggunakan `.obs` untuk membuat variabel reaktif.
+- **Controller**: Kelas yang mengelola logika dan state.
+- **Dependency Injection**: Mengelola instance controller secara global.
+
+### 3.3. Contoh State Management GetX
+
+#### 3.3.1. Membuat Controller
+
+```dart
+import 'package:get/get.dart';
+
+class CounterController extends GetxController {
+  var count = 0.obs;
+
+  void increment() {
+    count.value++;
+  }
+}
+```
+
+#### 3.3.2. Menggunakan Controller di UI
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'counter_controller.dart';
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return GetMaterialApp(
+      home: CounterPage(),
+    );
+  }
+}
+
+class CounterPage extends StatelessWidget {
+  final CounterController c = Get.put(CounterController());
+
+  CounterPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('GetX Counter')),
+      body: Center(
+        child: Obx(() => Text(
+              'Angka: ${c.count}',
+              style: const TextStyle(fontSize: 30),
+            )),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: c.increment,
+        child: const Icon(Icons.add),
+      ),
+    );
+  }
+}
+```
+
+---
+
+## 4. Best Practice State Management
+
+- Pisahkan logika bisnis di controller, UI di widget.
+- Gunakan dependency injection GetX (`Get.put`, `Get.find`) untuk manajemen controller.
+- Gunakan `Obx` untuk widget yang perlu update otomatis saat state berubah.
+- Hindari logic berat di UI, letakkan di controller.
+
+---
+
+## 5. Studi Kasus: Aplikasi To-Do Sederhana dengan GetX
+
+### 5.1. Model
+
+```dart
+class Todo {
+  String title;
+  bool done;
+  Todo({required this.title, this.done = false});
+}
+```
+
+### 5.2. Controller
+
+```dart
+import 'package:get/get.dart';
+import 'todo.dart';
+
+class TodoController extends GetxController {
+  var todos = <Todo>[].obs;
+
+  void addTodo(String title) {
+    todos.add(Todo(title: title));
+  }
+
+  void toggleDone(int index) {
+    todos[index].done = !todos[index].done;
+    todos.refresh();
+  }
+}
+```
+
+### 5.3. UI
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'todo_controller.dart';
+
+class TodoPage extends StatelessWidget {
+  final TodoController c = Get.put(TodoController());
+
+  TodoPage({super.key});
+
+  final TextEditingController textController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('To-Do List')),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: textController,
+                    decoration: const InputDecoration(
+                      hintText: 'Tambah tugas...',
+                    ),
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.add),
+                  onPressed: () {
+                    if (textController.text.isNotEmpty) {
+                      c.addTodo(textController.text);
+                      textController.clear();
+                    }
+                  },
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: Obx(() => ListView.builder(
+                  itemCount: c.todos.length,
+                  itemBuilder: (context, index) {
+                    final todo = c.todos[index];
+                    return ListTile(
+                      title: Text(
+                        todo.title,
+                        style: TextStyle(
+                          decoration: todo.done
+                              ? TextDecoration.lineThrough
+                              : TextDecoration.none,
+                        ),
+                      ),
+                      trailing: Checkbox(
+                        value: todo.done,
+                        onChanged: (_) => c.toggleDone(index),
+                      ),
+                    );
+                  },
+                )),
+          ),
+        ],
+      ),
+    );
+  }
+}
+```
+
+---
+
+## 6. Referensi
+
+- [Flutter Widget Catalog](https://docs.flutter.dev/development/ui/widgets)
+- [GetX Documentation](https://pub.dev/packages/get)
+- [Flutter Layouts](https://flutter.dev/docs/development/ui/layout)
+
+---
+
+**Dengan memahami UI, arsitektur, dan state management di Flutter menggunakan GetX, Anda siap membangun aplikasi yang scalable dan maintainable. Lanjutkan ke Modul 2 untuk mempelajari Network API & Web Interfaces.**
