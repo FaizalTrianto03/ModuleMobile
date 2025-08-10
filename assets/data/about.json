@@ -19,7 +19,7 @@
         "title": "Tentang Platform Pembelajaran",
         "subtitle": "Laboratorium Informatika UMM",
         "description": "Platform pembelajaran interaktif yang dirancang khusus untuk mahasiswa yang ingin menguasai pengembangan aplikasi mobile Android.",
-        "backgroundImage": "/assets/images/about-bg.jpg",
+        "backgroundImage": "./assets/images/about-bg.jpg",
         "buttons": [
           {
             "text": "Mulai Belajar",

@@ -9,7 +9,7 @@
       "difficulty": "beginner",
       "duration": "3 jam",
       "url": "/modul/modul1.html",
-      "image": "/assets/images/module1.jpg",
+      "image": "./assets/images/module1.jpg",
       "tags": ["Android Studio", "Setup", "Hello World"],
       "status": "available",
       "objectives": [
@@ -26,7 +26,7 @@
       "difficulty": "beginner",
       "duration": "4 jam",
       "url": "/modul/modul2.html",
-      "image": "/assets/images/module2.jpg",
+      "image": "./assets/images/module2.jpg",
       "tags": ["Layout", "UI", "Views", "ConstraintLayout"],
       "status": "available",
       "objectives": [
@@ -43,7 +43,7 @@
       "difficulty": "intermediate",
       "duration": "4 jam",
       "url": "/modul/modul3.html",
-      "image": "/assets/images/module3.jpg",
+      "image": "./assets/images/module3.jpg",
       "tags": ["Activity", "Intent", "Navigation", "Lifecycle"],
       "status": "available",
       "objectives": [
@@ -60,7 +60,7 @@
       "difficulty": "intermediate",
       "duration": "5 jam",
       "url": "/modul/modul4.html",
-      "image": "/assets/images/module4.jpg",
+      "image": "./assets/images/module4.jpg",
       "tags": ["Fragment", "ViewPager", "Navigation", "UI Patterns"],
       "status": "available",
       "objectives": [
@@ -77,7 +77,7 @@
       "difficulty": "intermediate",
       "duration": "5 jam",
       "url": "/modul/modul5.html",
-      "image": "/assets/images/module5.jpg",
+      "image": "./assets/images/module5.jpg",
       "tags": ["SharedPreferences", "SQLite", "Room", "Data Storage"],
       "status": "available",
       "objectives": [
@@ -94,7 +94,7 @@
       "difficulty": "advanced",
       "duration": "6 jam",
       "url": "/modul/modul6.html",
-      "image": "/assets/images/module6.jpg",
+      "image": "./assets/images/module6.jpg",
       "tags": ["Retrofit", "REST API", "JSON", "Networking"],
       "status": "available",
       "objectives": [

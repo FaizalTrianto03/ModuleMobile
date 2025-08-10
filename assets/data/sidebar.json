@@ -2,7 +2,7 @@
   "brand": {
     "name": "Modul Praktikum",
     "subtitle": "Mobile Development",
-    "logo": "/assets/images/logo.png"
+    "logo": "./assets/images/logo.png"
   },
   "navigation": [
     {

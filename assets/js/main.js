@@ -87,7 +87,7 @@ function determinePageType(path) {
  */
 async function loadSidebarData() {
     try {
-        const response = await fetch('/assets/data/sidebar.json');
+        const response = await fetch('./assets/data/sidebar.json');
         if (!response.ok) throw new Error('Failed to load sidebar data');
         
         AppState.sidebarData = await response.json();
@@ -200,7 +200,7 @@ function toggleNavGroup(groupId) {
  */
 async function initializeHomePage() {
     try {
-        const response = await fetch('/assets/data/homepage.json');
+        const response = await fetch('./assets/data/homepage.json');
         if (!response.ok) throw new Error('Failed to load homepage data');
         
         const data = await response.json();
@@ -217,7 +217,7 @@ async function initializeHomePage() {
  */
 async function initializeModulesPage() {
     try {
-        const response = await fetch('/assets/data/modules.json');
+        const response = await fetch('./assets/data/modules.json');
         if (!response.ok) throw new Error('Failed to load modules data');
         
         const data = await response.json();
@@ -242,7 +242,7 @@ async function initializeModulePage() {
         if (!moduleMatch) throw new Error('Invalid module URL');
         
         const moduleNumber = moduleMatch[1];
-        const response = await fetch(`/assets/data/content/modul${moduleNumber}.json`);
+        const response = await fetch(`./assets/data/content/modul${moduleNumber}.json`);
         if (!response.ok) throw new Error('Failed to load module data');
         
         const data = await response.json();
@@ -267,7 +267,7 @@ async function initializeModulePage() {
  */
 async function initializeStaticPage(pageType) {
     try {
-        const response = await fetch(`/assets/data/${pageType}.json`);
+        const response = await fetch(`./assets/data/${pageType}.json`);
         if (!response.ok) throw new Error(`Failed to load ${pageType} data`);
         
         const data = await response.json();

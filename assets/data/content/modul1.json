@@ -44,7 +44,7 @@
         "title": "Introduction to Android Development",
         "subtitle": "Modul 1 - Fundamental Concepts",
         "description": "Memulai perjalanan pengembangan Android dengan memahami dasar-dasar platform Android dan tools yang diperlukan.",
-        "backgroundImage": "/assets/images/android-development-bg.jpg",
+        "backgroundImage": "./assets/images/android-development-bg.jpg",
         "buttons": [
           {
             "text": "Download Materials",
@@ -233,7 +233,7 @@
       "data": {
         "title": "activity_main.xml",
         "description": "Layout XML untuk MainActivity yang menampilkan Hello World message:",
-        "filePath": "/assets/code/modul1/activity_main.xml",
+        "filePath": "./assets/code/modul1/activity_main.xml",
         "language": "xml",
         "code": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<LinearLayout xmlns:android=\"http://schemas.android.com/apk/res/android\"\n    xmlns:tools=\"http://schemas.android.com/tools\"\n    android:layout_width=\"match_parent\"\n    android:layout_height=\"match_parent\"\n    android:orientation=\"vertical\"\n    android:gravity=\"center\"\n    android:padding=\"16dp\"\n    android:background=\"@color/background_color\"\n    tools:context=\".MainActivity\">\n\n    <ImageView\n        android:id=\"@+id/imageView\"\n        android:layout_width=\"120dp\"\n        android:layout_height=\"120dp\"\n        android:layout_marginBottom=\"32dp\"\n        android:src=\"@mipmap/ic_launcher\"\n        android:contentDescription=\"App Logo\" />\n\n    <TextView\n        android:id=\"@+id/titleTextView\"\n        android:layout_width=\"wrap_content\"\n        android:layout_height=\"wrap_content\"\n        android:text=\"@string/hello_title\"\n        android:textSize=\"28sp\"\n        android:textStyle=\"bold\"\n        android:textColor=\"@color/primary_color\"\n        android:layout_marginBottom=\"16dp\" />\n\n    <TextView\n        android:id=\"@+id/messageTextView\"\n        android:layout_width=\"wrap_content\"\n        android:layout_height=\"wrap_content\"\n        android:text=\"@string/hello_message\"\n        android:textSize=\"16sp\"\n        android:textAlignment=\"center\"\n        android:textColor=\"@color/text_color\"\n        android:layout_marginBottom=\"32dp\" />\n\n    <Button\n        android:id=\"@+id/actionButton\"\n        android:layout_width=\"wrap_content\"\n        android:layout_height=\"wrap_content\"\n        android:text=\"@string/button_text\"\n        android:textSize=\"16sp\"\n        android:paddingHorizontal=\"32dp\"\n        android:paddingVertical=\"12dp\" />\n\n</LinearLayout>",
         "showLineNumbers": true,
@@ -249,7 +249,7 @@
       "data": {
         "title": "strings.xml",
         "description": "String resources yang digunakan dalam layout:",
-        "filePath": "/assets/code/modul1/strings.xml",
+        "filePath": "./assets/code/modul1/strings.xml",
         "language": "xml",
         "code": "<resources>\n    <string name=\"app_name\">Hello World App</string>\n    <string name=\"hello_title\">Hello, World!</string>\n    <string name=\"hello_message\">Welcome to Android Development!\\nThis is your first Android application.</string>\n    <string name=\"button_text\">Get Started</string>\n</resources>",
         "showLineNumbers": true,
@@ -264,7 +264,7 @@
       "data": {
         "title": "colors.xml",
         "description": "Color resources untuk styling aplikasi:",
-        "filePath": "/assets/code/modul1/colors.xml",
+        "filePath": "./assets/code/modul1/colors.xml",
         "language": "xml",
         "code": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<resources>\n    <color name=\"primary_color\">#FF6B35</color>\n    <color name=\"primary_dark\">#E55A2B</color>\n    <color name=\"accent_color\">#FFB366</color>\n    <color name=\"background_color\">#F8F9FA</color>\n    <color name=\"text_color\">#333333</color>\n    <color name=\"white\">#FFFFFF</color>\n    <color name=\"black\">#000000</color>\n</resources>",
         "showLineNumbers": true,
@@ -279,7 +279,7 @@
       "data": {
         "title": "MainActivity.java",
         "description": "Activity utama dengan basic interaction:",
-        "filePath": "/assets/code/modul1/MainActivity.java",
+        "filePath": "./assets/code/modul1/MainActivity.java",
         "language": "java",
         "code": "package com.example.helloworldapp;\n\nimport androidx.appcompat.app.AppCompatActivity;\nimport android.os.Bundle;\nimport android.view.View;\nimport android.widget.Button;\nimport android.widget.TextView;\nimport android.widget.Toast;\n\npublic class MainActivity extends AppCompatActivity {\n\n    private TextView titleTextView;\n    private TextView messageTextView;\n    private Button actionButton;\n\n    @Override\n    protected void onCreate(Bundle savedInstanceState) {\n        super.onCreate(savedInstanceState);\n        setContentView(R.layout.activity_main);\n\n        // Initialize views\n        titleTextView = findViewById(R.id.titleTextView);\n        messageTextView = findViewById(R.id.messageTextView);\n        actionButton = findViewById(R.id.actionButton);\n\n        // Set button click listener\n        actionButton.setOnClickListener(new View.OnClickListener() {\n            @Override\n            public void onClick(View v) {\n                // Show toast message when button is clicked\n                Toast.makeText(MainActivity.this, \n                    \"Hello from Android!\", \n                    Toast.LENGTH_SHORT).show();\n                \n                // Update the title text\n                titleTextView.setText(\"Welcome to Android!\");\n            }\n        });\n    }\n}",
         "showLineNumbers": true,
@@ -383,21 +383,21 @@
           {
             "name": "HelloWorldApp Source Code",
             "description": "Complete project source code",
-            "url": "/assets/code/modul1/HelloWorldApp.zip",
+            "url": "./assets/code/modul1/HelloWorldApp.zip",
             "type": "zip",
             "size": "2.5 MB"
           },
           {
             "name": "Android Development Cheatsheet",
             "description": "Quick reference for Android development",
-            "url": "/assets/downloads/android-cheatsheet.pdf",
+            "url": "./assets/downloads/android-cheatsheet.pdf",
             "type": "pdf",
             "size": "1.2 MB"
           },
           {
             "name": "Project Structure Diagram",
             "description": "Visual diagram of Android project structure",
-            "url": "/assets/images/android-project-structure.png",
+            "url": "./assets/images/android-project-structure.png",
             "type": "image",
             "size": "856 KB"
           }
