@@ -4,114 +4,76 @@
   "modules": [
     {
       "id": "module1",
-      "title": "Introduction to Android Development",
-      "description": "Memahami dasar-dasar pengembangan Android, setup development environment, dan membuat aplikasi pertama. Modul ini mencakup pengenalan Android Studio, struktur project Android, dan Hello World app.",
-      "difficulty": "beginner",
-      "duration": "3 jam",
+      "title": "Flutter Widget Tree & State Management",
+      "description": "Memahami konsep dasar Flutter Widget Tree, perbedaan StatelessWidget vs StatefulWidget, layout UI dasar, dan pengenalan state management dengan setState() serta Provider. Modul ini mencakup implementasi aplikasi counter sederhana dan teknik profiling dasar.",
       "url": "/modul/modul1.html",
-      "image": "./assets/images/module1.jpg",
-      "tags": ["Android Studio", "Setup", "Hello World"],
+      "image": "./assets/images/module1.png",
+      "tags": ["Flutter", "Widget Tree", "StatelessWidget", "StatefulWidget", "setState", "Provider"],
       "status": "available",
       "objectives": [
-        "Setup Android Studio dan SDK",
-        "Memahami struktur project Android",
-        "Membuat aplikasi Hello World",
-        "Menjalankan aplikasi di emulator"
+        "Memahami arsitektur Flutter Widget Tree",
+        "Menguasai perbedaan StatelessWidget dan StatefulWidget",
+        "Menggunakan layout dasar: Column, Row, Container, Padding",
+        "Implementasi state management dengan setState()",
+        "Pengenalan Provider untuk state management eksternal",
+        "Membuat aplikasi Counter sederhana",
+        "Melakukan profiling sederhana dengan debugPrint() dan DevTools"
       ]
     },
     {
       "id": "module2",
-      "title": "Basic Layouts and UI Components",
-      "description": "Mempelajari berbagai jenis layout Android seperti LinearLayout, RelativeLayout, ConstraintLayout, dan cara menggunakan View components untuk membuat user interface yang menarik dan responsif.",
-      "difficulty": "beginner",
-      "duration": "4 jam",
-      "url": "/modul/modul2.html",
-      "image": "./assets/images/module2.jpg",
-      "tags": ["Layout", "UI", "Views", "ConstraintLayout"],
-      "status": "available",
-      "objectives": [
-        "Memahami berbagai jenis Layout",
-        "Menggunakan View components",
-        "Membuat UI responsif",
-        "Styling dengan themes dan styles"
-      ]
+      "title": "Coming Soon",
+      "description": "Modul ini sedang dalam tahap pengembangan. Stay tuned!",
+      "url": "/modul/comingsoon.html",
+      "image": "./assets/images/module2.png",
+      "tags": ["Coming Soon"],
+      "status": "coming_soon",
+      "objectives": []
     },
     {
       "id": "module3",
-      "title": "Activities and Intents",
-      "description": "Mendalami konsep Activity lifecycle, navigasi antar Activities menggunakan Intents, passing data antar Activities, dan mengelola state aplikasi dengan baik.",
-      "difficulty": "intermediate",
-      "duration": "4 jam",
-      "url": "/modul/modul3.html",
-      "image": "./assets/images/module3.jpg",
-      "tags": ["Activity", "Intent", "Navigation", "Lifecycle"],
-      "status": "available",
-      "objectives": [
-        "Memahami Activity Lifecycle",
-        "Navigasi dengan Intents",
-        "Passing data antar Activities",
-        "Mengelola state aplikasi"
-      ]
+      "title": "Coming Soon",
+      "description": "Modul ini sedang dalam tahap pengembangan. Stay tuned!",
+      "url": "/modul/comingsoon.html",
+      "image": "./assets/images/module3.png",
+      "tags": ["Coming Soon"],
+      "status": "coming_soon",
+      "objectives": []
     },
     {
       "id": "module4",
-      "title": "Fragments and Advanced UI",
-      "description": "Mempelajari Fragments untuk menciptakan UI yang fleksibel, Fragment lifecycle, komunikasi antar Fragments, dan implementasi advanced UI patterns seperti ViewPager dan Navigation Component.",
-      "difficulty": "intermediate",
-      "duration": "5 jam",
-      "url": "/modul/modul4.html",
-      "image": "./assets/images/module4.jpg",
-      "tags": ["Fragment", "ViewPager", "Navigation", "UI Patterns"],
-      "status": "available",
-      "objectives": [
-        "Memahami Fragment Lifecycle",
-        "Komunikasi antar Fragments",
-        "Implementasi ViewPager",
-        "Menggunakan Navigation Component"
-      ]
+      "title": "Coming Soon",
+      "description": "Modul ini sedang dalam tahap pengembangan. Stay tuned!",
+      "url": "/modul/comingsoon.html",
+      "image": "./assets/images/module4.png",
+      "tags": ["Coming Soon"],
+      "status": "coming_soon",
+      "objectives": []
     },
     {
       "id": "module5",
-      "title": "Data Storage and Persistence",
-      "description": "Eksplorasi berbagai metode penyimpanan data di Android: SharedPreferences untuk data sederhana, SQLite database untuk data kompleks, dan Room database sebagai modern approach untuk data persistence.",
-      "difficulty": "intermediate",
-      "duration": "5 jam",
-      "url": "/modul/modul5.html",
-      "image": "./assets/images/module5.jpg",
-      "tags": ["SharedPreferences", "SQLite", "Room", "Data Storage"],
-      "status": "available",
-      "objectives": [
-        "Menggunakan SharedPreferences",
-        "Implementasi SQLite database",
-        "Room database dengan DAO",
-        "Data binding dan LiveData"
-      ]
+      "title": "Coming Soon",
+      "description": "Modul ini sedang dalam tahap pengembangan. Stay tuned!",
+      "url": "/modul/comingsoon.html",
+      "image": "./assets/images/module5.png",
+      "tags": ["Coming Soon"],
+      "status": "coming_soon",
+      "objectives": []
     },
     {
       "id": "module6",
-      "title": "Networking and API Integration",
-      "description": "Integrasi dengan REST APIs, HTTP requests menggunakan Retrofit, handling JSON data, authentication, dan best practices untuk networking di aplikasi Android modern.",
-      "difficulty": "advanced",
-      "duration": "6 jam",
-      "url": "/modul/modul6.html",
-      "image": "./assets/images/module6.jpg",
-      "tags": ["Retrofit", "REST API", "JSON", "Networking"],
-      "status": "available",
-      "objectives": [
-        "HTTP requests dengan Retrofit",
-        "Parsing JSON data",
-        "Authentication dan Headers",
-        "Error handling dan caching"
-      ]
+      "title": "Coming Soon",
+      "description": "Modul ini sedang dalam tahap pengembangan. Stay tuned!",
+      "url": "/modul/comingsoon.html",
+      "image": "./assets/images/module6.png",
+      "tags": ["Coming Soon"],
+      "status": "coming_soon",
+      "objectives": []
     }
   ],
   "stats": {
     "totalModules": 6,
-    "totalDuration": "27 jam",
-    "difficultyDistribution": {
-      "beginner": 2,
-      "intermediate": 3,
-      "advanced": 1
-    }
+    "availableModules": 1,
+    "comingSoonModules": 5
   }
 }

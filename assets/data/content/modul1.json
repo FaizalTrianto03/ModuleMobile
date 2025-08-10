@@ -1,19 +1,20 @@
 {
-  "title": "Modul 1: Introduction to Android Development",
-  "subtitle": "Memulai Perjalanan Android Development",
-  "description": "Modul ini akan memperkenalkan Anda pada dunia pengembangan Android, mulai dari setup environment hingga membuat aplikasi pertama.",
+  "title": "Modul 1: Flutter Widget Tree & State Management",
+  "subtitle": "Memahami Dasar-dasar Flutter Widget dan State",
+  "description": "Modul ini akan memperkenalkan Anda pada konsep fundamental Flutter: Widget Tree, perbedaan StatelessWidget vs StatefulWidget, dan dasar-dasar state management.",
   "duration": "3 jam",
   "difficulty": "beginner",
   "objectives": [
-    "Setup Android Studio dan SDK",
-    "Memahami struktur project Android",
-    "Membuat aplikasi Hello World",
-    "Menjalankan aplikasi di emulator"
+    "Memahami arsitektur Flutter Widget Tree",
+    "Menguasai perbedaan StatelessWidget dan StatefulWidget",
+    "Implementasi layout dasar dengan Column, Row, Container",
+    "Menerapkan state management dengan setState()"
   ],
   "prerequisites": [
-    "Dasar-dasar pemrograman Java/Kotlin",
+    "Dasar-dasar pemrograman Dart",
     "Pemahaman konsep OOP",
-    "Komputer dengan spesifikasi minimum untuk Android Studio"
+    "Flutter SDK sudah terinstall",
+    "IDE (VS Code/Android Studio) sudah dikonfigurasi"
   ],
   "breadcrumb": [
     {
@@ -32,7 +33,7 @@
   "navigation": {
     "previous": null,
     "next": {
-      "title": "Modul 2: Basic Layouts",
+      "title": "Modul 2: Basic Layouts and UI Components",
       "url": "/modul/modul2.html"
     }
   },
@@ -41,10 +42,9 @@
       "type": "hero",
       "id": "module-hero",
       "data": {
-        "title": "Introduction to Android Development",
-        "subtitle": "Modul 1 - Fundamental Concepts",
-        "description": "Memulai perjalanan pengembangan Android dengan memahami dasar-dasar platform Android dan tools yang diperlukan.",
-        "backgroundImage": "./assets/images/android-development-bg.jpg",
+        "title": "Flutter Widget Tree & State Management",
+        "subtitle": "Modul 1 - Konsep Fundamental Flutter",
+        "description": "Memahami arsitektur UI Flutter berbasis widget, perbedaan StatelessWidget vs StatefulWidget, dan implementasi state management dasar.",
         "buttons": [
           {
             "text": "Download Materials",
@@ -61,7 +61,7 @@
       "data": {
         "type": "info",
         "title": "Persiapan Sebelum Memulai",
-        "content": "Pastikan komputer Anda memiliki minimum 8GB RAM dan 10GB storage kosong untuk instalasi Android Studio dan SDK.",
+        "content": "Pastikan Flutter SDK sudah terinstall dan IDE (VS Code/Android Studio) sudah dikonfigurasi dengan plugin Flutter dan Dart.",
         "dismissible": false
       }
     },
@@ -69,39 +69,27 @@
       "type": "text",
       "id": "intro-content",
       "data": {
-        "content": "<h2 class='text-2xl font-bold mb-4'>Apa itu Android?</h2><p class='mb-4'>Android adalah sistem operasi mobile berbasis Linux yang dikembangkan oleh Google. Sejak diperkenalkan pada tahun 2008, Android telah menjadi platform mobile paling populer di dunia dengan lebih dari 2.5 miliar perangkat aktif.</p><p class='mb-4'>Sebagai platform open source, Android memberikan kebebasan kepada developer untuk menciptakan aplikasi yang inovatif dan beragam. Aplikasi Android ditulis menggunakan bahasa pemrograman Java atau Kotlin, dan berjalan di atas Android Runtime (ART).</p>",
+        "content": "<h2 class='text-2xl font-bold mb-4'>Konsep Dasar Flutter Widget Tree</h2><h3 class='text-xl font-semibold mb-3'>Arsitektur UI Flutter Berbasis Widget</h3><p class='mb-4'>Dalam dunia Flutter, semua yang Anda lihat di layar adalah widget. Mulai dari tombol, teks, ikon, hingga tata letak satu halaman penuh. Widget-widget ini tidak berdiri sendiri, melainkan tersusun dalam sebuah struktur pohon yang disebut Widget Tree. Bayangkan sebuah pohon keluarga, di mana ada widget \"induk\" (parent) yang memiliki satu atau beberapa widget \"anak\" (child/children). Struktur inilah yang menjadi cetak biru (blueprint) dari seluruh tampilan aplikasi Anda.</p>",
         "align": "left",
         "size": "base"
       }
     },
     {
       "type": "card",
-      "id": "android-features",
+      "id": "widget-types",
       "data": {
-        "title": "Keunggulan Platform Android",
+        "title": "StatelessWidget vs StatefulWidget",
         "columns": 2,
         "cards": [
           {
-            "title": "Open Source",
-            "description": "Platform terbuka yang memungkinkan customization dan inovasi tanpa batas.",
+            "title": "StatelessWidget",
+            "description": "Widget yang \"tidak memiliki state\" atau data internal yang bisa berubah. Seperti poster yang sudah dicetak - isinya tetap dan tidak akan pernah berubah selama aplikasi berjalan.",
             "image": null,
             "buttons": []
           },
           {
-            "title": "Large Market Share",
-            "description": "Digunakan oleh lebih dari 70% perangkat mobile di seluruh dunia.",
-            "image": null,
-            "buttons": []
-          },
-          {
-            "title": "Rich API",
-            "description": "Menyediakan API yang lengkap untuk mengakses fitur hardware dan sistem.",
-            "image": null,
-            "buttons": []
-          },
-          {
-            "title": "Multiple Form Factors",
-            "description": "Mendukung berbagai jenis perangkat: phone, tablet, TV, watch, dan IoT.",
+            "title": "StatefulWidget",
+            "description": "Widget yang \"memiliki state\" atau data internal yang dapat berubah sepanjang waktu. Seperti papan skor digital yang angkanya bisa berubah setiap kali ada gol.",
             "image": null,
             "buttons": []
           }
@@ -110,267 +98,230 @@
     },
     {
       "type": "text",
-      "id": "studio-intro",
+      "id": "layout-intro",
       "data": {
-        "content": "<h2 class='text-2xl font-bold mb-4'>Android Studio - IDE Resmi Android</h2><p class='mb-4'>Android Studio adalah Integrated Development Environment (IDE) resmi untuk pengembangan Android. Dibangun berdasarkan IntelliJ IDEA, Android Studio menyediakan tools yang powerful untuk development, debugging, testing, dan performance profiling.</p>",
+        "content": "<h2 class='text-2xl font-bold mb-4'>Pengenalan Layout UI Flutter</h2><h3 class='text-xl font-semibold mb-3'>Peran Widget Layout dalam Flutter</h3><p class='mb-4'>Setelah memahami konsep dasar widget, langkah selanjutnya adalah mempelajari bagaimana widget-widget ini dapat disusun untuk menciptakan antarmuka pengguna yang terstruktur dan estetis. Di sinilah widget layout berperan. Widget layout adalah jenis widget khusus yang bertugas mengatur posisi, ukuran, dan tata letak widget lain di dalamnya.</p>",
         "align": "left",
         "size": "base"
-      }
-    },
-    {
-      "type": "video",
-      "id": "setup-video",
-      "data": {
-        "title": "Video Tutorial: Setup Android Studio",
-        "description": "Tonton video tutorial lengkap tentang cara menginstall dan mengkonfigurasi Android Studio.",
-        "videoId": "0zx_eFyHRU0",
-        "aspectRatio": "16:9"
       }
     },
     {
       "type": "accordion",
-      "id": "setup-steps",
+      "id": "layout-widgets",
       "data": {
+        "title": "Widget Layout Dasar",
         "allowMultiple": false,
         "items": [
           {
-            "title": "Step 1: Download Android Studio",
-            "content": "<div class='space-y-4'><p>1. Kunjungi website resmi Android Studio: <a href='https://developer.android.com/studio' class='text-blue-500 hover:underline' target='_blank'>developer.android.com/studio</a></p><p>2. Klik tombol 'Download Android Studio'</p><p>3. Pilih versi sesuai sistem operasi Anda (Windows, macOS, atau Linux)</p><p>4. Baca dan setujui Terms and Conditions</p><p>5. Download file installer (ukuran sekitar 1GB)</p></div>"
+            "title": "Column - Layout Vertikal",
+            "content": "<div class='space-y-4'><p><strong>Fungsi:</strong> Menyusun widget-widget anaknya secara vertikal, dari atas ke bawah.</p><p><strong>Penggunaan:</strong> Cocok untuk membuat tata letak di mana elemen-elemen harus ditampilkan dalam satu kolom, seperti daftar atau form.</p><p><strong>Properti Utama:</strong></p><ul class='list-disc list-inside ml-4'><li>mainAxisAlignment: Mengatur posisi widget di sepanjang sumbu utama (vertikal)</li><li>crossAxisAlignment: Mengatur posisi widget di sepanjang sumbu sekunder (horizontal)</li></ul></div>"
           },
           {
-            "title": "Step 2: Install Android Studio",
-            "content": "<div class='space-y-4'><p><strong>Windows:</strong></p><ul class='list-disc list-inside ml-4'><li>Jalankan file .exe yang telah didownload</li><li>Ikuti wizard instalasi</li><li>Pilih komponen yang akan diinstall (pilih semua untuk pengalaman lengkap)</li><li>Tentukan lokasi instalasi</li></ul><p><strong>macOS:</strong></p><ul class='list-disc list-inside ml-4'><li>Buka file .dmg</li><li>Drag Android Studio ke folder Applications</li><li>Jalankan Android Studio dari Launchpad</li></ul></div>"
+            "title": "Row - Layout Horizontal",
+            "content": "<div class='space-y-4'><p><strong>Fungsi:</strong> Menyusun widget-widget anaknya secara horizontal, dari kiri ke kanan.</p><p><strong>Penggunaan:</strong> Cocok untuk membuat tata letak di mana elemen-elemen harus ditampilkan dalam satu baris, seperti tombol navigasi atau ikon.</p><p><strong>Properti Utama:</strong></p><ul class='list-disc list-inside ml-4'><li>mainAxisAlignment: Mengatur posisi widget di sepanjang sumbu utama (horizontal)</li><li>crossAxisAlignment: Mengatur posisi widget di sepanjang sumbu sekunder (vertikal)</li></ul></div>"
           },
           {
-            "title": "Step 3: Setup SDK dan Tools",
-            "content": "<div class='space-y-4'><p>Setelah Android Studio terbuka untuk pertama kali:</p><ol class='list-decimal list-inside space-y-2'><li>Pilih 'Standard' setup untuk menginstall komponen yang direkomendasikan</li><li>Pilih UI theme (Darcula atau Light)</li><li>Verify settings dan klik 'Finish'</li><li>Tunggu proses download SDK components (bisa memakan waktu 15-30 menit)</li><li>Setelah selesai, Android Studio siap digunakan</li></ol></div>"
+            "title": "Container - Kotak Serbaguna",
+            "content": "<div class='space-y-4'><p><strong>Fungsi:</strong> Sebuah \"kotak serbaguna\" yang dapat digunakan untuk membungkus widget lain dengan properti tambahan.</p><p><strong>Penggunaan:</strong> Cocok untuk membuat elemen UI yang membutuhkan penyesuaian visual, seperti latar belakang berwarna atau batasan ukuran.</p><p><strong>Properti Utama:</strong></p><ul class='list-disc list-inside ml-4'><li>color: Memberikan warna latar belakang</li><li>width dan height: Mengatur ukuran container</li><li>decoration: Menambahkan dekorasi seperti bingkai atau bayangan</li></ul></div>"
           },
           {
-            "title": "Step 4: Setup AVD (Android Virtual Device)",
-            "content": "<div class='space-y-4'><p>AVD Manager memungkinkan Anda menjalankan emulator Android:</p><ol class='list-decimal list-inside space-y-2'><li>Buka AVD Manager dari Tools > AVD Manager</li><li>Klik 'Create Virtual Device'</li><li>Pilih device type (disarankan Pixel 3a atau Pixel 4)</li><li>Pilih system image (disarankan API 30 atau terbaru)</li><li>Verify configuration dan klik 'Finish'</li><li>Test emulator dengan klik tombol Play</li></ol></div>"
+            "title": "Padding - Ruang Kosong",
+            "content": "<div class='space-y-4'><p><strong>Fungsi:</strong> Memberikan ruang kosong di sekeliling widget anaknya.</p><p><strong>Penggunaan:</strong> Cocok untuk mengatur jarak antara elemen UI agar terlihat lebih rapi dan terstruktur.</p><p><strong>Properti Utama:</strong></p><ul class='list-disc list-inside ml-4'><li>padding: Mengatur jumlah ruang kosong di setiap sisi (atas, bawah, kiri, kanan)</li></ul></div>"
+          }
+        ]
+      }
+    },
+    {
+      "type": "code",
+      "id": "column-example",
+      "data": {
+        "title": "Contoh Column Widget",
+        "description": "Implementasi dasar Column untuk menyusun widget secara vertikal:",
+        "filePath": "./assets/code/modul1/column_example.dart",
+        "language": "dart",
+        "code": "Column(\n  mainAxisAlignment: MainAxisAlignment.center,\n  children: [\n    Text('Widget 1'),\n    Text('Widget 2'),\n    Text('Widget 3'),\n  ],\n)",
+        "showLineNumbers": true,
+        "showPreview": false,
+        "showShare": true,
+        "downloadable": true
+      }
+    },
+    {
+      "type": "code",
+      "id": "row-example",
+      "data": {
+        "title": "Contoh Row Widget",
+        "description": "Implementasi dasar Row untuk menyusun widget secara horizontal:",
+        "filePath": "./assets/code/modul1/row_example.dart",
+        "language": "dart",
+        "code": "Row(\n  mainAxisAlignment: MainAxisAlignment.spaceAround,\n  children: [\n    Icon(Icons.home),\n    Icon(Icons.search),\n    Icon(Icons.settings),\n  ],\n)",
+        "showLineNumbers": true,
+        "showPreview": false,
+        "showShare": true,
+        "downloadable": true
+      }
+    },
+    {
+      "type": "text",
+      "id": "state-management-intro",
+      "data": {
+        "content": "<h2 class='text-2xl font-bold mb-4'>State Management pada Flutter: setState vs External State</h2><h3 class='text-xl font-semibold mb-3'>Pendahuluan</h3><p class='mb-4'>Flutter dikenal karena kemampuannya untuk membangun antarmuka pengguna yang interaktif dan responsif. Salah satu elemen utama dalam membangun UI dinamis adalah state management. State adalah data yang menentukan bagaimana suatu widget terlihat atau berperilaku pada waktu tertentu.</p><p class='mb-4'>Pertanyaannya adalah: Bagaimana cara memberitahu Flutter bahwa ada data yang berubah dan UI perlu diperbarui?</p>",
+        "align": "left",
+        "size": "base"
+      }
+    },
+    {
+      "type": "accordion",
+      "id": "state-management-concepts",
+      "data": {
+        "title": "Konsep State Management",
+        "allowMultiple": false,
+        "items": [
+          {
+            "title": "setState() dan Batasannya",
+            "content": "<div class='space-y-4'><p>Di sinilah fungsi <code>setState()</code> berperan. Ketika Anda memanggil <code>setState()</code> di dalam sebuah StatefulWidget, Anda pada dasarnya mengirim sinyal ke Flutter: \"Hei, ada data di dalam widget ini yang baru saja saya ubah. Tolong gambar ulang bagian UI yang bergantung pada data tersebut!\"</p><p><strong>Keunggulan setState():</strong></p><ul class='list-disc list-inside ml-4'><li>Sederhana dan mudah dipahami</li><li>Cocok untuk mengelola state lokal</li></ul><p><strong>Batasan setState():</strong></p><ul class='list-disc list-inside ml-4'><li>Tidak scalable untuk state global</li><li>Menyulitkan pengelolaan data yang dibagikan ke banyak widget</li></ul></div>"
+          },
+          {
+            "title": "Konteks untuk State yang Lebih Kompleks",
+            "content": "<div class='space-y-4'><p>Bayangkan sebuah aplikasi e-commerce. Data seperti:</p><ul class='list-disc list-inside ml-4'><li>Status login pengguna: Dibutuhkan oleh halaman utama, halaman profil, dan halaman pengaturan</li><li>Isi keranjang belanja: Dibutuhkan oleh halaman utama, halaman produk, dan halaman checkout</li></ul><p>Menggunakan setState() untuk mengelola data seperti ini akan sangat merepotkan karena Anda harus mengoper data dari satu widget ke widget lainnya secara manual.</p></div>"
+          },
+          {
+            "title": "Provider sebagai Solusi",
+            "content": "<div class='space-y-4'><p>Provider adalah sebuah paket Flutter yang memungkinkan Anda untuk \"menyediakan\" state di puncak widget tree, sehingga widget mana pun di bawahnya dapat mendengarkan dan menggunakan state tersebut tanpa perlu operan manual.</p><p><strong>Keunggulan Provider:</strong></p><ul class='list-disc list-inside ml-4'><li>Scalable: Cocok untuk aplikasi besar dengan banyak halaman</li><li>Efisien: Mengurangi kompleksitas pengelolaan state global</li><li>Reactive: UI akan diperbarui secara otomatis ketika state berubah</li></ul></div>"
           }
         ]
       }
     },
     {
       "type": "text",
-      "id": "project-structure",
+      "id": "implementation-intro",
       "data": {
-        "content": "<h2 class='text-2xl font-bold mb-4'>Struktur Project Android</h2><p class='mb-4'>Sebelum membuat aplikasi pertama, penting untuk memahami struktur dasar project Android. Setiap project Android memiliki struktur folder dan file yang standar.</p>",
+        "content": "<h2 class='text-2xl font-bold mb-4'>Implementasi Aplikasi Sederhana</h2><p class='mb-4'>Teori sudah cukup, saatnya praktik! Untuk memahami bagaimana state management bekerja dalam Flutter, kita akan membuat aplikasi paling klasik untuk mendemonstrasikan state: Aplikasi Counter. Aplikasi ini akan menunjukkan perbedaan antara StatelessWidget dan StatefulWidget, serta bagaimana state dapat mengubah tampilan UI berdasarkan interaksi pengguna.</p>",
         "align": "left",
         "size": "base"
       }
     },
     {
-      "type": "code",
-      "id": "project-structure-tree",
+      "type": "accordion",
+      "id": "counter-implementation",
       "data": {
-        "title": "Struktur Folder Project Android",
-        "description": "Berikut adalah struktur dasar sebuah project Android baru:",
-        "language": "text",
-        "code": "MyAndroidApp/\n├── app/\n│   ├── src/\n│   │   ├── main/\n│   │   │   ├── java/\n│   │   │   │   └── com/example/myandroidapp/\n│   │   │   │       └── MainActivity.java\n│   │   │   ├── res/\n│   │   │   │   ├── layout/\n│   │   │   │   │   └── activity_main.xml\n│   │   │   │   ├── values/\n│   │   │   │   │   ├── strings.xml\n│   │   │   │   │   ├── colors.xml\n│   │   │   │   │   └── themes.xml\n│   │   │   │   └── mipmap/\n│   │   │   │       └── (app icons)\n│   │   │   └── AndroidManifest.xml\n│   │   ├── test/\n│   │   └── androidTest/\n│   ├── build.gradle (Module: App)\n│   └── proguard-rules.pro\n├── gradle/\n├── build.gradle (Project: MyAndroidApp)\n├── gradle.properties\n├── gradlew\n├── gradlew.bat\n├── local.properties\n└── settings.gradle",
+        "title": "Implementasi Counter App",
+        "allowMultiple": false,
+        "items": [
+          {
+            "title": "Versi Stateless: Memahami Keterbatasan",
+            "content": "<div class='space-y-4'><p>Pertama, kita akan mencoba membuat aplikasi counter menggunakan StatelessWidget. Anda akan melihat bahwa meskipun tombol dapat ditekan, angka di layar tidak akan pernah bertambah. Hal ini membuktikan bahwa StatelessWidget hanya cocok untuk UI yang statis atau tidak bergantung pada perubahan data internal.</p><p><strong>Hasil:</strong></p><ul class='list-disc list-inside ml-4'><li>Angka counter di layar tidak berubah meskipun tombol ditekan</li><li>StatelessWidget tidak memiliki mekanisme untuk memperbarui UI berdasarkan perubahan data</li></ul></div>"
+          },
+          {
+            "title": "Versi Stateful: Menghidupkan Interaksi",
+            "content": "<div class='space-y-4'><p>Selanjutnya, kita akan mengubah aplikasi tersebut menjadi StatefulWidget. Dengan menambahkan sebuah variabel untuk menyimpan angka hitungan dan memanggil setState() setiap kali tombol ditekan, angka di layar pun akan diperbarui. Di sini Anda akan melihat langsung kekuatan dari internal state dan fungsi setState().</p><p><strong>Hasil:</strong></p><ul class='list-disc list-inside ml-4'><li>Angka counter di layar akan bertambah setiap kali tombol ditekan</li><li>Fungsi setState() memberitahu Flutter bahwa ada data yang berubah, sehingga UI perlu digambar ulang</li></ul></div>"
+          }
+        ]
+      }
+    },
+    {
+      "type": "code",
+      "id": "stateless-counter",
+      "data": {
+        "title": "StatelessWidget Counter (Tidak Berfungsi)",
+        "description": "Contoh counter menggunakan StatelessWidget yang tidak dapat memperbarui UI:",
+        "filePath": "./assets/code/modul1/stateless_counter.dart",
+        "language": "dart",
+        "code": "class StatelessCounterApp extends StatelessWidget {\n  int counter = 0; // Variabel statis, tidak akan berubah\n\n  @override\n  Widget build(BuildContext context) {\n    return MaterialApp(\n      home: Scaffold(\n        appBar: AppBar(title: Text('Stateless Counter')),\n        body: Center(\n          child: Column(\n            mainAxisAlignment: MainAxisAlignment.center,\n            children: [\n              Text('Counter: $counter'),\n              ElevatedButton(\n                onPressed: () {\n                  counter++; // Tidak akan memperbarui UI\n                  print('Counter: $counter');\n                },\n                child: Text('Increment'),\n              ),\n            ],\n          ),\n        ),\n      ),\n    );\n  }\n}",
         "showLineNumbers": true,
+        "highlightLines": [2, 15, 16],
         "showPreview": false,
         "showShare": true,
-        "downloadable": false
+        "downloadable": true
+      }
+    },
+    {
+      "type": "code",
+      "id": "stateful-counter",
+      "data": {
+        "title": "StatefulWidget Counter (Berfungsi)",
+        "description": "Contoh counter menggunakan StatefulWidget dengan setState():",
+        "filePath": "./assets/code/modul1/stateful_counter.dart",
+        "language": "dart",
+        "code": "class StatefulCounterApp extends StatefulWidget {\n  @override\n  _StatefulCounterAppState createState() => _StatefulCounterAppState();\n}\n\nclass _StatefulCounterAppState extends State<StatefulCounterApp> {\n  int _counter = 0; // Variabel state untuk menyimpan angka\n\n  void _incrementCounter() {\n    setState(() {\n      _counter++; // Memperbarui angka dan UI\n    });\n  }\n\n  @override\n  Widget build(BuildContext context) {\n    return MaterialApp(\n      home: Scaffold(\n        appBar: AppBar(title: Text('Stateful Counter')),\n        body: Center(\n          child: Column(\n            mainAxisAlignment: MainAxisAlignment.center,\n            children: [\n              Text('Counter: $_counter'),\n              ElevatedButton(\n                onPressed: _incrementCounter,\n                child: Text('Increment'),\n              ),\n            ],\n          ),\n        ),\n      ),\n    );\n  }\n}",
+        "showLineNumbers": true,
+        "highlightLines": [7, 9, 10, 11, 12],
+        "showPreview": false,
+        "showShare": true,
+        "downloadable": true
       }
     },
     {
       "type": "table",
-      "id": "folder-explanation",
+      "id": "comparison-table",
       "data": {
-        "title": "Penjelasan Folder dan File Penting",
-        "headers": ["Folder/File", "Deskripsi", "Fungsi"],
+        "title": "Perbandingan StatelessWidget vs StatefulWidget",
+        "headers": ["Aspek", "StatelessWidget", "StatefulWidget"],
         "rows": [
-          ["app/src/main/java/", "Source code Java/Kotlin", "Berisi semua file kode program aplikasi"],
-          ["app/src/main/res/", "Resources aplikasi", "Berisi layout, strings, images, colors, dll"],
-          ["app/src/main/res/layout/", "Layout XML files", "Mendefinisikan UI/tampilan aplikasi"],
-          ["app/src/main/res/values/", "Value resources", "Berisi strings, colors, dimensions, styles"],
-          ["AndroidManifest.xml", "App manifest", "Konfigurasi aplikasi, permissions, activities"],
-          ["build.gradle (app)", "Build configuration", "Dependencies dan build settings untuk app module"],
-          ["build.gradle (project)", "Project build config", "Build settings untuk keseluruhan project"]
+          ["Pembaruan UI", "Tidak dapat memperbarui UI", "Dapat memperbarui UI dengan setState()"],
+          ["Cocok untuk", "UI statis atau tidak interaktif", "UI dinamis atau interaktif"],
+          ["Pengelolaan State", "Tidak memiliki state internal", "Memiliki state internal"],
+          ["Performa", "Lebih ringan dan cepat", "Sedikit lebih berat karena lifecycle"],
+          ["Kompleksitas", "Sederhana", "Lebih kompleks dengan State class"]
         ],
         "responsive": true
       }
     },
     {
       "type": "text",
-      "id": "hello-world-intro",
+      "id": "profiling-intro",
       "data": {
-        "content": "<h2 class='text-2xl font-bold mb-4'>Membuat Aplikasi Hello World</h2><p class='mb-4'>Sekarang saatnya membuat aplikasi Android pertama Anda! Aplikasi 'Hello World' adalah tradisi dalam programming - aplikasi sederhana yang menampilkan pesan \"Hello World\" di layar.</p>",
+        "content": "<h2 class='text-2xl font-bold mb-4'>Profiling Sederhana</h2><h3 class='text-xl font-semibold mb-3'>Mengapa Profiling Penting?</h3><p class='mb-4'>Dalam pengembangan aplikasi Flutter, efisiensi adalah kunci untuk memastikan aplikasi berjalan mulus dan responsif. Salah satu aspek penting dalam efisiensi adalah meminimalkan rebuild widget yang tidak perlu. Untuk itu, kita perlu memahami widget mana yang sedang digambar ulang dan seberapa sering hal itu terjadi.</p><p class='mb-4'>Proses ini disebut profiling, dan sangat penting untuk mengoptimalkan performa aplikasi.</p>",
         "align": "left",
         "size": "base"
       }
     },
     {
       "type": "accordion",
-      "id": "hello-world-steps",
+      "id": "profiling-methods",
       "data": {
+        "title": "Metode Profiling Flutter",
         "allowMultiple": false,
         "items": [
           {
-            "title": "Step 1: Create New Project",
-            "content": "<ol class='list-decimal list-inside space-y-2'><li>Buka Android Studio</li><li>Klik 'Create New Project' atau File > New > New Project</li><li>Pilih 'Empty Activity' dari template yang tersedia</li><li>Klik 'Next'</li></ol>"
+            "title": "Memanfaatkan debugPrint()",
+            "content": "<div class='space-y-4'><p>Cara paling sederhana untuk melacak rebuild widget adalah dengan menggunakan perintah <code>debugPrint()</code> di dalam metode build() sebuah widget. Setiap kali widget tersebut digambar ulang, pesan akan muncul di konsol.</p><p><strong>Hasil:</strong></p><ul class='list-disc list-inside ml-4'><li>Setiap kali widget digambar ulang, pesan akan muncul di konsol</li><li>Anda dapat melacak frekuensi dan waktu rebuild untuk widget tertentu</li></ul></div>"
           },
           {
-            "title": "Step 2: Configure Project",
-            "content": "<div class='space-y-4'><p>Isi informasi project:</p><ul class='list-disc list-inside ml-4 space-y-1'><li><strong>Name:</strong> Hello World App</li><li><strong>Package name:</strong> com.example.helloworldapp</li><li><strong>Save location:</strong> Pilih folder penyimpanan</li><li><strong>Language:</strong> Java (atau Kotlin jika prefer)</li><li><strong>Minimum SDK:</strong> API 21 (Android 5.0) - recommended</li></ul><p>Klik 'Finish' dan tunggu Android Studio menyiapkan project.</p></div>"
+            "title": "Hot Reload vs Hot Restart",
+            "content": "<div class='space-y-4'><p>Dalam Flutter, ada dua cara utama untuk memuat ulang aplikasi saat Anda melakukan perubahan kode:</p><p><strong>Hot Reload:</strong></p><ul class='list-disc list-inside ml-4'><li>Memuat ulang perubahan kode dengan cepat tanpa mereset state aplikasi</li><li>Cocok untuk perbaikan UI, seperti perubahan tata letak, warna, atau teks</li></ul><p><strong>Hot Restart:</strong></p><ul class='list-disc list-inside ml-4'><li>Memulai ulang seluruh aplikasi dan mereset semua state</li><li>Dibutuhkan jika ada perubahan pada logika state awal atau struktur aplikasi</li></ul></div>"
           },
           {
-            "title": "Step 3: Explore Generated Code",
-            "content": "<p>Android Studio akan generate beberapa file dasar. Mari kita lihat file utama yang akan kita modify:</p><ul class='list-disc list-inside ml-4 space-y-1'><li><strong>MainActivity.java:</strong> Activity utama aplikasi</li><li><strong>activity_main.xml:</strong> Layout untuk MainActivity</li><li><strong>strings.xml:</strong> String resources</li></ul>"
-          },
-          {
-            "title": "Step 4: Modify Layout",
-            "content": "<p>Kita akan memodifikasi layout untuk menampilkan pesan 'Hello World' yang lebih menarik. Edit file activity_main.xml sesuai contoh kode di bawah.</p>"
+            "title": "Flutter DevTools",
+            "content": "<div class='space-y-4'><p>Untuk analisis yang lebih mendalam, Flutter menyediakan alat bernama DevTools. Alat ini memiliki berbagai fitur yang berguna untuk profiling dan debugging aplikasi Flutter.</p><p><strong>Fitur Utama DevTools:</strong></p><ul class='list-disc list-inside ml-4'><li><strong>Flutter Inspector:</strong> Memvisualisasikan widget tree aplikasi Anda</li><li><strong>Repaint Rainbow:</strong> Memberikan warna berbeda pada layer-layer widget setiap kali mereka digambar ulang</li></ul><p>Sangat membantu untuk mendeteksi rebuild yang tidak perlu dan mengoptimalkan performa aplikasi.</p></div>"
           }
         ]
       }
     },
     {
       "type": "code",
-      "id": "activity-main-xml",
+      "id": "profiling-example",
       "data": {
-        "title": "activity_main.xml",
-        "description": "Layout XML untuk MainActivity yang menampilkan Hello World message:",
-        "filePath": "./assets/code/modul1/activity_main.xml",
-        "language": "xml",
-        "code": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<LinearLayout xmlns:android=\"http://schemas.android.com/apk/res/android\"\n    xmlns:tools=\"http://schemas.android.com/tools\"\n    android:layout_width=\"match_parent\"\n    android:layout_height=\"match_parent\"\n    android:orientation=\"vertical\"\n    android:gravity=\"center\"\n    android:padding=\"16dp\"\n    android:background=\"@color/background_color\"\n    tools:context=\".MainActivity\">\n\n    <ImageView\n        android:id=\"@+id/imageView\"\n        android:layout_width=\"120dp\"\n        android:layout_height=\"120dp\"\n        android:layout_marginBottom=\"32dp\"\n        android:src=\"@mipmap/ic_launcher\"\n        android:contentDescription=\"App Logo\" />\n\n    <TextView\n        android:id=\"@+id/titleTextView\"\n        android:layout_width=\"wrap_content\"\n        android:layout_height=\"wrap_content\"\n        android:text=\"@string/hello_title\"\n        android:textSize=\"28sp\"\n        android:textStyle=\"bold\"\n        android:textColor=\"@color/primary_color\"\n        android:layout_marginBottom=\"16dp\" />\n\n    <TextView\n        android:id=\"@+id/messageTextView\"\n        android:layout_width=\"wrap_content\"\n        android:layout_height=\"wrap_content\"\n        android:text=\"@string/hello_message\"\n        android:textSize=\"16sp\"\n        android:textAlignment=\"center\"\n        android:textColor=\"@color/text_color\"\n        android:layout_marginBottom=\"32dp\" />\n\n    <Button\n        android:id=\"@+id/actionButton\"\n        android:layout_width=\"wrap_content\"\n        android:layout_height=\"wrap_content\"\n        android:text=\"@string/button_text\"\n        android:textSize=\"16sp\"\n        android:paddingHorizontal=\"32dp\"\n        android:paddingVertical=\"12dp\" />\n\n</LinearLayout>",
+        "title": "Contoh Profiling dengan debugPrint()",
+        "description": "Cara melacak rebuild widget menggunakan debugPrint():",
+        "filePath": "./assets/code/modul1/profiling_example.dart",
+        "language": "dart",
+        "code": "class ProfilingWidget extends StatelessWidget {\n  @override\n  Widget build(BuildContext context) {\n    debugPrint('ProfilingWidget is rebuilding!'); // Melacak rebuild\n    return MaterialApp(\n      home: Scaffold(\n        appBar: AppBar(title: Text('Profiling Sederhana')),\n        body: Center(\n          child: Text('Hello, Profiling!'),\n        ),\n      ),\n    );\n  }\n}",
         "showLineNumbers": true,
-        "highlightLines": [15, 16, 17, 25, 26, 27],
+        "highlightLines": [4],
         "showPreview": false,
         "showShare": true,
         "downloadable": true
-      }
-    },
-    {
-      "type": "code",
-      "id": "strings-xml",
-      "data": {
-        "title": "strings.xml",
-        "description": "String resources yang digunakan dalam layout:",
-        "filePath": "./assets/code/modul1/strings.xml",
-        "language": "xml",
-        "code": "<resources>\n    <string name=\"app_name\">Hello World App</string>\n    <string name=\"hello_title\">Hello, World!</string>\n    <string name=\"hello_message\">Welcome to Android Development!\\nThis is your first Android application.</string>\n    <string name=\"button_text\">Get Started</string>\n</resources>",
-        "showLineNumbers": true,
-        "showPreview": false,
-        "showShare": true,
-        "downloadable": true
-      }
-    },
-    {
-      "type": "code",
-      "id": "colors-xml",
-      "data": {
-        "title": "colors.xml",
-        "description": "Color resources untuk styling aplikasi:",
-        "filePath": "./assets/code/modul1/colors.xml",
-        "language": "xml",
-        "code": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<resources>\n    <color name=\"primary_color\">#FF6B35</color>\n    <color name=\"primary_dark\">#E55A2B</color>\n    <color name=\"accent_color\">#FFB366</color>\n    <color name=\"background_color\">#F8F9FA</color>\n    <color name=\"text_color\">#333333</color>\n    <color name=\"white\">#FFFFFF</color>\n    <color name=\"black\">#000000</color>\n</resources>",
-        "showLineNumbers": true,
-        "showPreview": false,
-        "showShare": true,
-        "downloadable": true
-      }
-    },
-    {
-      "type": "code",
-      "id": "main-activity-java",
-      "data": {
-        "title": "MainActivity.java",
-        "description": "Activity utama dengan basic interaction:",
-        "filePath": "./assets/code/modul1/MainActivity.java",
-        "language": "java",
-        "code": "package com.example.helloworldapp;\n\nimport androidx.appcompat.app.AppCompatActivity;\nimport android.os.Bundle;\nimport android.view.View;\nimport android.widget.Button;\nimport android.widget.TextView;\nimport android.widget.Toast;\n\npublic class MainActivity extends AppCompatActivity {\n\n    private TextView titleTextView;\n    private TextView messageTextView;\n    private Button actionButton;\n\n    @Override\n    protected void onCreate(Bundle savedInstanceState) {\n        super.onCreate(savedInstanceState);\n        setContentView(R.layout.activity_main);\n\n        // Initialize views\n        titleTextView = findViewById(R.id.titleTextView);\n        messageTextView = findViewById(R.id.messageTextView);\n        actionButton = findViewById(R.id.actionButton);\n\n        // Set button click listener\n        actionButton.setOnClickListener(new View.OnClickListener() {\n            @Override\n            public void onClick(View v) {\n                // Show toast message when button is clicked\n                Toast.makeText(MainActivity.this, \n                    \"Hello from Android!\", \n                    Toast.LENGTH_SHORT).show();\n                \n                // Update the title text\n                titleTextView.setText(\"Welcome to Android!\");\n            }\n        });\n    }\n}",
-        "showLineNumbers": true,
-        "highlightLines": [21, 22, 23, 26, 27, 28, 29, 30, 31, 32, 33, 35],
-        "showPreview": false,
-        "showShare": true,
-        "downloadable": true
-      }
-    },
-    {
-      "type": "text",
-      "id": "run-app",
-      "data": {
-        "content": "<h3 class='text-xl font-semibold mb-3'>Menjalankan Aplikasi</h3><p class='mb-4'>Setelah menulis kode, saatnya menjalankan aplikasi untuk melihat hasilnya:</p>",
-        "align": "left",
-        "size": "base"
-      }
-    },
-    {
-      "type": "list",
-      "id": "run-steps",
-      "data": {
-        "type": "ordered",
-        "items": [
-          "Pastikan semua file sudah disimpan (Ctrl+S atau Cmd+S)",
-          "Pilih device target (emulator atau physical device) dari dropdown di toolbar",
-          "Klik tombol Run (ikon play hijau) atau tekan Shift+F10",
-          "Tunggu proses build dan deployment selesai",
-          "Aplikasi akan terbuka di device/emulator yang dipilih",
-          "Test fungsi tombol untuk melihat Toast message"
-        ]
       }
     },
     {
       "type": "alert",
-      "id": "troubleshooting-alert",
+      "id": "performance-tips",
       "data": {
-        "type": "warning",
-        "title": "Troubleshooting Common Issues",
-        "content": "Jika aplikasi tidak berjalan: 1) Pastikan emulator sudah running, 2) Check apakah ada error di Build Output, 3) Clean project (Build > Clean Project) lalu rebuild, 4) Pastikan SDK dan build tools sudah terinstall dengan benar.",
-        "dismissible": true
-      }
-    },
-    {
-      "type": "quiz",
-      "id": "module1-quiz",
-      "data": {
-        "title": "Quiz: Understanding Android Basics",
-        "questions": [
-          {
-            "type": "multiple-choice",
-            "question": "Apa nama IDE resmi untuk pengembangan Android?",
-            "options": [
-              "Eclipse",
-              "Android Studio",
-              "Visual Studio",
-              "IntelliJ IDEA"
-            ],
-            "correct": 1
-          },
-          {
-            "type": "multiple-choice",
-            "question": "File mana yang berisi konfigurasi aplikasi dan permissions?",
-            "options": [
-              "build.gradle",
-              "activity_main.xml",
-              "AndroidManifest.xml",
-              "strings.xml"
-            ],
-            "correct": 2
-          },
-          {
-            "type": "multiple-choice",
-            "question": "Folder mana yang berisi layout XML files?",
-            "options": [
-              "res/values/",
-              "res/layout/",
-              "res/mipmap/",
-              "java/"
-            ],
-            "correct": 1
-          },
-          {
-            "type": "text",
-            "question": "Sebutkan minimal 3 komponen utama dalam struktur project Android!"
-          },
-          {
-            "type": "text",
-            "question": "Apa fungsi dari method onCreate() dalam Activity?"
-          }
-        ]
+        "type": "success",
+        "title": "Tips Optimasi Performa",
+        "content": "1. Gunakan const Widget untuk widget yang tidak pernah berubah. 2. Minimalkan rebuild dengan menghindari setState() untuk seluruh widget tree. 3. Pisahkan widget menjadi bagian-bagian kecil agar hanya bagian yang relevan yang digambar ulang.",
+        "dismissible": false
       }
     },
     {
@@ -381,25 +332,25 @@
         "description": "Download source code lengkap dan materi tambahan untuk modul ini:",
         "files": [
           {
-            "name": "HelloWorldApp Source Code",
-            "description": "Complete project source code",
-            "url": "./assets/code/modul1/HelloWorldApp.zip",
+            "name": "Flutter Widget Examples",
+            "description": "Complete Dart code examples for all widgets",
+            "url": "./assets/code/modul1/flutter_examples.zip",
             "type": "zip",
-            "size": "2.5 MB"
+            "size": "1.8 MB"
           },
           {
-            "name": "Android Development Cheatsheet",
-            "description": "Quick reference for Android development",
-            "url": "./assets/downloads/android-cheatsheet.pdf",
+            "name": "Flutter Widget Cheatsheet",
+            "description": "Quick reference for Flutter widgets and layouts",
+            "url": "./assets/downloads/flutter-widget-cheatsheet.pdf",
             "type": "pdf",
-            "size": "1.2 MB"
+            "size": "950 KB"
           },
           {
-            "name": "Project Structure Diagram",
-            "description": "Visual diagram of Android project structure",
-            "url": "./assets/images/android-project-structure.png",
-            "type": "image",
-            "size": "856 KB"
+            "name": "State Management Guide",
+            "description": "Comprehensive guide to Flutter state management",
+            "url": "./assets/downloads/state-management-guide.pdf",
+            "type": "pdf",
+            "size": "1.1 MB"
           }
         ]
       }
@@ -410,7 +361,7 @@
       "data": {
         "type": "success",
         "title": "Selamat! Anda telah menyelesaikan Modul 1",
-        "content": "Anda telah berhasil mempelajari dasar-dasar Android development dan membuat aplikasi pertama. Selanjutnya, mari pelajari tentang Layout dan UI Components di Modul 2.",
+        "content": "Anda telah berhasil mempelajari dasar-dasar Flutter Widget Tree dan State Management. Selanjutnya, mari pelajari tentang Layout dan UI Components yang lebih advanced di Modul 2.",
         "dismissible": false
       }
     }

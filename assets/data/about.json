@@ -1,6 +1,6 @@
 {
   "title": "About This Platform",
-  "description": "Learn more about our mobile development learning platform and the team behind it.",
+  "description": "Learn more about our mobile development learning platform.",
   "breadcrumb": [
     {
       "title": "Home",
@@ -17,9 +17,8 @@
       "id": "about-hero",
       "data": {
         "title": "Tentang Platform Pembelajaran",
-        "subtitle": "Laboratorium Informatika UMM",
-        "description": "Platform pembelajaran interaktif yang dirancang khusus untuk mahasiswa yang ingin menguasai pengembangan aplikasi mobile Android.",
-        "backgroundImage": "./assets/images/about-bg.jpg",
+        "subtitle": "Modul Praktikum Mobile Development",
+        "description": "Platform pembelajaran sederhana untuk praktikum pengembangan aplikasi Android di Laboratorium Informatika UMM.",
         "buttons": [
           {
             "text": "Mulai Belajar",
@@ -32,141 +31,29 @@
     },
     {
       "type": "text",
-      "id": "mission-statement",
+      "id": "about-description",
       "data": {
-        "content": "<h2 class='text-2xl font-bold mb-4'>Misi Kami</h2><p class='mb-4'>Menyediakan platform pembelajaran yang komprehensif dan mudah diakses untuk mahasiswa Informatika UMM dalam mempelajari pengembangan aplikasi mobile Android. Kami berkomitmen untuk menyajikan materi yang up-to-date, praktikal, dan sesuai dengan kebutuhan industri.</p><p class='mb-4'>Platform ini dikembangkan dengan pendekatan <em>hands-on learning</em> di mana mahasiswa tidak hanya mempelajari teori, tetapi juga langsung mempraktikkan apa yang dipelajari melalui contoh kode, latihan, dan project nyata.</p>",
+        "content": "<h2 class='text-2xl font-bold mb-4'>Tentang Platform Ini</h2><p class='mb-4'>Platform pembelajaran ini dibuat untuk membantu mahasiswa mempelajari pengembangan aplikasi Android melalui modul-modul praktikum yang terstruktur.</p><p class='mb-4'>Setiap modul dirancang dengan pendekatan praktis, dilengkapi contoh kode dan latihan yang dapat langsung dipraktikkan.</p>",
         "align": "left",
         "size": "base"
       }
     },
     {
       "type": "card",
-      "id": "platform-features",
+      "id": "simple-features",
       "data": {
-        "title": "Fitur Platform",
-        "columns": 3,
-        "cards": [
-          {
-            "title": "Modul Terstruktur",
-            "description": "6 modul pembelajaran yang disusun secara bertahap dari dasar hingga mahir, memastikan pemahaman yang solid di setiap step.",
-            "image": null,
-            "buttons": []
-          },
-          {
-            "title": "Contoh Kode Lengkap",
-            "description": "Setiap konsep dilengkapi dengan contoh kode yang bisa langsung dicoba, di-download, dan dimodifikasi sesuai kebutuhan.",
-            "image": null,
-            "buttons": []
-          },
-          {
-            "title": "Interactive Learning",
-            "description": "Quiz interaktif, latihan praktik, dan assessment untuk mengukur pemahaman dan progress belajar.",
-            "image": null,
-            "buttons": []
-          },
-          {
-            "title": "Responsive Design",
-            "description": "Platform yang dapat diakses dengan nyaman di desktop, tablet, maupun smartphone untuk fleksibilitas belajar.",
-            "image": null,
-            "buttons": []
-          },
-          {
-            "title": "Dark/Light Theme",
-            "description": "Pilihan theme yang dapat disesuaikan dengan preferensi pengguna untuk kenyamanan belajar di berbagai kondisi.",
-            "image": null,
-            "buttons": []
-          },
-          {
-            "title": "Resource Downloads",
-            "description": "Akses ke source code, dokumentasi, dan resource tambahan yang mendukung proses pembelajaran.",
-            "image": null,
-            "buttons": []
-          }
-        ]
-      }
-    },
-    {
-      "type": "text",
-      "id": "curriculum-overview",
-      "data": {
-        "content": "<h2 class='text-2xl font-bold mb-4'>Kurikulum Pembelajaran</h2><p class='mb-4'>Kurikulum kami dirancang berdasarkan standar industri dan kebutuhan pasar kerja saat ini. Setiap modul mencakup pembelajaran yang komprehensif dengan pendekatan praktis.</p>",
-        "align": "left",
-        "size": "base"
-      }
-    },
-    {
-      "type": "timeline",
-      "id": "curriculum-timeline",
-      "data": {
-        "title": "Learning Path Overview",
-        "items": [
-          {
-            "title": "Foundation",
-            "subtitle": "Modul 1-2",
-            "description": "Membangun fondasi yang kuat dengan mempelajari dasar-dasar Android development, environment setup, dan UI fundamentals.",
-            "link": {
-              "text": "Mulai dari Dasar",
-              "url": "/modul/modul1.html"
-            }
-          },
-          {
-            "title": "Core Concepts",
-            "subtitle": "Modul 3-4",
-            "description": "Menguasai konsep inti Android seperti Activities, Intents, Fragments, dan navigation patterns yang modern.",
-            "link": {
-              "text": "Pelajari Core Concepts",
-              "url": "/modul/modul3.html"
-            }
-          },
-          {
-            "title": "Advanced Topics",
-            "subtitle": "Modul 5-6",
-            "description": "Topik lanjutan meliputi data storage, database management, networking, dan integrasi dengan REST APIs.",
-            "link": {
-              "text": "Advanced Learning",
-              "url": "/modul/modul5.html"
-            }
-          }
-        ]
-      }
-    },
-    {
-      "type": "text",
-      "id": "lab-info",
-      "data": {
-        "content": "<h2 class='text-2xl font-bold mb-4'>Laboratorium Informatika UMM</h2><p class='mb-4'>Laboratorium Informatika Universitas Muhammadiyah Malang adalah pusat pembelajaran teknologi informasi yang telah berpengalaman dalam menyediakan pendidikan berkualitas di bidang IT.</p><p class='mb-4'>Dengan dukungan fasilitas modern dan tim pengajar yang berpengalaman, Lab Informatika UMM berkomitmen untuk mencetak lulusan yang siap bersaing di dunia kerja teknologi.</p>",
-        "align": "left",
-        "size": "base"
-      }
-    },
-    {
-      "type": "card",
-      "id": "lab-facilities",
-      "data": {
-        "title": "Fasilitas Laboratorium",
+        "title": "Yang Tersedia",
         "columns": 2,
         "cards": [
           {
-            "title": "Hardware & Software",
-            "description": "Komputer dengan spesifikasi tinggi, Android Studio terbaru, SDK tools lengkap, dan akses ke berbagai device testing.",
+            "title": "6 Modul Pembelajaran",
+            "description": "Modul praktikum dari dasar hingga lanjutan untuk pengembangan aplikasi Android.",
             "image": null,
             "buttons": []
           },
           {
-            "title": "Learning Resources",
-            "description": "Akses ke dokumentasi resmi, online courses, development tools, dan library resources untuk mendukung pembelajaran.",
-            "image": null,
-            "buttons": []
-          },
-          {
-            "title": "Mentoring & Support",
-            "description": "Bimbingan dari instruktur berpengalaman, session tanya jawab, dan dukungan teknis untuk mengatasi challenges.",
-            "image": null,
-            "buttons": []
-          },
-          {
-            "title": "Project Collaboration",
-            "description": "Environment yang mendukung kerja tim, version control dengan Git, dan tools collaboration untuk project development.",
+            "title": "Contoh Kode",
+            "description": "Setiap materi dilengkapi dengan contoh kode yang bisa langsung dicoba.",
             "image": null,
             "buttons": []
           }
@@ -175,48 +62,21 @@
     },
     {
       "type": "text",
-      "id": "technology-stack",
+      "id": "developer-info",
       "data": {
-        "content": "<h2 class='text-2xl font-bold mb-4'>Technology Stack</h2><p class='mb-4'>Platform ini dibangun menggunakan teknologi modern untuk memberikan pengalaman pembelajaran yang optimal:</p>",
+        "content": "<h2 class='text-2xl font-bold mb-4'>Developer</h2><p class='mb-4'>Platform ini dikembangkan oleh <strong>Faizal Qadri Trianto</strong> untuk Laboratorium Informatika Universitas Muhammadiyah Malang sebagai media pembelajaran praktikum mobile development.</p>",
         "align": "left",
         "size": "base"
-      }
-    },
-    {
-      "type": "table",
-      "id": "tech-stack-table",
-      "data": {
-        "title": "Platform Technology",
-        "headers": ["Component", "Technology", "Purpose"],
-        "rows": [
-          ["Frontend", "HTML5, CSS3, JavaScript", "User interface dan interactivity"],
-          ["Styling", "Tailwind CSS", "Responsive design dan consistent styling"],
-          ["Syntax Highlighting", "Prism.js", "Code presentation dengan highlighting"],
-          ["Icons", "Font Awesome", "Consistent iconography"],
-          ["Architecture", "Component-based JSON", "Modular dan maintainable content"],
-          ["Theme System", "CSS Custom Properties", "Dark/light mode support"],
-          ["Mobile Support", "Responsive Design", "Cross-device compatibility"]
-        ],
-        "responsive": true
       }
     },
     {
       "type": "alert",
-      "id": "feedback-alert",
-      "data": {
-        "type": "info",
-        "title": "Feedback & Suggestions",
-        "content": "Kami sangat menghargai feedback dan saran untuk terus meningkatkan kualitas platform pembelajaran ini. Jika ada masukan atau pertanyaan, jangan ragu untuk menghubungi tim kami.",
-        "dismissible": true
-      }
-    },
-    {
-      "type": "text",
       "id": "contact-info",
       "data": {
-        "content": "<h2 class='text-2xl font-bold mb-4'>Kontak & Informasi</h2><div class='bg-gray-50 dark:bg-gray-800 p-6 rounded-lg'><div class='grid grid-cols-1 md:grid-cols-2 gap-6'><div><h3 class='font-semibold mb-2'>Alamat Laboratorium</h3><p class='text-gray-600 dark:text-gray-300'>Laboratorium Informatika<br>Universitas Muhammadiyah Malang<br>Jl. Raya Tlogomas No. 246<br>Malang, Jawa Timur 65144</p></div><div><h3 class='font-semibold mb-2'>Kontak</h3><p class='text-gray-600 dark:text-gray-300'><i class='fas fa-envelope mr-2'></i>lab.informatika@umm.ac.id<br><i class='fas fa-phone mr-2'></i>(0341) 464318<br><i class='fas fa-globe mr-2'></i>www.umm.ac.id</p></div></div></div>",
-        "align": "left",
-        "size": "base"
+        "type": "info",
+        "title": "Butuh Bantuan?",
+        "content": "Jika ada pertanyaan atau kendala dalam menggunakan platform ini, silakan hubungi tim laboratorium.",
+        "dismissible": true
       }
     }
   ]
