@@ -94,49 +94,7 @@
       "type": "card",
       "id": "featured-modules",
       "data": {
-        "title": "Modul Unggulan",
-        "columns": 3,
-        "cards": [
-          {
-            "title": "Introduction to Android",
-            "description": "Pelajari dasar-dasar pengembangan Android, setup environment, dan membuat aplikasi pertama Anda.",
-            "image": "/assets/images/module1-preview.jpg",
-            "buttons": [
-              {
-                "text": "Mulai Belajar",
-                "url": "/modul/modul1.html",
-                "icon": "fas fa-play",
-                "primary": true
-              }
-            ]
-          },
-          {
-            "title": "Basic Layouts",
-            "description": "Memahami berbagai jenis layout Android dan cara menggunakannya untuk membuat UI yang responsif.",
-            "image": "/assets/images/module2-preview.jpg",
-            "buttons": [
-              {
-                "text": "Mulai Belajar",
-                "url": "/modul/modul2.html",
-                "icon": "fas fa-play",
-                "primary": true
-              }
-            ]
-          },
-          {
-            "title": "Activities & Intents",
-            "description": "Mengelola Activities, Navigation antar screen, dan komunikasi dengan Intents.",
-            "image": "/assets/images/module3-preview.jpg",
-            "buttons": [
-              {
-                "text": "Mulai Belajar",
-                "url": "/modul/modul3.html",
-                "icon": "fas fa-play",
-                "primary": true
-              }
-            ]
-          }
-        ]
+        
       }
     },
     {
