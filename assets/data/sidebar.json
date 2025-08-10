@@ -1,0 +1,101 @@
+{
+  "brand": {
+    "name": "Modul Praktikum",
+    "subtitle": "Mobile Development",
+    "logo": "/assets/images/logo.png"
+  },
+  "navigation": [
+    {
+      "id": "home",
+      "title": "Home",
+      "url": "/index.html",
+      "icon": "fas fa-home"
+    },
+    {
+      "id": "modules",
+      "title": "Learning Modules",
+      "icon": "fas fa-book-open",
+      "children": [
+        {
+          "id": "module1",
+          "title": "Modul 1: Introduction",
+          "url": "/modul/modul1.html",
+          "icon": "fas fa-play-circle"
+        },
+        {
+          "id": "module2",
+          "title": "Modul 2: Basic Layout",
+          "url": "/modul/modul2.html",
+          "icon": "fas fa-th-large"
+        },
+        {
+          "id": "module3",
+          "title": "Modul 3: Activities",
+          "url": "/modul/modul3.html",
+          "icon": "fas fa-window-maximize"
+        },
+        {
+          "id": "module4",
+          "title": "Modul 4: Fragments",
+          "url": "/modul/modul4.html",
+          "icon": "fas fa-puzzle-piece"
+        },
+        {
+          "id": "module5",
+          "title": "Modul 5: Data Storage",
+          "url": "/modul/modul5.html",
+          "icon": "fas fa-database"
+        },
+        {
+          "id": "module6",
+          "title": "Modul 6: Networking",
+          "url": "/modul/modul6.html",
+          "icon": "fas fa-wifi"
+        }
+      ]
+    },
+    {
+      "id": "all-modules",
+      "title": "All Modules",
+      "url": "/modules.html",
+      "icon": "fas fa-th-list"
+    },
+    {
+      "id": "resources",
+      "title": "Resources",
+      "icon": "fas fa-folder-open",
+      "children": [
+        {
+          "id": "documentation",
+          "title": "Documentation",
+          "url": "https://developer.android.com/docs",
+          "icon": "fas fa-file-alt"
+        },
+        {
+          "id": "tools",
+          "title": "Development Tools",
+          "url": "https://developer.android.com/studio",
+          "icon": "fas fa-tools"
+        },
+        {
+          "id": "samples",
+          "title": "Code Samples",
+          "url": "https://github.com/android/samples",
+          "icon": "fas fa-code"
+        }
+      ]
+    },
+    {
+      "id": "about",
+      "title": "About",
+      "url": "/pages/about.html",
+      "icon": "fas fa-info-circle"
+    },
+    {
+      "id": "contact",
+      "title": "Contact",
+      "url": "/pages/contact.html",
+      "icon": "fas fa-envelope"
+    }
+  ]
+}

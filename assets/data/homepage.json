@@ -1,0 +1,216 @@
+{
+  "title": "Modul Praktikum Mobile Development",
+  "description": "Platform pembelajaran interaktif untuk pengembangan aplikasi mobile Android",
+  "breadcrumb": [
+    {
+      "title": "Home",
+      "url": "/index.html"
+    }
+  ],
+  "components": [
+    {
+      "type": "hero",
+      "id": "hero-section",
+      "data": {
+        "title": "Selamat Datang di Platform Pembelajaran Mobile",
+        "subtitle": "Laboratorium Informatika UMM",
+        "description": "Pelajari pengembangan aplikasi mobile Android dari dasar hingga mahir dengan modul praktikum yang terstruktur dan interaktif.",
+        "backgroundImage": "/assets/images/hero-bg.jpg",
+        "buttons": [
+          {
+            "text": "Mulai Belajar",
+            "url": "/modules.html",
+            "icon": "fas fa-play",
+            "primary": true
+          },
+          {
+            "text": "Lihat Dokumentasi",
+            "url": "/pages/about.html",
+            "icon": "fas fa-book",
+            "primary": false
+          }
+        ]
+      }
+    },
+    {
+      "type": "card",
+      "id": "stats-section",
+      "data": {
+        "title": "Platform Statistics",
+        "columns": 4,
+        "cards": [
+          {
+            "title": "6",
+            "description": "Modul Pembelajaran",
+            "image": null,
+            "buttons": []
+          },
+          {
+            "title": "50+",
+            "description": "Contoh Kode",
+            "image": null,
+            "buttons": []
+          },
+          {
+            "title": "Interactive",
+            "description": "Quiz & Latihan",
+            "image": null,
+            "buttons": []
+          },
+          {
+            "title": "24/7",
+            "description": "Akses Platform",
+            "image": null,
+            "buttons": []
+          }
+        ]
+      }
+    },
+    {
+      "type": "text",
+      "id": "intro-section",
+      "data": {
+        "content": "<h2 class='text-2xl font-bold mb-4'>Tentang Platform Ini</h2><p class='mb-4'>Platform pembelajaran ini dirancang khusus untuk mahasiswa Laboratorium Informatika UMM yang sedang mempelajari pengembangan aplikasi mobile Android. Dengan pendekatan hands-on dan modul yang terstruktur, Anda akan memahami konsep-konsep penting dalam pemrograman Android.</p><p>Setiap modul dilengkapi dengan:</p>",
+        "align": "left",
+        "size": "base"
+      }
+    },
+    {
+      "type": "list",
+      "id": "features-list",
+      "data": {
+        "type": "unordered",
+        "items": [
+          "Penjelasan konsep yang mudah dipahami",
+          "Contoh kode dengan syntax highlighting",
+          "Video tutorial dan demonstrasi",
+          "Quiz interaktif untuk menguji pemahaman",
+          "Latihan praktik dengan solusi",
+          "Download source code dan resource"
+        ]
+      }
+    },
+    {
+      "type": "card",
+      "id": "featured-modules",
+      "data": {
+        "title": "Modul Unggulan",
+        "columns": 3,
+        "cards": [
+          {
+            "title": "Introduction to Android",
+            "description": "Pelajari dasar-dasar pengembangan Android, setup environment, dan membuat aplikasi pertama Anda.",
+            "image": "/assets/images/module1-preview.jpg",
+            "buttons": [
+              {
+                "text": "Mulai Belajar",
+                "url": "/modul/modul1.html",
+                "icon": "fas fa-play",
+                "primary": true
+              }
+            ]
+          },
+          {
+            "title": "Basic Layouts",
+            "description": "Memahami berbagai jenis layout Android dan cara menggunakannya untuk membuat UI yang responsif.",
+            "image": "/assets/images/module2-preview.jpg",
+            "buttons": [
+              {
+                "text": "Mulai Belajar",
+                "url": "/modul/modul2.html",
+                "icon": "fas fa-play",
+                "primary": true
+              }
+            ]
+          },
+          {
+            "title": "Activities & Intents",
+            "description": "Mengelola Activities, Navigation antar screen, dan komunikasi dengan Intents.",
+            "image": "/assets/images/module3-preview.jpg",
+            "buttons": [
+              {
+                "text": "Mulai Belajar",
+                "url": "/modul/modul3.html",
+                "icon": "fas fa-play",
+                "primary": true
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "type": "timeline",
+      "id": "learning-path",
+      "data": {
+        "title": "Learning Path",
+        "items": [
+          {
+            "title": "Introduction to Android",
+            "subtitle": "Week 1-2",
+            "description": "Setup development environment, understand Android architecture, create your first 'Hello World' app.",
+            "link": {
+              "text": "Start Module 1",
+              "url": "/modul/modul1.html"
+            }
+          },
+          {
+            "title": "Basic Layouts & UI",
+            "subtitle": "Week 3-4",
+            "description": "Learn about different layout types, Views, ViewGroups, and create responsive user interfaces.",
+            "link": {
+              "text": "Start Module 2",
+              "url": "/modul/modul2.html"
+            }
+          },
+          {
+            "title": "Activities & Navigation",
+            "subtitle": "Week 5-6",
+            "description": "Understand Activity lifecycle, Intents, and navigation between multiple screens.",
+            "link": {
+              "text": "Start Module 3",
+              "url": "/modul/modul3.html"
+            }
+          },
+          {
+            "title": "Fragments & Advanced UI",
+            "subtitle": "Week 7-8",
+            "description": "Work with Fragments for flexible UI design and advanced UI components.",
+            "link": {
+              "text": "Start Module 4",
+              "url": "/modul/modul4.html"
+            }
+          },
+          {
+            "title": "Data Storage",
+            "subtitle": "Week 9-10",
+            "description": "Learn different data storage options: SharedPreferences, SQLite, and Room database.",
+            "link": {
+              "text": "Start Module 5",
+              "url": "/modul/modul5.html"
+            }
+          },
+          {
+            "title": "Networking & APIs",
+            "subtitle": "Week 11-12",
+            "description": "Integrate REST APIs, handle network requests, and work with JSON data.",
+            "link": {
+              "text": "Start Module 6",
+              "url": "/modul/modul6.html"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "alert",
+      "id": "getting-started-alert",
+      "data": {
+        "type": "info",
+        "title": "Siap Memulai?",
+        "content": "Pastikan Anda sudah menginstall Android Studio dan memiliki device Android atau emulator untuk testing. Jika belum, silakan ikuti panduan setup di Modul 1.",
+        "dismissible": true
+      }
+    }
+  ]
+}
