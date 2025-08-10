@@ -15,7 +15,7 @@
         "title": "Selamat Datang di Platform Pembelajaran Mobile",
         "subtitle": "Laboratorium Informatika UMM",
         "description": "Pelajari pengembangan aplikasi mobile Android dari dasar hingga mahir dengan modul praktikum yang terstruktur dan interaktif.",
-        "backgroundImage": "/assets/images/hero-bg.jpg",
+        "backgroundImage": "/assets/images/hero-bg.png",
         "buttons": [
           {
             "text": "Mulai Belajar",

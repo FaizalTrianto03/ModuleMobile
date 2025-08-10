@@ -129,7 +129,7 @@ function renderSidebar(data) {
         <!-- Footer -->
         <div class="p-4 border-t border-gray-200 dark:border-gray-700">
             <p class="text-xs text-gray-500 dark:text-gray-400 text-center">
-                © 2024 Lab Informatika UMM
+                © 2025 Lab Informatika UMM
             </p>
         </div>
     `;
