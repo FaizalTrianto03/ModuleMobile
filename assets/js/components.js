@@ -1,6 +1,7 @@
 /**
- * Component rendering system for the learning platform
- * Handles dynamic content generation based on JSON configuration
+ * Standardized Component Rendering System for Learning Platform
+ * All UI styles are predefined in component.js to ensure consistency
+ * JSON only provides data values, no custom styling
  */
 
 // Utility functions
@@ -16,41 +17,43 @@ function generateId() {
 
 function getFileName(filePath) {
     if (!filePath) return 'code.txt';
-    // Extract filename from path, handle both forward and backward slashes
     return filePath.split(/[/\\]/).pop();
 }
 
-function sanitizeFilePath(filePath) {
-    if (!filePath) return '';
-    // Return only the filename for display, but keep original path for fetching
-    return getFileName(filePath);
-}
-
-/**
- * Generate constant section ID from section name
- * This ensures consistent IDs for section navigation
- */
 function generateSectionId(sectionName, componentType = '') {
     if (!sectionName) return generateId();
-    
-    // Convert to lowercase, replace spaces/special chars with hyphens
+
     const cleanName = sectionName
         .toLowerCase()
-        .replace(/[^a-z0-9\s-]/g, '') // Remove special characters except spaces and hyphens
-        .replace(/\s+/g, '-')         // Replace spaces with hyphens
-        .replace(/-+/g, '-')          // Replace multiple hyphens with single
-        .replace(/^-|-$/g, '');       // Remove leading/trailing hyphens
-    
-    // Add component type prefix if provided
+        .replace(/[^a-z0-9\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-')
+        .replace(/^-|-$/g, '');
+
     const prefix = componentType ? `${componentType}-` : '';
-    
     return `${prefix}${cleanName}`;
 }
 
-// File reading utility
+// File reading utility dengan path resolution yang benar
 async function readCodeFile(filePath) {
     try {
-        const response = await fetch(filePath);
+        // Normalisasi path - hapus leading slash dan resolve relative path
+        let normalizedPath = filePath;
+        
+        // Jika path dimulai dengan ./ hapus prefix tersebut
+        if (normalizedPath.startsWith('./')) {
+            normalizedPath = normalizedPath.substring(2);
+        }
+        
+        // Jika path tidak dimulai dengan / atau http, pastikan relative path benar
+        if (!normalizedPath.startsWith('/') && !normalizedPath.startsWith('http')) {
+            // Untuk relative path, gunakan dari root website
+            normalizedPath = '/' + normalizedPath;
+        }
+        
+        console.log(`Loading code from: ${normalizedPath}`); // Debug log
+        
+        const response = await fetch(normalizedPath);
         if (!response.ok) {
             throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
@@ -61,121 +64,196 @@ async function readCodeFile(filePath) {
     }
 }
 
-// Component renderers object
+// Standardized Component Renderers
 const ComponentRenderers = {
-    
+
     /**
-     * Render hero component
+     * Module Header - Standardized header for all modules with theme support
      */
-    hero: (data) => {
-        const { title, subtitle, description, backgroundImage, buttons = [], sectionId, sectionName } = data;
-        const heroId = sectionId || generateSectionId(sectionName || title, 'hero');
-        
+    moduleHeader: (data) => {
+        const { title, moduleName, description, theme = 'orange' } = data;
+        const headerId = generateSectionId(title, 'header');
+
+        const themeClasses = {
+            orange: 'bg-gradient-to-br from-orange-500 to-red-600',
+            navy: 'bg-gradient-to-br from-blue-800 to-indigo-900',
+            blue: 'bg-gradient-to-br from-blue-600 to-indigo-700',
+            white: 'bg-gradient-to-br from-gray-50 to-gray-100 text-gray-900 border border-gray-200'
+        };
+
+        const textColor = theme === 'white' ? 'text-gray-900' : 'text-white';
+        const badgeColor = theme === 'white' ? 'bg-gray-900/10 text-gray-700' : 'bg-white/20';
+        const subtitleColor = theme === 'white' ? 'text-gray-600' : 'text-orange-100';
+
         return `
-            <section id="${heroId}" class="relative bg-gradient-to-br from-primary-orange to-accent-orange text-white py-20 px-6 rounded-lg mb-8 overflow-hidden">
-                ${backgroundImage ? `<div class="absolute inset-0 bg-cover bg-center opacity-20" style="background-image: url('${backgroundImage}');"></div>` : ''}
-                <div class="relative z-10 max-w-4xl mx-auto text-center">
-                    <h1 class="text-4xl md:text-6xl font-bold mb-4">${title}</h1>
-                    ${subtitle ? `<h2 class="text-xl md:text-2xl font-light mb-6 text-orange-100">${subtitle}</h2>` : ''}
-                    ${description ? `<p class="text-lg md:text-xl mb-8 text-orange-50 max-w-2xl mx-auto">${description}</p>` : ''}
-                    ${buttons.length > 0 ? `
-                        <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                            ${buttons.map(btn => `
-                                <a href="${btn.url}" class="inline-flex items-center px-6 py-3 ${btn.primary ? 'bg-white text-primary-orange hover:bg-gray-100' : 'border-2 border-white text-white hover:bg-white hover:text-primary-orange'} font-semibold rounded-lg transition-colors duration-300">
-                                    ${btn.icon ? `<i class="${btn.icon} mr-2"></i>` : ''}
-                                    ${btn.text}
-                                </a>
-                            `).join('')}
-                        </div>
-                    ` : ''}
+            <section id="${headerId}" class="${themeClasses[theme]} ${textColor} py-16 px-6 rounded-xl mb-8 shadow-lg">
+                <div class="max-w-4xl mx-auto text-center">
+                    <div class="inline-block ${badgeColor} px-4 py-2 rounded-full text-sm font-medium mb-4">
+                        ${moduleName}
+                    </div>
+                    <h1 class="text-3xl md:text-5xl font-bold mb-6">${title}</h1>
+                    <p class="text-lg md:text-xl ${subtitleColor} max-w-2xl mx-auto leading-relaxed">
+                        ${description}
+                    </p>
                 </div>
             </section>
         `;
     },
 
     /**
-     * Render text component
+     * Info Box - Standardized information display with enhanced colors
      */
-    text: (data) => {
-        const { content, align = 'left', size = 'base', sectionId, sectionName } = data;
-        const alignClass = align === 'center' ? 'text-center' : align === 'right' ? 'text-right' : 'text-left';
-        const sizeClass = size === 'large' ? 'text-lg' : size === 'small' ? 'text-sm' : 'text-base';
-        const textId = sectionId || generateSectionId(sectionName, 'text');
-        
+    info: (data) => {
+        const { title, content, type = 'default', shared = false } = data;
+        const infoId = generateSectionId(title, 'info');
+
+        const typeStyles = {
+            default: 'bg-gray-50 border-gray-200 text-gray-800 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200',
+            primary: 'bg-orange-50 border-orange-200 text-orange-800 dark:bg-orange-900/20 dark:border-orange-800 dark:text-orange-200',
+            success: 'bg-green-50 border-green-200 text-green-800 dark:bg-green-900/20 dark:border-green-800 dark:text-green-200',
+            warning: 'bg-yellow-50 border-yellow-200 text-yellow-800 dark:bg-yellow-900/20 dark:border-yellow-800 dark:text-yellow-200',
+            error: 'bg-red-50 border-red-200 text-red-800 dark:bg-red-900/20 dark:border-red-800 dark:text-red-200',
+            navy: 'bg-blue-50 border-blue-200 text-blue-800 dark:bg-blue-900/20 dark:border-blue-800 dark:text-blue-200'
+        };
+
+        const icons = {
+            default: 'fas fa-info-circle',
+            primary: 'fas fa-lightbulb',
+            success: 'fas fa-check-circle',
+            warning: 'fas fa-exclamation-triangle',
+            error: 'fas fa-times-circle',
+            navy: 'fas fa-anchor'
+        };
+
         return `
-            <div id="${textId}" class="prose prose-lg dark:prose-invert max-w-none mb-6">
-                <div class="${alignClass} ${sizeClass}">${content}</div>
+            <div id="${infoId}" class="border-l-4 p-6 mb-6 ${typeStyles[type]} rounded-r-lg shadow-sm">
+                <div class="flex items-start justify-between">
+                    <div class="flex items-start flex-1">
+                        <i class="${icons[type]} text-xl mr-4 mt-1"></i>
+                        <div class="flex-1">
+                            <h3 class="font-semibold text-lg mb-2">${title}</h3>
+                            <div class="prose prose-sm max-w-none">${content}</div>
+                        </div>
+                    </div>
+                    ${shared ? `
+                        <button onclick="shareSection('${infoId}', '${title}')" 
+                                class="ml-4 p-2 opacity-60 hover:opacity-100 transition-opacity hover:text-orange-600" 
+                                title="Share this section">
+                            <i class="fas fa-share-alt"></i>
+                        </button>
+                    ` : ''}
+                </div>
             </div>
         `;
     },
 
     /**
-     * Render code component with file reading and enhanced UI
+     * Material Section - Standardized content sections with theme support
+     */
+    material: (data) => {
+        const { title, content, level = 'h2', shared = false, theme = 'default' } = data;
+        const materialId = generateSectionId(title, 'material');
+
+        const headingClasses = {
+            h1: 'text-3xl font-bold mb-6',
+            h2: 'text-2xl font-bold mb-4',
+            h3: 'text-xl font-semibold mb-3',
+            h4: 'text-lg font-semibold mb-2',
+            h5: 'text-base font-semibold mb-2',
+            h6: 'text-sm font-semibold mb-2'
+        };
+
+        const themeColors = {
+            default: 'text-gray-900 dark:text-white',
+            orange: 'text-orange-700 dark:text-orange-300',
+            navy: 'text-blue-800 dark:text-blue-300'
+        };
+
+        return `
+            <section id="${materialId}" class="mb-8 scroll-mt-20">
+                <div class="flex items-center justify-between mb-4">
+                    <${level} class="${headingClasses[level]} ${themeColors[theme]}">
+                        ${title}
+                    </${level}>
+                    ${shared ? `
+                        <button onclick="shareSection('${materialId}', '${title}')" 
+                                class="p-2 text-gray-500 hover:text-orange-600 rounded-lg transition-colors" 
+                                title="Share this section">
+                            <i class="fas fa-share-alt"></i>
+                        </button>
+                    ` : ''}
+                </div>
+                <div class="prose prose-lg dark:prose-invert max-w-none">
+                    ${content}
+                </div>
+            </section>
+        `;
+    },
+
+    /**
+     * Code Block - Standardized code display with enhanced UI
      */
     code: (data) => {
-        const { 
-            title, 
-            description, 
-            code, 
-            filePath, 
-            language = 'javascript', 
-            showLineNumbers = true, 
-            highlightLines = [], 
-            showPreview = false,
-            showShare = true,
-            downloadable = true,
-            sectionId,
-            sectionName
-        } = data;
-        
+        const { title, description, filePath, language = 'javascript', shared = true, theme = 'orange' } = data;
+
+        if (!filePath) {
+            return `
+                <div class="p-4 bg-red-50 border border-red-200 rounded-lg mb-6">
+                    <p class="text-red-600">Error: filePath is required for code component</p>
+                </div>
+            `;
+        }
+
         const codeId = generateId();
         const loaderId = `loader-${codeId}`;
-        const containerId = sectionId || generateSectionId(sectionName || title, 'code');
-        const displayFileName = sanitizeFilePath(filePath) || `code.${language}`;
-        
+        const containerId = generateSectionId(title, 'code');
+        const displayFileName = getFileName(filePath);
+
+        const themeColors = {
+            orange: 'hover:text-orange-400',
+            navy: 'hover:text-blue-400',
+            blue: 'hover:text-blue-400'
+        };
+
         // Initialize code loading
         setTimeout(async () => {
-            let codeContent = code;
-            
-            // Read from file if filePath is provided and no code content
-            if (filePath && !code) {
-                const loader = document.getElementById(loaderId);
-                if (loader) loader.style.display = 'flex';
-                
-                codeContent = await readCodeFile(filePath);
-                
-                if (loader) loader.style.display = 'none';
-            }
-            
+            const loader = document.getElementById(loaderId);
+            if (loader) loader.style.display = 'flex';
+
+            const codeContent = await readCodeFile(filePath);
+
+            if (loader) loader.style.display = 'none';
+
             const codeElement = document.getElementById(codeId);
             if (codeElement) {
                 codeElement.textContent = codeContent;
-                // Re-highlight syntax if Prism.js is available
                 if (typeof Prism !== 'undefined') {
                     Prism.highlightElement(codeElement);
                 }
             }
         }, 100);
-        
+
         return `
-            <div id="${containerId}" class="bg-white dark:bg-gray-900 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 mb-6 overflow-hidden">
-                ${title ? `<div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+            <div id="${containerId}" class="bg-white dark:bg-gray-900 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 mb-8 overflow-hidden scroll-mt-20">
+                <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
                     <div class="flex items-center justify-between">
                         <div>
                             <h3 class="text-xl font-semibold text-gray-900 dark:text-white">${title}</h3>
                             ${description ? `<p class="text-gray-600 dark:text-gray-300 mt-1">${description}</p>` : ''}
                         </div>
-                        <button onclick="shareSection('${containerId}', '${title}')" 
-                                class="p-2 text-gray-500 hover:text-primary-orange rounded-lg transition-colors duration-200" 
-                                title="Share this section">
-                            <i class="fas fa-share-alt"></i>
-                        </button>
+                        ${shared ? `
+                            <button onclick="shareSection('${containerId}', '${title}')" 
+                                    class="p-2 text-gray-500 hover:text-orange-600 rounded-lg transition-colors" 
+                                    title="Share this code">
+                                <i class="fas fa-share-alt"></i>
+                            </button>
+                        ` : ''}
                     </div>
-                </div>` : ''}
+                </div>
                 
                 <div class="relative">
                     <!-- Code Header -->
-                    <div class="flex items-center justify-between bg-gray-800 dark:bg-gray-900 text-white px-4 py-3">
+                    <div class="flex items-center justify-between bg-gray-800 text-white px-4 py-3">
                         <div class="flex items-center space-x-3">
                             <div class="flex space-x-1">
                                 <div class="w-3 h-3 bg-red-500 rounded-full"></div>
@@ -185,29 +263,20 @@ const ComponentRenderers = {
                             <span class="text-sm font-mono text-gray-300">${displayFileName}</span>
                         </div>
                         <div class="flex items-center space-x-2">
-                            ${downloadable ? `
-                                <button onclick="downloadCodeFile('${filePath}', '${codeId}')" 
-                                        class="p-2 hover:bg-gray-700 rounded-lg transition-colors duration-200 group" 
-                                        title="Download File">
-                                    <i class="fas fa-download text-sm group-hover:text-blue-400"></i>
-                                </button>
-                            ` : ''}
+                            <button onclick="downloadCodeFile('${filePath}', '${codeId}')" 
+                                    class="p-2 hover:bg-gray-700 rounded-lg transition-colors group" 
+                                    title="Download File">
+                                <i class="fas fa-download text-sm ${themeColors[theme]}"></i>
+                            </button>
                             <button onclick="copyCodeToClipboard('${codeId}')" 
-                                    class="p-2 hover:bg-gray-700 rounded-lg transition-colors duration-200 group" 
+                                    class="p-2 hover:bg-gray-700 rounded-lg transition-colors group" 
                                     title="Copy Code">
                                 <i class="fas fa-copy text-sm group-hover:text-green-400"></i>
                             </button>
-                            ${showShare ? `
-                                <button onclick="shareCode('${codeId}', '${title || 'Code Example'}')" 
-                                        class="p-2 hover:bg-gray-700 rounded-lg transition-colors duration-200 group" 
-                                        title="Share Code">
-                                    <i class="fas fa-share-alt text-sm group-hover:text-purple-400"></i>
-                                </button>
-                            ` : ''}
                             <button onclick="toggleFullscreen('${codeId}')" 
-                                    class="p-2 hover:bg-gray-700 rounded-lg transition-colors duration-200 group" 
-                                    title="Toggle Fullscreen">
-                                <i class="fas fa-expand text-sm group-hover:text-orange-400"></i>
+                                    class="p-2 hover:bg-gray-700 rounded-lg transition-colors group" 
+                                    title="Fullscreen">
+                                <i class="fas fa-expand text-sm ${themeColors[theme]}"></i>
                             </button>
                         </div>
                     </div>
@@ -215,451 +284,340 @@ const ComponentRenderers = {
                     <!-- Loading indicator -->
                     <div id="${loaderId}" class="hidden absolute inset-0 bg-gray-100 dark:bg-gray-800 flex items-center justify-center z-10">
                         <div class="flex items-center space-x-2 text-gray-600 dark:text-gray-400">
-                            <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-primary-orange"></div>
+                            <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-orange-600"></div>
                             <span>Loading code...</span>
                         </div>
                     </div>
                     
                     <!-- Code Content -->
                     <div class="relative">
-                        <pre class="!mt-0 !mb-0 overflow-x-auto bg-gray-50 dark:bg-gray-800" style="max-height: 600px;"><code id="${codeId}" class="language-${language} ${showLineNumbers ? 'line-numbers' : ''}">${code || 'Loading...'}</code></pre>
-                        
-                        ${highlightLines.length > 0 ? `
-                            <div class="absolute inset-0 pointer-events-none">
-                                ${highlightLines.map(line => `
-                                    <div class="absolute left-0 right-0 bg-yellow-200 dark:bg-yellow-900/30 opacity-30" 
-                                         style="top: ${(line - 1) * 1.5}rem; height: 1.5rem;"></div>
-                                `).join('')}
-                            </div>
-                        ` : ''}
+                        <pre class="!mt-0 !mb-0 overflow-x-auto bg-gray-50 dark:bg-gray-800 p-4" style="max-height: 600px;"><code id="${codeId}" class="language-${language} line-numbers">Loading...</code></pre>
                     </div>
                 </div>
-                
-                ${showPreview ? `
-                    <div class="border-t border-gray-200 dark:border-gray-700 p-6">
-                        <div class="flex items-center justify-between mb-4">
-                            <h4 class="font-semibold text-gray-900 dark:text-white">Preview</h4>
-                            <button onclick="refreshPreview('${codeId}')" class="text-sm text-primary-orange hover:text-accent-orange">
-                                <i class="fas fa-refresh mr-1"></i>Refresh
-                            </button>
-                        </div>
-                        <div id="preview-${codeId}" class="preview-content bg-white dark:bg-gray-900 p-4 rounded-lg border border-gray-200 dark:border-gray-600 min-h-[100px]">
-                            <!-- Preview content will be rendered here -->
-                        </div>
-                    </div>
-                ` : ''}
             </div>
         `;
     },
 
     /**
-     * Render video component (YouTube embed)
+     * Command Section - Standardized command/terminal display with theme support
      */
-    video: (data) => {
-        const { title, description, videoId, aspectRatio = '16:9', sectionId, sectionName } = data;
-        const paddingClass = aspectRatio === '16:9' ? 'pb-[56.25%]' : aspectRatio === '4:3' ? 'pb-[75%]' : 'pb-[56.25%]';
-        const containerId = sectionId || generateSectionId(sectionName || title, 'video');
+    command: (data) => {
+        const { title, description, commands, type = 'terminal', shared = false, theme = 'orange' } = data;
+        const commandId = generateSectionId(title, 'command');
+        
+        const themeColors = {
+            orange: 'text-orange-700 dark:text-orange-300',
+            navy: 'text-blue-800 dark:text-blue-300',
+            blue: 'text-blue-700 dark:text-blue-300'
+        };
+        
+        const typeStyles = {
+            terminal: 'bg-gray-900 text-green-400',
+            powershell: 'bg-blue-900 text-white',
+            cmd: 'bg-black text-white'
+        };
+        
+        const promptSymbols = {
+            terminal: '$',
+            powershell: 'PS>',
+            cmd: 'C:\\>'
+        };
         
         return `
-            <div id="${containerId}" class="mb-6">
-                ${title ? `
-                    <div class="flex items-center justify-between mb-2">
-                        <h3 class="text-xl font-semibold">${title}</h3>
-                        <button onclick="shareSection('${containerId}', '${title}')" 
-                                class="p-2 text-gray-500 hover:text-primary-orange rounded-lg transition-colors duration-200" 
+            <section id="${commandId}" class="mb-8 scroll-mt-20">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xl font-semibold ${themeColors[theme]}">${title}</h3>
+                    ${shared ? `
+                        <button onclick="shareSection('${commandId}', '${title}')" 
+                                class="p-2 text-gray-500 hover:text-orange-600 rounded-lg transition-colors" 
+                                title="Share this command">
+                            <i class="fas fa-share-alt"></i>
+                        </button>
+                    ` : ''}
+                </div>
+                ${description ? `<p class="text-gray-600 dark:text-gray-300 mb-4">${description}</p>` : ''}
+                
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+                    <!-- Terminal Header -->
+                    <div class="flex items-center justify-between bg-gray-200 dark:bg-gray-700 px-4 py-2">
+                        <div class="flex items-center space-x-2">
+                            <div class="flex space-x-1">
+                                <div class="w-3 h-3 bg-red-500 rounded-full"></div>
+                                <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                                <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                            </div>
+                            <span class="text-sm font-medium text-gray-600 dark:text-gray-300">${type.toUpperCase()}</span>
+                        </div>
+                        <button onclick="copyCommandsToClipboard('${commandId}')" 
+                                class="p-1 text-gray-500 hover:text-orange-600 rounded transition-colors" 
+                                title="Copy all commands">
+                            <i class="fas fa-copy text-sm"></i>
+                        </button>
+                    </div>
+                    
+                    <!-- Terminal Content -->
+                    <div class="${typeStyles[type]} p-4 font-mono text-sm overflow-x-auto">
+                        <div id="${commandId}-content">
+                            ${commands.map((cmd, index) => {
+                                const cmdId = `${commandId}-cmd-${index}`;
+                                return `
+                                    <div class="mb-2 group">
+                                        <div class="flex items-center">
+                                            <span class="text-gray-400 mr-2">${promptSymbols[type]}</span>
+                                            <span class="flex-1">${cmd.command}</span>
+                                            <button onclick="copyToClipboard('${cmd.command}')" 
+                                                    class="ml-2 opacity-0 group-hover:opacity-100 p-1 hover:bg-gray-700 rounded transition-all" 
+                                                    title="Copy command">
+                                                <i class="fas fa-copy text-xs"></i>
+                                            </button>
+                                        </div>
+                                        ${cmd.output ? `
+                                            <div class="mt-1 ml-6 text-gray-300 whitespace-pre-wrap">${cmd.output}</div>
+                                        ` : ''}
+                                        ${cmd.comment ? `
+                                            <div class="mt-1 ml-6 text-gray-500 text-xs"># ${cmd.comment}</div>
+                                        ` : ''}
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                </div>
+            </section>
+        `;
+    },
+
+    /**
+     * Card Section - Standardized card layout with theme support
+     */
+    cardSection: (data) => {
+        const { title, cards, columns = 2, shared = false, theme = 'orange' } = data;
+        const sectionId = generateSectionId(title, 'cards');
+        const gridClass = `grid-cols-1 md:grid-cols-${Math.min(columns, 3)}`;
+
+        const themeColors = {
+            orange: 'text-orange-700 dark:text-orange-300',
+            navy: 'text-blue-800 dark:text-blue-300',
+            blue: 'text-blue-700 dark:text-blue-300'
+        };
+
+        return `
+            <section id="${sectionId}" class="mb-8 scroll-mt-20">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-bold ${themeColors[theme]}">${title}</h2>
+                    ${shared ? `
+                        <button onclick="shareSection('${sectionId}', '${title}')" 
+                                class="p-2 text-gray-500 hover:text-orange-600 rounded-lg transition-colors" 
                                 title="Share this section">
                             <i class="fas fa-share-alt"></i>
                         </button>
-                    </div>
-                ` : ''}
+                    ` : ''}
+                </div>
+                
+                <div class="grid ${gridClass} gap-6">
+                    ${cards.map(card => `
+                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 border border-gray-200 dark:border-gray-700 overflow-hidden hover:border-orange-300 dark:hover:border-orange-600">
+                            ${card.image ? `
+                                <img src="${card.image}" alt="${card.title}" class="w-full h-48 object-cover">
+                            ` : ''}
+                            <div class="p-6">
+                                <h3 class="text-lg font-semibold mb-3 text-gray-900 dark:text-white">${card.title}</h3>
+                                <p class="text-gray-600 dark:text-gray-300 leading-relaxed">${card.description}</p>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            </section>
+        `;
+    },
+
+    /**
+     * Accordion Section - Standardized accordion layout with theme support
+     */
+    accordionSection: (data) => {
+        const { title, items, allowMultiple = false, shared = false, theme = 'orange' } = data;
+        const accordionId = generateSectionId(title, 'accordion');
+
+        const themeColors = {
+            orange: 'text-orange-700 dark:text-orange-300',
+            navy: 'text-blue-800 dark:text-blue-300',
+            blue: 'text-blue-700 dark:text-blue-300'
+        };
+
+        return `
+            <section id="${accordionId}" class="mb-8 scroll-mt-20">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-bold ${themeColors[theme]}">${title}</h2>
+                    ${shared ? `
+                        <button onclick="shareSection('${accordionId}', '${title}')" 
+                                class="p-2 text-gray-500 hover:text-orange-600 rounded-lg transition-colors" 
+                                title="Share this section">
+                            <i class="fas fa-share-alt"></i>
+                        </button>
+                    ` : ''}
+                </div>
+                
+                <div class="space-y-3" data-accordion="${accordionId}" data-multiple="${allowMultiple}">
+                    ${items.map((item, index) => {
+            const itemId = `${accordionId}-item-${index}`;
+            return `
+                            <div class="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden hover:border-orange-300 dark:hover:border-orange-600 transition-colors">
+                                <button 
+                                    class="accordion-toggle w-full px-6 py-4 text-left flex items-center justify-between bg-gray-50 dark:bg-gray-800 hover:bg-orange-50 dark:hover:bg-gray-700 transition-colors"
+                                    data-target="${itemId}"
+                                    onclick="toggleAccordion('${itemId}', '${accordionId}', ${allowMultiple})"
+                                >
+                                    <span class="font-medium text-gray-900 dark:text-white">${item.title}</span>
+                                    <i class="fas fa-chevron-down transform transition-transform duration-200 text-orange-500"></i>
+                                </button>
+                                <div id="${itemId}" class="accordion-content hidden">
+                                    <div class="px-6 py-4 border-t border-gray-200 dark:border-gray-700 prose prose-sm dark:prose-invert max-w-none">
+                                        ${item.content}
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+        }).join('')}
+                </div>
+            </section>
+        `;
+    },
+
+    /**
+     * Video Section - Standardized YouTube embed with theme support
+     */
+    video: (data) => {
+        const { title, description, videoId, shared = true, theme = 'orange' } = data;
+        const videoContainerId = generateSectionId(title, 'video');
+
+        const themeColors = {
+            orange: 'text-orange-700 dark:text-orange-300',
+            navy: 'text-blue-800 dark:text-blue-300',
+            blue: 'text-blue-700 dark:text-blue-300'
+        };
+
+        return `
+            <section id="${videoContainerId}" class="mb-8 scroll-mt-20">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xl font-semibold ${themeColors[theme]}">${title}</h3>
+                    ${shared ? `
+                        <button onclick="shareSection('${videoContainerId}', '${title}')" 
+                                class="p-2 text-gray-500 hover:text-orange-600 rounded-lg transition-colors" 
+                                title="Share this video">
+                            <i class="fas fa-share-alt"></i>
+                        </button>
+                    ` : ''}
+                </div>
                 ${description ? `<p class="text-gray-600 dark:text-gray-300 mb-4">${description}</p>` : ''}
                 
-                <div class="relative ${paddingClass} bg-gray-200 dark:bg-gray-800 rounded-lg overflow-hidden shadow-lg">
+                <div class="relative pb-[56.25%] bg-gray-200 dark:bg-gray-800 rounded-lg overflow-hidden shadow-lg border-2 border-transparent hover:border-orange-300 transition-colors">
                     <iframe 
                         class="absolute inset-0 w-full h-full"
                         src="https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1"
-                        title="${title || 'Video'}"
+                        title="${title}"
                         frameborder="0"
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowfullscreen>
                     </iframe>
                 </div>
-            </div>
+            </section>
         `;
     },
 
     /**
-     * Render image component
-     */
-    image: (data) => {
-        const { src, alt, caption, width = 'full', align = 'center', sectionId, sectionName } = data;
-        const widthClass = width === 'full' ? 'w-full' : width === 'half' ? 'w-1/2' : width === 'third' ? 'w-1/3' : 'w-full';
-        const alignClass = align === 'center' ? 'mx-auto' : align === 'right' ? 'ml-auto' : 'mr-auto';
-        const containerId = sectionId || generateSectionId(sectionName || alt, 'image');
-        
-        return `
-            <figure id="${containerId}" class="mb-6 ${alignClass} ${widthClass}">
-                <img src="${src}" alt="${alt}" class="w-full h-auto rounded-lg shadow-md" loading="lazy">
-                ${caption ? `
-                    <figcaption class="text-sm text-gray-600 dark:text-gray-400 text-center mt-2 flex items-center justify-between">
-                        <span>${caption}</span>
-                        <button onclick="shareSection('${containerId}', '${alt}')" 
-                                class="p-1 text-gray-400 hover:text-primary-orange rounded transition-colors duration-200" 
-                                title="Share this image">
-                            <i class="fas fa-share-alt text-xs"></i>
-                        </button>
-                    </figcaption>
-                ` : ''}
-            </figure>
-        `;
-    },
-
-    /**
-     * Render alert component
-     */
-    alert: (data) => {
-        const { type = 'info', title, content, dismissible = false, sectionId, sectionName } = data;
-        const alertId = sectionId || generateSectionId(sectionName || title, 'alert');
-        
-        const typeClasses = {
-            info: 'bg-blue-50 border-blue-200 text-blue-800 dark:bg-blue-900/20 dark:border-blue-800 dark:text-blue-200',
-            success: 'bg-green-50 border-green-200 text-green-800 dark:bg-green-900/20 dark:border-green-800 dark:text-green-200',
-            warning: 'bg-yellow-50 border-yellow-200 text-yellow-800 dark:bg-yellow-900/20 dark:border-yellow-800 dark:text-yellow-200',
-            error: 'bg-red-50 border-red-200 text-red-800 dark:bg-red-900/20 dark:border-red-800 dark:text-red-200'
-        };
-        
-        const iconClasses = {
-            info: 'fas fa-info-circle',
-            success: 'fas fa-check-circle',
-            warning: 'fas fa-exclamation-triangle',
-            error: 'fas fa-times-circle'
-        };
-        
-        return `
-            <div id="${alertId}" class="border-l-4 p-4 mb-6 ${typeClasses[type]} rounded-r-lg">
-                <div class="flex items-start">
-                    <div class="flex-shrink-0">
-                        <i class="${iconClasses[type]} text-lg"></i>
-                    </div>
-                    <div class="ml-3 flex-1">
-                        ${title ? `<h4 class="font-semibold mb-1">${title}</h4>` : ''}
-                        <div>${content}</div>
-                    </div>
-                    <div class="flex space-x-1">
-                        <button onclick="shareSection('${alertId}', '${title || 'Alert'}')" 
-                                class="flex-shrink-0 p-1 opacity-70 hover:opacity-100 transition-opacity" 
-                                title="Share this alert">
-                            <i class="fas fa-share-alt text-sm"></i>
-                        </button>
-                        ${dismissible ? `
-                            <button onclick="dismissAlert('${alertId}')" class="flex-shrink-0 p-1 opacity-70 hover:opacity-100 transition-opacity">
-                                <i class="fas fa-times text-sm"></i>
-                            </button>
-                        ` : ''}
-                    </div>
-                </div>
-            </div>
-        `;
-    },
-
-    /**
-     * Render list component
-     */
-    list: (data) => {
-        const { type = 'unordered', items, title, sectionId, sectionName } = data;
-        const listTag = type === 'ordered' ? 'ol' : 'ul';
-        const listClass = type === 'ordered' ? 'list-decimal list-inside' : 'list-disc list-inside';
-        const containerId = sectionId || generateSectionId(sectionName || title, 'list');
-        
-        return `
-            <div id="${containerId}" class="mb-6">
-                ${title ? `
-                    <div class="flex items-center justify-between mb-3">
-                        <h3 class="text-xl font-semibold">${title}</h3>
-                        <button onclick="shareSection('${containerId}', '${title}')" 
-                                class="p-2 text-gray-500 hover:text-primary-orange rounded-lg transition-colors duration-200" 
-                                title="Share this section">
-                            <i class="fas fa-share-alt"></i>
-                        </button>
-                    </div>
-                ` : ''}
-                <${listTag} class="${listClass} space-y-2 text-gray-700 dark:text-gray-300">
-                    ${items.map(item => `<li>${item}</li>`).join('')}
-                </${listTag}>
-            </div>
-        `;
-    },
-
-    /**
-     * Render accordion component
-     */
-    accordion: (data) => {
-        const { items, allowMultiple = false, title, sectionId, sectionName } = data;
-        const accordionId = sectionId || generateSectionId(sectionName || title || 'accordion', 'accordion');
-        
-        return `
-            <div id="${accordionId}" class="space-y-2 mb-6" data-accordion="${accordionId}" data-multiple="${allowMultiple}">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-xl font-semibold">${title || 'Accordion'}</h3>
-                    <button onclick="shareSection('${accordionId}', '${title || 'Accordion'}')" 
-                            class="p-2 text-gray-500 hover:text-primary-orange rounded-lg transition-colors duration-200" 
-                            title="Share this section">
-                        <i class="fas fa-share-alt"></i>
-                    </button>
-                </div>
-                ${items.map((item, index) => {
-                    const itemId = `${accordionId}-item-${index}`;
-                    return `
-                        <div class="border border-gray-200 dark:border-gray-700 rounded-lg">
-                            <button 
-                                class="accordion-toggle w-full px-4 py-3 text-left flex items-center justify-between bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 rounded-lg"
-                                data-target="${itemId}"
-                                onclick="toggleAccordion('${itemId}', '${accordionId}', ${allowMultiple})"
-                            >
-                                <span class="font-medium">${item.title}</span>
-                                <i class="fas fa-chevron-down transform transition-transform duration-200"></i>
-                            </button>
-                            <div id="${itemId}" class="accordion-content hidden px-4 py-3 border-t border-gray-200 dark:border-gray-700">
-                                ${item.content}
-                            </div>
-                        </div>
-                    `;
-                }).join('')}
-            </div>
-        `;
-    },
-
-    /**
-     * Render table component
+     * Table Section - Standardized table display with theme support
      */
     table: (data) => {
-        const { title, headers, rows, responsive = true, sectionId, sectionName } = data;
-        const containerId = sectionId || generateSectionId(sectionName || title, 'table');
-        
+        const { title, headers, rows, shared = false, theme = 'orange' } = data;
+        const tableId = generateSectionId(title, 'table');
+
+        const themeColors = {
+            orange: 'text-orange-700 dark:text-orange-300',
+            navy: 'text-blue-800 dark:text-blue-300',
+            blue: 'text-blue-700 dark:text-blue-300'
+        };
+
         return `
-            <div id="${containerId}" class="mb-6">
-                ${title ? `
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-xl font-semibold">${title}</h3>
-                        <button onclick="shareSection('${containerId}', '${title}')" 
-                                class="p-2 text-gray-500 hover:text-primary-orange rounded-lg transition-colors duration-200" 
-                                title="Share this section">
+            <section id="${tableId}" class="mb-8 scroll-mt-20">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xl font-semibold ${themeColors[theme]}">${title}</h3>
+                    ${shared ? `
+                        <button onclick="shareSection('${tableId}', '${title}')" 
+                                class="p-2 text-gray-500 hover:text-orange-600 rounded-lg transition-colors" 
+                                title="Share this table">
                             <i class="fas fa-share-alt"></i>
                         </button>
-                    </div>
-                ` : ''}
+                    ` : ''}
+                </div>
                 
-                <div class="${responsive ? 'overflow-x-auto' : ''}">
-                    <table class="min-w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
-                        <thead class="bg-gray-50 dark:bg-gray-700">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden shadow-sm">
+                        <thead class="bg-orange-50 dark:bg-gray-700">
                             <tr>
                                 ${headers.map(header => `
-                                    <th class="px-4 py-3 text-left font-medium text-gray-900 dark:text-gray-100">${header}</th>
+                                    <th class="px-6 py-3 text-left font-medium text-orange-700 dark:text-orange-300">${header}</th>
                                 `).join('')}
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
                             ${rows.map(row => `
-                                <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                                <tr class="hover:bg-orange-50 dark:hover:bg-gray-700 transition-colors">
                                     ${row.map(cell => `
-                                        <td class="px-4 py-3 text-gray-700 dark:text-gray-300">${cell}</td>
+                                        <td class="px-6 py-4 text-gray-700 dark:text-gray-300">${cell}</td>
                                     `).join('')}
                                 </tr>
                             `).join('')}
                         </tbody>
                     </table>
                 </div>
-            </div>
-        `;
-    },
-
-    /**
-     * Render card grid component (UPDATED - removed difficulty and duration)
-     */
-    card: (data) => {
-        const { title, cards, columns = 3, sectionId, sectionName } = data;
-        const gridClass = `grid-cols-1 md:grid-cols-2 lg:grid-cols-${columns}`;
-        const containerId = sectionId || generateSectionId(sectionName || title, 'card');
-        
-        return `
-            <div id="${containerId}" class="mb-6">
-                ${title ? `
-                    <div class="flex items-center justify-between mb-6">
-                        <h3 class="text-xl font-semibold">${title}</h3>
-                        <button onclick="shareSection('${containerId}', '${title}')" 
-                                class="p-2 text-gray-500 hover:text-primary-orange rounded-lg transition-colors duration-200" 
-                                title="Share this section">
-                            <i class="fas fa-share-alt"></i>
-                        </button>
-                    </div>
-                ` : ''}
-                
-                <div class="grid ${gridClass} gap-6">
-                    ${cards.map(card => `
-                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden">
-                            ${card.image ? `
-                                <img src="${card.image}" alt="${card.title}" class="w-full h-48 object-cover">
-                            ` : ''}
-                            <div class="p-6">
-                                <h4 class="text-lg font-semibold mb-2">${card.title}</h4>
-                                ${card.description ? `<p class="text-gray-600 dark:text-gray-300 mb-4">${card.description}</p>` : ''}
-                                ${card.buttons && card.buttons.length > 0 ? `
-                                    <div class="flex space-x-2">
-                                        ${card.buttons.map(btn => `
-                                            <a href="${btn.url}" class="inline-flex items-center px-4 py-2 ${btn.primary ? 'bg-primary-orange text-white' : 'border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300'} rounded-lg hover:opacity-80 transition-opacity">
-                                                ${btn.icon ? `<i class="${btn.icon} mr-2"></i>` : ''}
-                                                ${btn.text}
-                                            </a>
-                                        `).join('')}
-                                    </div>
-                                ` : ''}
-                            </div>
-                        </div>
-                    `).join('')}
-                </div>
-            </div>
-        `;
-    },
-
-    /**
-     * Render timeline component
-     */
-    timeline: (data) => {
-        const { title, items, sectionId, sectionName } = data;
-        const containerId = sectionId || generateSectionId(sectionName || title, 'timeline');
-        
-        return `
-            <div id="${containerId}" class="mb-6">
-                ${title ? `
-                    <div class="flex items-center justify-between mb-6">
-                        <h3 class="text-xl font-semibold">${title}</h3>
-                        <button onclick="shareSection('${containerId}', '${title}')" 
-                                class="p-2 text-gray-500 hover:text-primary-orange rounded-lg transition-colors duration-200" 
-                                title="Share this section">
-                            <i class="fas fa-share-alt"></i>
-                        </button>
-                    </div>
-                ` : ''}
-                
-                <div class="relative">
-                    <!-- Timeline line -->
-                    <div class="absolute left-4 top-0 bottom-0 w-0.5 bg-gray-300 dark:bg-gray-600"></div>
-                    
-                    <div class="space-y-8">
-                        ${items.map((item, index) => `
-                            <div class="relative flex items-start">
-                                <!-- Timeline dot -->
-                                <div class="flex-shrink-0 w-8 h-8 bg-primary-orange rounded-full flex items-center justify-center z-10">
-                                    <span class="text-white text-sm font-bold">${index + 1}</span>
-                                </div>
-                                
-                                <!-- Content -->
-                                <div class="ml-6 flex-1">
-                                    <h4 class="text-lg font-semibold">${item.title}</h4>
-                                    ${item.subtitle ? `<p class="text-sm text-gray-500 dark:text-gray-400 mb-2">${item.subtitle}</p>` : ''}
-                                    <p class="text-gray-700 dark:text-gray-300">${item.description}</p>
-                                    ${item.link ? `
-                                        <a href="${item.link.url}" class="inline-flex items-center mt-3 text-primary-orange hover:text-accent-orange">
-                                            ${item.link.text}
-                                            <i class="fas fa-arrow-right ml-2"></i>
-                                        </a>
-                                    ` : ''}
-                                </div>
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>
-            </div>
-        `;
-    },
-
-    /**
-     * Render completion section
-     */
-    completion: (data) => {
-        const { title, description, nextModule, sectionId, sectionName } = data;
-        const containerId = sectionId || generateSectionId(sectionName || title, 'completion');
-        
-        return `
-            <div id="${containerId}" class="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-lg p-6 mb-6">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="flex items-center">
-                        <i class="fas fa-trophy text-green-500 text-2xl mr-3"></i>
-                        <h3 class="text-xl font-semibold">${title}</h3>
-                    </div>
-                    <button onclick="shareSection('${containerId}', '${title}')" 
-                            class="p-2 text-gray-500 hover:text-primary-orange rounded-lg transition-colors duration-200" 
-                            title="Share this achievement">
-                        <i class="fas fa-share-alt"></i>
-                    </button>
-                </div>
-                
-                ${description ? `<p class="text-gray-600 dark:text-gray-300 mb-4">${description}</p>` : ''}
-                
-                ${nextModule ? `
-                    <a href="${nextModule.url}" class="inline-flex items-center px-6 py-3 bg-primary-orange text-white rounded-lg hover:bg-accent-orange transition-colors duration-300">
-                        ${nextModule.text}
-                        <i class="fas fa-arrow-right ml-2"></i>
-                    </a>
-                ` : ''}
-            </div>
+            </section>
         `;
     }
 };
 
 /**
- * Render a single component based on its type and data
+ * Main rendering function
  */
 function renderComponent(component) {
     const { type, data, id } = component;
-    
+
     if (!ComponentRenderers[type]) {
         console.warn(`Unknown component type: ${type}`);
-        return `<div class="p-4 bg-red-100 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg mb-4">
-            <p class="text-red-600 dark:text-red-400">Unknown component type: ${type}</p>
-        </div>`;
+        return `
+            <div class="p-4 bg-red-50 border border-red-200 rounded-lg mb-4">
+                <p class="text-red-600">Unknown component type: <strong>${type}</strong></p>
+            </div>
+        `;
     }
-    
+
     const renderedHTML = ComponentRenderers[type](data);
-    
-    // Wrap with component container if ID is provided
+
     if (id) {
         return `<div id="${id}" class="component-container" data-component-type="${type}">${renderedHTML}</div>`;
     }
-    
+
     return renderedHTML;
 }
 
-/**
- * Render multiple components
- */
 function renderComponents(components) {
     return components.map(component => renderComponent(component)).join('');
 }
 
-// Enhanced Interactive functions for components
-
-/**
- * Copy code to clipboard with better feedback
- */
+// Interactive Functions (enhanced with better URL handling)
 function copyCodeToClipboard(codeId) {
     const codeElement = document.getElementById(codeId);
     if (!codeElement) return;
-    
-    const code = codeElement.textContent;
-    
-    navigator.clipboard.writeText(code).then(() => {
-        // Show feedback with toast notification
+
+    navigator.clipboard.writeText(codeElement.textContent).then(() => {
         showToast('Code copied to clipboard!', 'success');
-        
-        // Update button icon temporarily
+
         const button = event.target.closest('button');
         const icon = button.querySelector('i');
         const originalClass = icon.className;
-        
+
         icon.className = 'fas fa-check text-sm';
         button.classList.add('bg-green-600');
-        
+
         setTimeout(() => {
             icon.className = originalClass;
             button.classList.remove('bg-green-600');
@@ -670,80 +628,56 @@ function copyCodeToClipboard(codeId) {
     });
 }
 
-/**
- * Download code file with proper handling
- */
 function downloadCodeFile(filePath, codeId) {
     if (filePath) {
-        // Download from actual file path
+        // Normalisasi path untuk download
+        let downloadPath = filePath;
+        if (downloadPath.startsWith('./')) {
+            downloadPath = downloadPath.substring(2);
+        }
+        if (!downloadPath.startsWith('/') && !downloadPath.startsWith('http')) {
+            downloadPath = '/' + downloadPath;
+        }
+        
         const link = document.createElement('a');
-        link.href = filePath;
+        link.href = downloadPath;
         link.download = getFileName(filePath);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-        
         showToast('Download started!', 'success');
-    } else {
-        // Download from code content
-        const codeElement = document.getElementById(codeId);
-        if (!codeElement) return;
-        
-        const code = codeElement.textContent;
-        const blob = new Blob([code], { type: 'text/plain' });
-        const url = URL.createObjectURL(blob);
-        
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = 'code.txt';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-        
-        showToast('Code downloaded!', 'success');
     }
 }
 
-/**
- * Share code with Web Share API or fallback
- */
-function shareCode(codeId, title) {
-    const codeElement = document.getElementById(codeId);
-    if (!codeElement) return;
+// Function untuk copy semua commands
+function copyCommandsToClipboard(commandId) {
+    const commandContent = document.getElementById(`${commandId}-content`);
+    if (!commandContent) return;
     
-    const code = codeElement.textContent;
-    const shareData = {
-        title: title,
-        text: `Check out this code example: ${title}`,
-        url: window.location.href
-    };
+    // Extract hanya command text, bukan output
+    const commands = Array.from(commandContent.querySelectorAll('.group')).map(group => {
+        const commandSpan = group.querySelector('span:nth-child(2)');
+        return commandSpan ? commandSpan.textContent.trim() : '';
+    }).filter(cmd => cmd).join('\n');
     
-    if (navigator.share) {
-        navigator.share(shareData).then(() => {
-            showToast('Code shared successfully!', 'success');
-        }).catch(err => {
-            console.error('Error sharing:', err);
-            fallbackShare(shareData, code);
-        });
-    } else {
-        fallbackShare(shareData, code);
-    }
+    navigator.clipboard.writeText(commands).then(() => {
+        showToast('All commands copied to clipboard!', 'success');
+    }).catch(err => {
+        console.error('Failed to copy commands: ', err);
+        showToast('Failed to copy commands', 'error');
+    });
 }
 
-/**
- * Share specific section with URL parameter
- */
 function shareSection(sectionId, title) {
     const currentUrl = new URL(window.location);
     currentUrl.searchParams.set('section', sectionId);
-    
+
     const shareData = {
         title: title,
         text: `Check out this section: ${title}`,
         url: currentUrl.toString()
     };
-    
+
     if (navigator.share) {
         navigator.share(shareData).then(() => {
             showToast('Section shared successfully!', 'success');
@@ -756,158 +690,52 @@ function shareSection(sectionId, title) {
     }
 }
 
-/**
- * Copy current page URL or section URL to clipboard
- */
-function copyPageUrl(sectionId = null) {
-    const currentUrl = new URL(window.location);
-    if (sectionId) {
-        currentUrl.searchParams.set('section', sectionId);
-    }
-    
-    navigator.clipboard.writeText(currentUrl.toString()).then(() => {
-        showToast('URL copied to clipboard!', 'success');
-    }).catch(err => {
-        console.error('Failed to copy URL: ', err);
-        showToast('Failed to copy URL', 'error');
-    });
-}
-
-/**
- * Fallback share method
- */
-function fallbackShare(shareData, code = null) {
-    // Create share modal
-    const modal = document.createElement('div');
-    modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
-    modal.innerHTML = `
-        <div class="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4">
-            <h3 class="text-lg font-semibold mb-4">Share ${shareData.title}</h3>
-            <div class="space-y-3">
-                <button onclick="copyToClipboard('${shareData.url}'); closeModal(this)" 
-                        class="w-full flex items-center justify-center px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
-                    <i class="fas fa-link mr-2"></i>Copy Link
-                </button>
-                <button onclick="shareToTwitter('${encodeURIComponent(shareData.text)}', '${encodeURIComponent(shareData.url)}'); closeModal(this)" 
-                        class="w-full flex items-center justify-center px-4 py-2 bg-blue-400 text-white rounded-lg hover:bg-blue-500">
-                    <i class="fab fa-twitter mr-2"></i>Share on Twitter
-                </button>
-                <button onclick="shareToLinkedIn('${encodeURIComponent(shareData.text)}', '${encodeURIComponent(shareData.url)}'); closeModal(this)" 
-                        class="w-full flex items-center justify-center px-4 py-2 bg-blue-700 text-white rounded-lg hover:bg-blue-800">
-                    <i class="fab fa-linkedin mr-2"></i>Share on LinkedIn
-                </button>
-                <button onclick="closeModal(this)" 
-                        class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700">
-                    Cancel
-                </button>
-            </div>
-        </div>
-    `;
-    
-    document.body.appendChild(modal);
-    
-    // Close on backdrop click
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
-            document.body.removeChild(modal);
-        }
-    });
-}
-
-/**
- * Toggle fullscreen for code block
- */
 function toggleFullscreen(codeId) {
-    const codeContainer = document.getElementById(codeId).closest('.component-container') || 
-                         document.getElementById(codeId).closest('div[class*="bg-white"]');
+    const codeContainer = document.getElementById(codeId).closest('.component-container') ||
+        document.getElementById(codeId).closest('div[class*="bg-white"]');
     if (!codeContainer) return;
-    
+
     if (codeContainer.classList.contains('fullscreen-code')) {
-        // Exit fullscreen
         codeContainer.classList.remove('fullscreen-code');
         document.body.classList.remove('overflow-hidden');
     } else {
-        // Enter fullscreen
         codeContainer.classList.add('fullscreen-code');
         document.body.classList.add('overflow-hidden');
     }
 }
 
-/**
- * Refresh preview for code component
- */
-function refreshPreview(codeId) {
-    const previewContainer = document.getElementById(`preview-${codeId}`);
-    if (!previewContainer) return;
-    
-    const codeElement = document.getElementById(codeId);
-    const code = codeElement.textContent;
-    
-    // Basic HTML preview (you can extend this for other languages)
-    if (codeElement.classList.contains('language-html')) {
-        previewContainer.innerHTML = code;
-    } else if (codeElement.classList.contains('language-css')) {
-        previewContainer.innerHTML = `<style>${code}</style><div>CSS applied to this preview</div>`;
-    } else {
-        previewContainer.innerHTML = '<p class="text-gray-500">Preview not available for this language</p>';
-    }
-}
-
-/**
- * Dismiss alert with animation
- */
-function dismissAlert(alertId) {
-    const alert = document.getElementById(alertId);
-    if (!alert) return;
-    
-    alert.style.transition = 'opacity 0.3s ease-out, transform 0.3s ease-out';
-    alert.style.opacity = '0';
-    alert.style.transform = 'translateX(100%)';
-    
-    setTimeout(() => {
-        alert.remove();
-    }, 300);
-}
-
-/**
- * Toggle accordion item with improved animation
- */
 function toggleAccordion(itemId, accordionId, allowMultiple) {
     const item = document.getElementById(itemId);
     const button = document.querySelector(`[data-target="${itemId}"]`);
     const icon = button.querySelector('i');
-    
+
     if (!allowMultiple) {
-        // Close all other items in this accordion
         const accordion = document.querySelector(`[data-accordion="${accordionId}"]`);
         const allItems = accordion.querySelectorAll('.accordion-content');
         const allButtons = accordion.querySelectorAll('.accordion-toggle i');
-        
+
         allItems.forEach(otherItem => {
             if (otherItem.id !== itemId && !otherItem.classList.contains('hidden')) {
                 otherItem.classList.add('hidden');
             }
         });
-        
+
         allButtons.forEach(otherIcon => {
             if (otherIcon !== icon) {
                 otherIcon.classList.remove('rotate-180');
             }
         });
     }
-    
-    // Toggle current item with smooth animation
+
     if (item.classList.contains('hidden')) {
         item.classList.remove('hidden');
         item.style.maxHeight = '0px';
         item.style.overflow = 'hidden';
         item.style.transition = 'max-height 0.3s ease-out';
-        
-        // Force reflow
+
         item.offsetHeight;
-        
         item.style.maxHeight = item.scrollHeight + 'px';
-        
+
         setTimeout(() => {
             item.style.maxHeight = '';
             item.style.overflow = '';
@@ -917,12 +745,10 @@ function toggleAccordion(itemId, accordionId, allowMultiple) {
         item.style.maxHeight = item.scrollHeight + 'px';
         item.style.overflow = 'hidden';
         item.style.transition = 'max-height 0.3s ease-out';
-        
-        // Force reflow
+
         item.offsetHeight;
-        
         item.style.maxHeight = '0px';
-        
+
         setTimeout(() => {
             item.classList.add('hidden');
             item.style.maxHeight = '';
@@ -930,59 +756,28 @@ function toggleAccordion(itemId, accordionId, allowMultiple) {
             item.style.transition = '';
         }, 300);
     }
-    
-    // Toggle icon rotation
+
     icon.classList.toggle('rotate-180');
 }
 
-/**
- * Navigate to section based on URL parameter
- */
-function navigateToSection() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const sectionId = urlParams.get('section');
-    
-    if (sectionId) {
-        const section = document.getElementById(sectionId);
-        if (section) {
-            // Smooth scroll to section
-            section.scrollIntoView({ 
-                behavior: 'smooth', 
-                block: 'start' 
-            });
-            
-            // Add highlight effect
-            section.classList.add('highlight-section');
-            setTimeout(() => {
-                section.classList.remove('highlight-section');
-            }, 3000);
-        }
-    }
-}
-
-// Utility functions
-
-/**
- * Show toast notification
- */
 function showToast(message, type = 'info') {
     const toast = document.createElement('div');
     const toastId = generateId();
-    
+
     const typeClasses = {
         success: 'bg-green-500 text-white',
         error: 'bg-red-500 text-white',
         warning: 'bg-yellow-500 text-black',
-        info: 'bg-blue-500 text-white'
+        info: 'bg-orange-500 text-white'
     };
-    
+
     const icons = {
         success: 'fas fa-check-circle',
         error: 'fas fa-times-circle',
         warning: 'fas fa-exclamation-triangle',
         info: 'fas fa-info-circle'
     };
-    
+
     toast.id = toastId;
     toast.className = `fixed top-4 right-4 ${typeClasses[type]} px-6 py-3 rounded-lg shadow-lg z-50 flex items-center space-x-2 transform translate-x-full transition-transform duration-300`;
     toast.innerHTML = `
@@ -992,27 +787,22 @@ function showToast(message, type = 'info') {
             <i class="fas fa-times"></i>
         </button>
     `;
-    
+
     document.body.appendChild(toast);
-    
-    // Animate in
+
     setTimeout(() => {
         toast.classList.remove('translate-x-full');
     }, 100);
-    
-    // Auto dismiss after 5 seconds
+
     setTimeout(() => {
         closeToast(toastId);
     }, 5000);
 }
 
-/**
- * Close toast notification
- */
 function closeToast(toastId) {
     const toast = document.getElementById(toastId);
     if (!toast) return;
-    
+
     toast.classList.add('translate-x-full');
     setTimeout(() => {
         if (toast.parentNode) {
@@ -1021,9 +811,34 @@ function closeToast(toastId) {
     }, 300);
 }
 
-/**
- * Close modal
- */
+function fallbackShare(shareData) {
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+    modal.innerHTML = `
+        <div class="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4">
+            <h3 class="text-lg font-semibold mb-4">Share ${shareData.title}</h3>
+            <div class="space-y-3">
+                <button onclick="copyToClipboard('${shareData.url}'); closeModal(this)" 
+                        class="w-full flex items-center justify-center px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors">
+                    <i class="fas fa-link mr-2"></i>Copy Link
+                </button>
+                <button onclick="closeModal(this)" 
+                        class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            document.body.removeChild(modal);
+        }
+    });
+}
+
 function closeModal(element) {
     const modal = element.closest('.fixed');
     if (modal) {
@@ -1031,9 +846,6 @@ function closeModal(element) {
     }
 }
 
-/**
- * Copy text to clipboard
- */
 function copyToClipboard(text) {
     navigator.clipboard.writeText(text).then(() => {
         showToast('Copied to clipboard!', 'success');
@@ -1043,21 +855,7 @@ function copyToClipboard(text) {
     });
 }
 
-/**
- * Share to Twitter
- */
-function shareToTwitter(text, url) {
-    window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
-}
-
-/**
- * Share to LinkedIn
- */
-function shareToLinkedIn(text, url) {
-    window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${url}`, '_blank');
-}
-
-// Add CSS for fullscreen code and section highlighting
+// Enhanced CSS Styles with orange theme
 const componentCSS = `
 <style>
 .fullscreen-code {
@@ -1114,14 +912,139 @@ const componentCSS = `
     animation: slideIn 0.3s ease-out;
 }
 
-/* Smooth scroll behavior */
+/* Enhanced smooth scroll behavior */
 html {
     scroll-behavior: smooth;
 }
 
 /* Section anchor offset for fixed headers */
 .component-container {
-    scroll-margin-top: 80px;
+    scroll-margin-top: 100px;
+}
+
+.scroll-mt-20 {
+    scroll-margin-top: 5rem;
+}
+
+/* Enhanced prose styling for content */
+.prose {
+    line-height: 1.7;
+}
+
+.prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+    font-weight: 600;
+    color: #c2410c;
+}
+
+.dark .prose h1, .dark .prose h2, .dark .prose h3, 
+.dark .prose h4, .dark .prose h5, .dark .prose h6 {
+    color: #fdba74;
+}
+
+.prose p {
+    margin-bottom: 1em;
+}
+
+.prose ul, .prose ol {
+    margin: 1em 0;
+    padding-left: 1.5em;
+}
+
+.prose li {
+    margin: 0.25em 0;
+}
+
+.prose code {
+    background-color: #fed7aa;
+    color: #c2410c;
+    padding: 0.125em 0.25em;
+    border-radius: 0.25rem;
+    font-size: 0.875em;
+}
+
+.dark .prose code {
+    background-color: #431407;
+    color: #fdba74;
+}
+
+.prose a {
+    color: #ea580c;
+    text-decoration: underline;
+}
+
+.prose a:hover {
+    color: #c2410c;
+}
+
+.dark .prose a {
+    color: #fb923c;
+}
+
+.dark .prose a:hover {
+    color: #fdba74;
+}
+
+/* Enhanced responsive grid adjustments */
+@media (max-width: 768px) {
+    .grid-cols-1.md\\:grid-cols-2,
+    .grid-cols-1.md\\:grid-cols-3 {
+        grid-template-columns: repeat(1, minmax(0, 1fr));
+    }
+    
+    .scroll-mt-20 {
+        scroll-margin-top: 3rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .md\\:grid-cols-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .md\\:grid-cols-3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+/* Loading animation */
+.loading-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: .5;
+    }
+}
+
+/* Scroll indicator */
+.scroll-indicator {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(to right, #f97316, #ea580c);
+    transform-origin: left;
+    z-index: 9999;
+}
+
+/* Enhanced focus styles */
+button:focus-visible,
+a:focus-visible {
+    outline: 2px solid #f97316;
+    outline-offset: 2px;
+}
+
+/* Smooth transitions for all interactive elements */
+* {
+    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
 }
 </style>
 `;
@@ -1134,40 +1057,275 @@ if (!document.getElementById('component-styles')) {
     document.head.appendChild(styleElement);
 }
 
-// Export for global use
+// Enhanced Navigation dengan MutationObserver
+async function navigateToSection() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const sectionId = urlParams.get('section');
+
+    if (sectionId) {
+        try {
+            const section = await waitForElement(sectionId, 3000);
+
+            // Smooth scroll to section with offset
+            const yOffset = -80;
+            const y = section.getBoundingClientRect().top + window.pageYOffset + yOffset;
+
+            window.scrollTo({
+                top: y,
+                behavior: 'smooth'
+            });
+
+            // Add highlight effect
+            section.classList.add('highlight-section');
+            setTimeout(() => {
+                section.classList.remove('highlight-section');
+            }, 3000);
+
+            // Update browser history
+            const newUrl = new URL(window.location);
+            newUrl.searchParams.set('section', sectionId);
+            window.history.replaceState({}, '', newUrl);
+
+            showToast(`Navigated to: ${section.querySelector('h1, h2, h3, h4, h5, h6')?.textContent || sectionId}`, 'info');
+
+        } catch (error) {
+            console.warn(`Section with ID '${sectionId}' not found:`, error.message);
+            showToast(`Section '${sectionId}' not found`, 'warning');
+        }
+    }
+}
+
+// Enhanced scroll progress indicator
+function updateScrollProgress() {
+    const scrollTop = document.documentElement.scrollTop;
+    const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    const scrollProgress = (scrollTop / scrollHeight) * 100;
+
+    let indicator = document.getElementById('scroll-indicator');
+    if (!indicator) {
+        indicator = document.createElement('div');
+        indicator.id = 'scroll-indicator';
+        indicator.className = 'scroll-indicator';
+        document.body.appendChild(indicator);
+    }
+
+    indicator.style.transform = `scaleX(${scrollProgress / 100})`;
+}
+
+// Auto-render function for dynamic content with enhanced error handling
+function autoRenderComponents(containerId, components) {
+    const container = document.getElementById(containerId);
+    if (!container) {
+        console.error(`Container with ID '${containerId}' not found`);
+        showToast(`Container '${containerId}' not found`, 'error');
+        return;
+    }
+
+    try {
+        // Show loading state
+        container.innerHTML = `
+            <div class="flex items-center justify-center py-12">
+                <div class="flex items-center space-x-3 text-orange-600">
+                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600"></div>
+                    <span class="text-lg">Loading content...</span>
+                </div>
+            </div>
+        `;
+
+        // Render components dengan callback setelah selesai
+        setTimeout(() => {
+            const renderedHTML = renderComponents(components);
+            container.innerHTML = renderedHTML;
+
+            // Initialize syntax highlighting if Prism.js is available
+            if (typeof Prism !== 'undefined') {
+                Prism.highlightAll();
+            }
+
+            // PENTING: Navigate to section SETELAH render selesai
+            setTimeout(() => {
+                navigateToSection();
+            }, 100); // Delay kecil untuk memastikan DOM sudah update
+
+            // Add scroll progress indicator
+            if (!window.scrollListenerAdded) {
+                window.addEventListener('scroll', updateScrollProgress);
+                window.scrollListenerAdded = true;
+            }
+            updateScrollProgress();
+
+            showToast('Content loaded successfully!', 'success');
+        }, 300);
+
+    } catch (error) {
+        console.error('Error rendering components:', error);
+        container.innerHTML = `
+            <div class="p-6 bg-red-50 border border-red-200 rounded-lg">
+                <h3 class="text-red-800 font-semibold mb-2">Rendering Error</h3>
+                <p class="text-red-600">${error.message}</p>
+                <button onclick="location.reload()" class="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
+                    Retry
+                </button>
+            </div>
+        `;
+        showToast('Failed to render content', 'error');
+    }
+}
+
+// Helper function to wait for element to exist
+function waitForElement(selector, timeout = 5000) {
+    return new Promise((resolve, reject) => {
+        const element = document.getElementById(selector);
+        if (element) {
+            resolve(element);
+            return;
+        }
+
+        const observer = new MutationObserver((mutations, obs) => {
+            const element = document.getElementById(selector);
+            if (element) {
+                obs.disconnect();
+                resolve(element);
+            }
+        });
+
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true
+        });
+
+        setTimeout(() => {
+            observer.disconnect();
+            reject(new Error(`Element ${selector} not found within ${timeout}ms`));
+        }, timeout);
+    });
+}
+
+// Export all functions for global use
 window.ComponentRenderers = ComponentRenderers;
 window.renderComponent = renderComponent;
 window.renderComponents = renderComponents;
+window.autoRenderComponents = autoRenderComponents;
 window.generateSectionId = generateSectionId;
 window.copyCodeToClipboard = copyCodeToClipboard;
 window.downloadCodeFile = downloadCodeFile;
-window.shareCode = shareCode;
 window.shareSection = shareSection;
-window.copyPageUrl = copyPageUrl;
 window.toggleFullscreen = toggleFullscreen;
-window.refreshPreview = refreshPreview;
-window.dismissAlert = dismissAlert;
 window.toggleAccordion = toggleAccordion;
 window.navigateToSection = navigateToSection;
 window.showToast = showToast;
 window.closeToast = closeToast;
 window.closeModal = closeModal;
 window.copyToClipboard = copyToClipboard;
-window.shareToTwitter = shareToTwitter;
-window.shareToLinkedIn = shareToLinkedIn;
+window.fallbackShare = fallbackShare;
+window.updateScrollProgress = updateScrollProgress;
+window.copyCommandsToClipboard = copyCommandsToClipboard; // Export function baru
 
-// Initialize on DOM load
+// Enhanced initialization on DOM load
 document.addEventListener('DOMContentLoaded', () => {
     // Initialize syntax highlighting if Prism.js is available
     if (typeof Prism !== 'undefined') {
         Prism.highlightAll();
     }
-    
+
     // Navigate to section if specified in URL
     navigateToSection();
+
+    // Initialize scroll progress
+    updateScrollProgress();
+
+    // Add keyboard navigation support
+    document.addEventListener('keydown', (e) => {
+        // Press 'S' to share current section
+        if (e.key === 's' && e.ctrlKey) {
+            e.preventDefault();
+            const activeSection = document.querySelector('.highlight-section');
+            if (activeSection) {
+                const title = activeSection.querySelector('h1, h2, h3, h4, h5, h6')?.textContent || 'Section';
+                shareSection(activeSection.id, title);
+            }
+        }
+    });
 });
 
 // Handle browser back/forward navigation
 window.addEventListener('popstate', () => {
     navigateToSection();
+});
+
+// Enhanced utility function to load and render JSON content
+async function loadAndRenderModule(jsonPath, containerId) {
+    try {
+        showToast('Loading module...', 'info');
+
+        const response = await fetch(jsonPath);
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        const moduleData = await response.json();
+
+        // Validate JSON structure
+        if (!moduleData.components || !Array.isArray(moduleData.components)) {
+            throw new Error('Invalid JSON structure: components array is required');
+        }
+
+        // Render components
+        autoRenderComponents(containerId, moduleData.components);
+
+        // Update page title if available
+        if (moduleData.title) {
+            document.title = moduleData.title;
+        }
+
+        // Update meta description if available
+        if (moduleData.description) {
+            let metaDesc = document.querySelector('meta[name="description"]');
+            if (!metaDesc) {
+                metaDesc = document.createElement('meta');
+                metaDesc.name = 'description';
+                document.head.appendChild(metaDesc);
+            }
+            metaDesc.content = moduleData.description;
+        }
+
+    } catch (error) {
+        console.error('Failed to load module:', error);
+        const container = document.getElementById(containerId);
+        if (container) {
+            container.innerHTML = `
+                <div class="p-6 bg-red-50 border border-red-200 rounded-lg">
+                    <div class="flex items-center mb-4">
+                        <i class="fas fa-exclamation-triangle text-red-500 text-xl mr-3"></i>
+                        <h3 class="text-red-800 font-semibold">Failed to Load Module</h3>
+                    </div>
+                    <p class="text-red-600 mb-4">${error.message}</p>
+                    <div class="flex space-x-3">
+                        <button onclick="location.reload()" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
+                            <i class="fas fa-redo mr-2"></i>Retry
+                        </button>
+                        <button onclick="window.history.back()" class="px-4 py-2 border border-red-300 text-red-700 rounded-lg hover:bg-red-50 transition-colors">
+                            <i class="fas fa-arrow-left mr-2"></i>Go Back
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+        showToast('Failed to load module', 'error');
+    }
+}
+
+// Export utility function
+window.loadAndRenderModule = loadAndRenderModule;
+
+// Add global error handler
+window.addEventListener('error', (e) => {
+    console.error('Global error:', e.error);
+    showToast('An unexpected error occurred', 'error');
+});
+
+// Add unhandled promise rejection handler
+window.addEventListener('unhandledrejection', (e) => {
+    console.error('Unhandled promise rejection:', e.reason);
+    showToast('An unexpected error occurred', 'error');
 });

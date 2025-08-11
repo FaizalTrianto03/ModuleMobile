@@ -1,6 +1,0 @@
-<resources>
-    <string name="app_name">Hello World App</string>
-    <string name="hello_title">Hello, World!</string>
-    <string name="hello_message">Welcome to Android Development!\nThis is your first Android application.</string>
-    <string name="button_text">Get Started</string>
-</resources>

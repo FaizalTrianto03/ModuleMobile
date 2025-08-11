@@ -368,12 +368,6 @@ function renderModuleCard(module) {
     const isCompleted = AppState.userData.completedModules.includes(module.id);
     const isBookmarked = AppState.userData.bookmarks.includes(module.id);
 
-    const difficultyColors = {
-        beginner: 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300',
-        intermediate: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-300',
-        advanced: 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-300'
-    };
-
     return `
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden">
             ${module.image ? `
@@ -393,16 +387,6 @@ function renderModuleCard(module) {
                 </div>
                 
                 <p class="text-gray-600 dark:text-gray-300 mb-4 line-clamp-3">${module.description}</p>
-                
-                <div class="flex items-center justify-between mb-4">
-                    <span class="text-xs px-2 py-1 rounded-full ${difficultyColors[module.difficulty] || difficultyColors.beginner}">
-                        ${module.difficulty || 'Beginner'}
-                    </span>
-                    <span class="text-sm text-gray-500 dark:text-gray-400">
-                        <i class="fas fa-clock mr-1"></i>
-                        ${module.duration || '2 jam'}
-                    </span>
-                </div>
                 
                 <div class="flex items-center justify-between">
                     <a href="${module.url}" class="inline-flex items-center px-4 py-2 bg-primary-orange text-white rounded-lg hover:bg-accent-orange transition-colors">
