@@ -1213,15 +1213,14 @@ a:focus-visible {
         transform: translateY(0) scale(1);
     }
 }
-
 </style>
 `;
 
 // Inject CSS
 if (!document.getElementById('component-styles')) {
-    const styleElement = document.createElement('div');
+    const styleElement = document.createElement('style');  // ✅ Benar
     styleElement.id = 'component-styles';
-    styleElement.innerHTML = componentCSS;
+    styleElement.textContent = componentCSS.replace(/<\/?style>/g, ''); // ✅ Remove style tags
     document.head.appendChild(styleElement);
 }
 
@@ -1385,7 +1384,6 @@ window.showToast = showToast;
 window.closeToast = closeToast;
 window.closeModal = closeModal;
 window.copyToClipboard = copyToClipboard;
-window.fallbackShare = fallbackShare;
 window.updateScrollProgress = updateScrollProgress;
 window.copyCommandsToClipboard = copyCommandsToClipboard; // Export function baru
 
