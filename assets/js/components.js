@@ -678,17 +678,170 @@ function shareSection(sectionId, title) {
         url: currentUrl.toString()
     };
 
-    if (navigator.share) {
-        navigator.share(shareData).then(() => {
-            showToast('Section shared successfully!', 'success');
-        }).catch(err => {
-            console.error('Error sharing:', err);
-            fallbackShare(shareData);
-        });
-    } else {
-        fallbackShare(shareData);
+    // Langsung pakai popup, skip native share
+    showShareModal(shareData);
+}
+
+function showShareModal(shareData) {
+    const modal = document.createElement('div');
+    const modalId = generateId();
+    
+    modal.id = modalId;
+    modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 animate-fade-in';
+    modal.innerHTML = `
+        <div class="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4 transform animate-slide-in">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Share: ${shareData.title}</h3>
+                <button onclick="closeShareModal('${modalId}')" 
+                        class="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <!-- URL Display -->
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Share URL:</label>
+                <div class="flex items-center space-x-2">
+                    <input type="text" 
+                           id="share-url-${modalId}" 
+                           value="${shareData.url}" 
+                           readonly 
+                           class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-sm text-gray-900 dark:text-white">
+                    <button onclick="copyShareUrl('${modalId}')" 
+                            class="px-3 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Social Share Buttons -->
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Share on:</label>
+                <div class="grid grid-cols-2 gap-3">
+                    <button onclick="shareToWhatsApp('${encodeURIComponent(shareData.text + ' ' + shareData.url)}')" 
+                            class="flex items-center justify-center px-4 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors">
+                        <i class="fab fa-whatsapp mr-2"></i>WhatsApp
+                    </button>
+                    <button onclick="shareToTelegram('${encodeURIComponent(shareData.text)}', '${encodeURIComponent(shareData.url)}')" 
+                            class="flex items-center justify-center px-4 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
+                        <i class="fab fa-telegram mr-2"></i>Telegram
+                    </button>
+                    <button onclick="shareToTwitter('${encodeURIComponent(shareData.text)}', '${encodeURIComponent(shareData.url)}')" 
+                            class="flex items-center justify-center px-4 py-3 bg-blue-400 text-white rounded-lg hover:bg-blue-500 transition-colors">
+                        <i class="fab fa-twitter mr-2"></i>Twitter
+                    </button>
+                    <button onclick="shareToFacebook('${encodeURIComponent(shareData.url)}')" 
+                            class="flex items-center justify-center px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                        <i class="fab fa-facebook mr-2"></i>Facebook
+                    </button>
+                    <button onclick="shareToLinkedIn('${encodeURIComponent(shareData.title)}', '${encodeURIComponent(shareData.text)}', '${encodeURIComponent(shareData.url)}')" 
+                            class="flex items-center justify-center px-4 py-3 bg-blue-700 text-white rounded-lg hover:bg-blue-800 transition-colors">
+                        <i class="fab fa-linkedin mr-2"></i>LinkedIn
+                    </button>
+                    <button onclick="shareToEmail('${encodeURIComponent(shareData.title)}', '${encodeURIComponent(shareData.text + ' ' + shareData.url)}')" 
+                            class="flex items-center justify-center px-4 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors">
+                        <i class="fas fa-envelope mr-2"></i>Email
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="flex space-x-3">
+                <button onclick="copyShareUrl('${modalId}')" 
+                        class="flex-1 flex items-center justify-center px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors">
+                    <i class="fas fa-link mr-2"></i>Copy Link
+                </button>
+                <button onclick="closeShareModal('${modalId}')" 
+                        class="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    // Close on backdrop click
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closeShareModal(modalId);
+        }
+    });
+    
+    // Close on Escape key
+    const handleEscape = (e) => {
+        if (e.key === 'Escape') {
+            closeShareModal(modalId);
+            document.removeEventListener('keydown', handleEscape);
+        }
+    };
+    document.addEventListener('keydown', handleEscape);
+}
+
+function closeShareModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.classList.add('animate-fade-out');
+        setTimeout(() => {
+            if (modal.parentNode) {
+                modal.parentNode.removeChild(modal);
+            }
+        }, 200);
     }
 }
+
+function copyShareUrl(modalId) {
+    const input = document.getElementById(`share-url-${modalId}`);
+    if (input) {
+        input.select();
+        navigator.clipboard.writeText(input.value).then(() => {
+            showToast('Link copied to clipboard!', 'success');
+            
+            // Visual feedback
+            const button = event.target.closest('button');
+            const icon = button.querySelector('i');
+            const originalClass = icon.className;
+            
+            icon.className = 'fas fa-check';
+            button.classList.add('bg-green-500');
+            
+            setTimeout(() => {
+                icon.className = originalClass;
+                button.classList.remove('bg-green-500');
+                button.classList.add('bg-orange-500');
+            }, 1500);
+        }).catch(err => {
+            console.error('Failed to copy: ', err);
+            showToast('Failed to copy link', 'error');
+        });
+    }
+}
+
+// Social media share functions
+function shareToWhatsApp(text) {
+    window.open(`https://wa.me/?text=${text}`, '_blank');
+}
+
+function shareToTelegram(text, url) {
+    window.open(`https://t.me/share/url?url=${url}&text=${text}`, '_blank');
+}
+
+function shareToTwitter(text, url) {
+    window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
+}
+
+function shareToFacebook(url) {
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank');
+}
+
+function shareToLinkedIn(title, text, url) {
+    window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${url}&title=${title}&summary=${text}`, '_blank');
+}
+
+function shareToEmail(subject, body) {
+    window.open(`mailto:?subject=${subject}&body=${body}`, '_blank');
+}
+
 
 function toggleFullscreen(codeId) {
     const codeContainer = document.getElementById(codeId).closest('.component-container') ||
@@ -811,33 +964,6 @@ function closeToast(toastId) {
     }, 300);
 }
 
-function fallbackShare(shareData) {
-    const modal = document.createElement('div');
-    modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
-    modal.innerHTML = `
-        <div class="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4">
-            <h3 class="text-lg font-semibold mb-4">Share ${shareData.title}</h3>
-            <div class="space-y-3">
-                <button onclick="copyToClipboard('${shareData.url}'); closeModal(this)" 
-                        class="w-full flex items-center justify-center px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors">
-                    <i class="fas fa-link mr-2"></i>Copy Link
-                </button>
-                <button onclick="closeModal(this)" 
-                        class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700">
-                    Cancel
-                </button>
-            </div>
-        </div>
-    `;
-
-    document.body.appendChild(modal);
-
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
-            document.body.removeChild(modal);
-        }
-    });
-}
 
 function closeModal(element) {
     const modal = element.closest('.fixed');
@@ -1046,6 +1172,48 @@ a:focus-visible {
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     transition-duration: 150ms;
 }
+
+.animate-fade-in {
+    animation: fadeIn 0.2s ease-out;
+}
+
+.animate-fade-out {
+    animation: fadeOut 0.2s ease-out;
+}
+
+.animate-slide-in {
+    animation: slideInModal 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+@keyframes slideInModal {
+    from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
 </style>
 `;
 
@@ -1329,3 +1497,14 @@ window.addEventListener('unhandledrejection', (e) => {
     console.error('Unhandled promise rejection:', e.reason);
     showToast('An unexpected error occurred', 'error');
 });
+
+// Tambahkan di bagian export functions
+window.showShareModal = showShareModal;
+window.closeShareModal = closeShareModal;
+window.copyShareUrl = copyShareUrl;
+window.shareToWhatsApp = shareToWhatsApp;
+window.shareToTelegram = shareToTelegram;
+window.shareToTwitter = shareToTwitter;
+window.shareToFacebook = shareToFacebook;
+window.shareToLinkedIn = shareToLinkedIn;
+window.shareToEmail = shareToEmail;
