@@ -9,6 +9,7 @@ import { Navbar } from "./components/Navbar";
 import { Sidebar } from "./components/Sidebar";
 import { Footer } from "./components/Footer";
 import "./global.css";
+import "./prism.css";
 
 export default component$(() => {
   const sidebarOpen = useSignal(false);
@@ -35,6 +36,13 @@ export default component$(() => {
           })();
         `}
         />
+        {/* Font Awesome for icons used by the component system */}
+        <link
+          rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+          referrerPolicy="no-referrer"
+        />
+        {/* Component system now integrated as Qwik components */}
         <RouterHead />
       </head>
       <body lang="en" class="flex min-h-screen flex-col">
@@ -45,6 +53,8 @@ export default component$(() => {
             onClose$={$(() => (sidebarOpen.value = false))}
           />
           <main class="container mx-auto flex-1 px-4 py-6">
+            {/* Optional dynamic render root for modules */}
+            <div id="module-root" class="hidden" />
             <RouterOutlet />
           </main>
         </div>

@@ -1,0 +1,150 @@
+{
+  "title": "Modul 1: Pengenalan React Native",
+  "description": "Modul ini membahas dasar-dasar React Native dan cara setup development environment",
+  "components": [
+    {
+      "type": "moduleHeader",
+      "data": {
+        "title": "Pengenalan React Native",
+        "moduleName": "Modul 1",
+        "description": "Belajar dasar-dasar React Native untuk pengembangan aplikasi mobile",
+        "theme": "orange"
+      }
+    },
+    {
+      "type": "info",
+      "data": {
+        "title": "Apa itu React Native?",
+        "content": "<p>React Native adalah framework JavaScript yang dikembangkan oleh Facebook untuk membuat aplikasi mobile native menggunakan React dan JavaScript.</p><p>Keunggulan React Native:</p><ul><li>Cross-platform development</li><li>Hot reload untuk development yang cepat</li><li>Native performance</li><li>Large community dan ecosystem</li></ul>",
+        "type": "primary",
+        "shared": true
+      }
+    },
+    {
+      "type": "material",
+      "data": {
+        "title": "Prerequisites",
+        "content": "<p>Sebelum memulai dengan React Native, pastikan Anda sudah familiar dengan:</p><ul><li><strong>JavaScript/ES6+</strong> - Fundamental programming</li><li><strong>React</strong> - Component-based UI library</li><li><strong>Node.js & npm</strong> - Package management</li><li><strong>Git</strong> - Version control</li></ul>",
+        "level": "h2",
+        "shared": false,
+        "theme": "blue"
+      }
+    },
+    {
+      "type": "code",
+      "data": {
+        "title": "Setup React Native CLI",
+        "description": "Install React Native CLI secara global",
+        "filePath": "/examples/setup-cli.js",
+        "language": "bash",
+        "shared": true,
+        "theme": "orange"
+      }
+    },
+    {
+      "type": "command",
+      "data": {
+        "title": "Create New Project",
+        "description": "Buat project React Native baru",
+        "commands": [
+          {
+            "command": "npx react-native@latest init MyApp",
+            "comment": "Create new React Native project"
+          },
+          {
+            "command": "cd MyApp",
+            "comment": "Navigate to project directory"
+          },
+          {
+            "command": "npx react-native run-android",
+            "output": "Starting Metro bundler...\nBuilding app...\nApp installed successfully!",
+            "comment": "Run on Android device/emulator"
+          }
+        ],
+        "type": "terminal",
+        "shared": true,
+        "theme": "orange"
+      }
+    },
+    {
+      "type": "cardSection",
+      "data": {
+        "title": "Development Tools",
+        "cards": [
+          {
+            "title": "Metro Bundler",
+            "description": "JavaScript bundler yang digunakan React Native untuk mengelola dan mengoptimalkan kode",
+            "image": "/images/metro-bundler.png"
+          },
+          {
+            "title": "React DevTools",
+            "description": "Browser extension untuk debugging React components dan state management",
+            "image": "/images/react-devtools.png"
+          },
+          {
+            "title": "Flipper",
+            "description": "Platform debugging tool untuk mobile apps dengan berbagai plugin",
+            "image": "/images/flipper.png"
+          }
+        ],
+        "columns": 3,
+        "shared": false,
+        "theme": "blue"
+      }
+    },
+    {
+      "type": "accordionSection",
+      "data": {
+        "title": "FAQ React Native",
+        "items": [
+          {
+            "title": "Apakah React Native benar-benar native?",
+            "content": "<p>Ya, React Native menghasilkan kode native yang sebenarnya. JavaScript code di-bundle dan dijalankan di JavaScript engine, tapi UI components dirender menggunakan native components platform.</p>"
+          },
+          {
+            "title": "Bagaimana dengan performance?",
+            "content": "<p>React Native memiliki performance yang sangat baik karena menggunakan native components dan bridge yang dioptimalkan. Untuk aplikasi yang kompleks, bisa menggunakan native modules.</p>"
+          },
+          {
+            "title": "Apakah bisa menggunakan library JavaScript?",
+            "content": "<p>Ya, sebagian besar library JavaScript yang tidak bergantung pada browser APIs bisa digunakan. Namun perlu diperhatikan kompatibilitas dengan React Native environment.</p>"
+          }
+        ],
+        "allowMultiple": true,
+        "shared": true,
+        "theme": "orange"
+      }
+    },
+    {
+      "type": "video",
+      "data": {
+        "title": "React Native Tutorial",
+        "description": "Video tutorial lengkap React Native untuk pemula",
+        "videoId": "dQw4w9WgXcQ",
+        "shared": true,
+        "theme": "orange"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "title": "Perbandingan Framework Mobile",
+        "headers": [
+          "Framework",
+          "Language",
+          "Performance",
+          "Learning Curve",
+          "Community"
+        ],
+        "rows": [
+          ["React Native", "JavaScript", "High", "Medium", "Large"],
+          ["Flutter", "Dart", "High", "Medium", "Large"],
+          ["Xamarin", "C#", "High", "High", "Medium"],
+          ["Ionic", "JavaScript", "Medium", "Low", "Large"]
+        ],
+        "shared": true,
+        "theme": "blue"
+      }
+    }
+  ]
+}

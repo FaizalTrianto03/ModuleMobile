@@ -1,35 +1,36 @@
 import { component$ } from "@qwik.dev/core";
+import { Link } from "@qwik.dev/router";
 
 export const Footer = component$(() => (
   <>
     <footer class="footer sm:footer-horizontal bg-base-200 text-base-content p-10">
       <nav>
         <h6 class="footer-title">Modul Praktikum</h6>
-        <a class="link link-hover" href="/">
+        <Link class="link link-hover" href="/">
           Home
-        </a>
-        <a class="link link-hover" href="/blog">
+        </Link>
+        <Link class="link link-hover" href="/blog">
           Blog
-        </a>
+        </Link>
         {[1, 2, 3, 4, 5, 6].map((modul) => (
-          <a key={modul} class="link link-hover" href={`/modul/${modul}`}>
+          <Link key={modul} class="link link-hover" href={`/modul/${modul}`}>
             Modul {modul}
-          </a>
+          </Link>
         ))}
       </nav>
       <nav>
         <h6 class="footer-title">Company</h6>
-        <a
+        <Link
           class="link link-hover"
           href="https://informatika.umm.ac.id/"
           target="_blank"
           rel="noopener"
         >
           Website Jurusan
-        </a>
-        <a class="link link-hover" href="mailto:lab@informatika.umm.ac.id">
+        </Link>
+        <Link class="link link-hover" href="mailto:lab@informatika.umm.ac.id">
           lab@informatika.umm.ac.id
-        </a>
+        </Link>
         <button type="button" class="link link-hover">
           About us
         </button>
@@ -72,7 +73,7 @@ export const Footer = component$(() => (
       </aside>
       <nav class="md:place-self-center md:justify-self-end">
         <div class="grid grid-flow-col gap-4">
-          <a
+          <Link
             href="https://instagram.com/"
             target="_blank"
             rel="noopener"
@@ -87,8 +88,8 @@ export const Footer = component$(() => (
             >
               <path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2zm0 1.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5A4.25 4.25 0 0 0 20.5 16.25v-8.5A4.25 4.25 0 0 0 16.25 3.5zm4.25 2.25a5.25 5.25 0 1 1-5.25 5.25 5.25 5.25 0 0 1 5.25-5.25zm0 1.5a3.75 3.75 0 1 0 3.75 3.75A3.75 3.75 0 0 0 12 5.25zm5.5 1.25a1 1 0 1 1-1 1 1 1 0 0 1 1-1z" />
             </svg>
-          </a>
-          <a
+          </Link>
+          <Link
             href="https://youtube.com/"
             target="_blank"
             rel="noopener"
@@ -103,8 +104,8 @@ export const Footer = component$(() => (
             >
               <path d="M21.8 8.001a2.75 2.75 0 0 0-1.94-1.94C18.2 5.5 12 5.5 12 5.5s-6.2 0-7.86.56a2.75 2.75 0 0 0-1.94 1.94C2.5 9.66 2.5 12 2.5 12s0 2.34.56 3.999a2.75 2.75 0 0 0 1.94 1.94C5.8 18.5 12 18.5 12 18.5s6.2 0 7.86-.56a2.75 2.75 0 0 0 1.94-1.94C21.5 14.34 21.5 12 21.5 12s0-2.34-.56-3.999zM10 15.5v-7l6 3.5-6 3.5z" />
             </svg>
-          </a>
-          <a
+          </Link>
+          <Link
             href="https://facebook.com/"
             target="_blank"
             rel="noopener"
@@ -119,7 +120,7 @@ export const Footer = component$(() => (
             >
               <path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z" />
             </svg>
-          </a>
+          </Link>
         </div>
       </nav>
     </footer>
