@@ -21,17 +21,18 @@ export const Sidebar = component$<SidebarProps>(({ open, onClose$ }) => {
       {/* Overlay for mobile */}
       {open && (
         <div
-          class="bg-opacity-40 fixed inset-0 z-40 bg-black lg:hidden"
+          class="bg-opacity-40 fixed inset-0 z-40 bg-black transition-opacity duration-300 lg:hidden"
+          style={{ opacity: open ? 1 : 0 }}
           onClick$={onClose$}
         ></div>
       )}
       <aside
         class={[
           // Mobile: fixed, overlays content, slides in/out
-          "bg-base-200 text-base-content rounded-box fixed top-0 left-0 z-50 h-full w-64 p-4 transition-transform duration-300",
+          "bg-base-200 text-base-content rounded-box fixed top-0 left-0 z-50 h-full w-80 p-6 transition-transform duration-300",
           open ? "translate-x-0" : "-translate-x-full",
           // Desktop: static, part of flex layout, always visible, full height, no rounded corners
-          "lg:static lg:h-screen lg:w-64 lg:flex-shrink-0 lg:translate-x-0 lg:rounded-none",
+          "lg:static lg:h-screen lg:w-80 lg:flex-shrink-0 lg:translate-x-0 lg:rounded-none",
         ]}
         style={
           {
@@ -39,9 +40,9 @@ export const Sidebar = component$<SidebarProps>(({ open, onClose$ }) => {
           }
         }
       >
-        <ul class="menu menu-xs min-h-full w-full lg:h-full">
+        <ul class="menu menu-md min-h-full w-full lg:h-full">
           <li>
-            <Link href="/">
+            <Link href="/" onClick$={onClose$}>
               <LuHome class="h-4 w-4" /> Home
             </Link>
           </li>
@@ -53,7 +54,7 @@ export const Sidebar = component$<SidebarProps>(({ open, onClose$ }) => {
               <ul>
                 {[1, 2, 3, 4, 5, 6].map((modul) => (
                   <li key={modul}>
-                    <Link href={`/modul/${modul}`}>
+                    <Link href={`/modul/${modul}`} onClick$={onClose$}>
                       <LuFileText class="h-4 w-4" /> Modul {modul}
                     </Link>
                   </li>

@@ -95,9 +95,7 @@ export const Code = component$<CodeProps>(
       <div
         id={containerId}
         class={`card bg-base-100 border-base-300 mb-8 overflow-hidden border shadow ${
-          isFullscreen.value
-            ? "bg-base-100 fixed inset-0 z-60 overflow-auto"
-            : ""
+          isFullscreen.value ? "bg-base-100 fixed inset-0 overflow-auto" : ""
         }`}
       >
         <div class="card-body gap-2">

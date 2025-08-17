@@ -45,21 +45,40 @@ export default component$(() => {
         {/* Component system now integrated as Qwik components */}
         <RouterHead />
       </head>
-      <body lang="en" class="flex min-h-screen flex-col">
-        <Navbar onMenuClick$={$(() => (sidebarOpen.value = true))} />
-        <div class="flex w-full flex-1">
-          <Sidebar
-            open={sidebarOpen.value}
-            onClose$={$(() => (sidebarOpen.value = false))}
+      <body lang="en" class="min-h-screen">
+        <div class="drawer lg:drawer-open">
+          <input
+            id="main-sidebar"
+            type="checkbox"
+            class="drawer-toggle"
+            checked={sidebarOpen.value}
+            readOnly
           />
-          <main class="container mx-auto flex-1 px-4 py-6">
-            {/* Optional dynamic render root for modules */}
-            <div id="module-root" class="hidden" />
-            <RouterOutlet />
-          </main>
+          <div class="drawer-content flex min-h-screen flex-col">
+            <Navbar
+              onMenuClick$={$(() => (sidebarOpen.value = true))}
+              drawerOpen={sidebarOpen.value}
+            />
+            <main class="container mx-auto flex-1 px-4 py-6">
+              {/* Optional dynamic render root for modules */}
+              <div id="module-root" class="hidden" />
+              <RouterOutlet />
+            </main>
+            <ServiceWorkerRegister />
+            <Footer />
+          </div>
+          <div class="drawer-side">
+            <label
+              for="main-sidebar"
+              class="drawer-overlay"
+              onClick$={$(() => (sidebarOpen.value = false))}
+            ></label>
+            <Sidebar
+              open={sidebarOpen.value}
+              onClose$={$(() => (sidebarOpen.value = false))}
+            />
+          </div>
         </div>
-        <ServiceWorkerRegister />
-        <Footer />
       </body>
     </QwikRouterProvider>
   );

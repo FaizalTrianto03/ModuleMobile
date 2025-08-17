@@ -60,7 +60,7 @@ export const showToast = $(
     if (!toastContainer) {
       toastContainer = document.createElement("div");
       toastContainer.id = "toast-container";
-      toastContainer.className = "toast toast-top toast-end z-50";
+      toastContainer.className = "toast toast-top toast-end";
       document.body.appendChild(toastContainer);
     }
 
