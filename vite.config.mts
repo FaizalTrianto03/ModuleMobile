@@ -20,6 +20,7 @@ errorOnDuplicatesPkgDeps(devDependencies, dependencies);
  * Note that Vite normally starts from `index.html` but the qwikRouter plugin makes start at `src/entry.ssr.tsx` instead.
  */
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export default defineConfig(({ command, mode }): UserConfig => {
   return {
     plugins: [
