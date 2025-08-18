@@ -1,8 +1,10 @@
-import { component$ } from '@qwik.dev/core';
-import { useLocation } from '@qwik.dev/router';
+import { component$ } from "@qwik.dev/core";
+import { useLocation } from "@qwik.dev/router";
 
 // Import semua modul MDX dari src/contents
-const modules = import.meta.glob('/contents/*/index.mdx', { eager: true }) as Record<string, { default: any }>;
+const modules = import.meta.glob("/contents/*/index.mdx", {
+  eager: true,
+}) as Record<string, { default: any }>;
 
 export default component$(() => {
   const loc = useLocation();
@@ -11,7 +13,11 @@ export default component$(() => {
   const ModulComponent = modules[modulPath]?.default;
 
   if (!ModulComponent) {
-    return <div>Modul <b>{modulId}</b> tidak ditemukan.</div>;
+    return (
+      <div>
+        Modul <b>{modulId}</b> tidak ditemukan.
+      </div>
+    );
   }
 
   return (

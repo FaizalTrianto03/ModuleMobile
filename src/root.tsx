@@ -45,7 +45,7 @@ export default component$(() => {
         {/* Component system now integrated as Qwik components */}
         <RouterHead />
       </head>
-      <body lang="en" class="min-h-screen">
+      <body lang="en" class="bg-base-200 min-h-screen">
         <div class="drawer lg:drawer-open">
           <input
             id="main-sidebar"
@@ -54,20 +54,22 @@ export default component$(() => {
             checked={sidebarOpen.value}
             readOnly
           />
-          <div class="drawer-content flex min-h-screen flex-col">
+          <div class="drawer-content bg-base-100 border-base-300 flex min-h-screen flex-col border-l">
             <Navbar
               onMenuClick$={$(() => (sidebarOpen.value = true))}
               drawerOpen={sidebarOpen.value}
             />
-            <main class="container mx-auto flex-1 px-4 py-6">
+            <main class="container mx-auto flex-1 px-2 py-6 md:px-6">
               {/* Optional dynamic render root for modules */}
               <div id="module-root" class="hidden" />
               <RouterOutlet />
             </main>
-            <ServiceWorkerRegister />
-            <Footer />
+            <div class="border-base-300 border-t">
+              <ServiceWorkerRegister />
+              <Footer />
+            </div>
           </div>
-          <div class="drawer-side">
+          <div class="drawer-side border-base-300 bg-base-100 border-r">
             <label
               for="main-sidebar"
               class="drawer-overlay"

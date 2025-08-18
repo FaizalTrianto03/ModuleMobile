@@ -35,33 +35,42 @@ export const Navbar = component$<NavbarProps>(
     return (
       <nav
         class={[
-          "navbar bg-base-100 sticky top-0 w-full shadow-sm transition-transform duration-300",
+          "navbar bg-base-100 border-base-300 sticky top-0 w-full border-b px-2 transition-transform duration-300 md:px-6",
           showNavbar.value ? "translate-y-0" : "-translate-y-full",
         ]}
         style={drawerOpen ? {} : { zIndex: 10 }}
       >
         <div class="flex-1">
-          <Link href="/" class="btn btn-ghost text-xl normal-case">
+          <Link
+            href="/"
+            class="btn btn-ghost px-2 text-xl font-bold tracking-tight normal-case"
+          >
             Modul Mobile 25/26
           </Link>
         </div>
         {/* Desktop Menu */}
         <div class="hidden flex-none lg:block">
-          <ul class="menu menu-horizontal px-1">
+          <ul class="menu menu-horizontal gap-1 px-1">
             <li>
-              <Link href="/">
+              <Link
+                href="/"
+                class="hover:bg-base-200 rounded-lg px-3 py-2 transition"
+              >
                 <LuHome class="h-4 w-4" /> Home
               </Link>
             </li>
             <li>
               <details>
-                <summary>
+                <summary class="hover:bg-base-200 rounded-lg px-3 py-2 transition">
                   <LuFolder class="h-4 w-4" /> Modul{" "}
                 </summary>
-                <ul class="bg-base-100 rounded-t-none p-2">
+                <ul class="bg-base-100 border-base-300 mt-1 rounded-t-none rounded-b-xl border p-2">
                   {[1, 2, 3, 4, 5, 6].map((modul) => (
                     <li key={modul}>
-                      <Link href={`/modul/${modul}`}>
+                      <Link
+                        href={`/modul/${modul}`}
+                        class="hover:bg-base-200 rounded-lg px-3 py-2 transition"
+                      >
                         <LuFileText class="h-4 w-4" /> Modul {modul}
                       </Link>
                     </li>
@@ -79,7 +88,7 @@ export const Navbar = component$<NavbarProps>(
         <div class="flex-none lg:hidden">
           <button
             aria-label="open sidebar"
-            class="btn btn-square btn-ghost"
+            class="btn btn-square btn-ghost border-base-300 border"
             type="button"
             onClick$={onMenuClick$}
           >
