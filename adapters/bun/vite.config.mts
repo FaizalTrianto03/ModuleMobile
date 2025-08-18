@@ -13,13 +13,13 @@ export default extendConfig(baseConfig, () => {
       rollupOptions: {
         input: ["src/entry.bun.ts", "@qwik-router-config"],
       },
-      minify: false,
+      minify: true,
     },
     plugins: [
       bunServerAdapter({
         ssg: {
           include: ["/*"],
-          origin: "https://mobile.bits.my.id",
+          origin: process.env.PUBLIC_BASE_URL || "https://localhost:3000",
           maxWorkers: 1, // Limit Workers to 1, otherwise SSG will hang when compiling Qwik City app with `bun run --bun build`.
         },
       }),
