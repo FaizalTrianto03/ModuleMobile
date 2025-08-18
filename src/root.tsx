@@ -63,9 +63,7 @@ export default component$(() => {
               {/* Optional dynamic render root for modules */}
               <div id="module-root" class="hidden" />
               <div class="flex w-full justify-center">
-                <div class="w-full max-w-screen-lg">
-                  <RouterOutlet />
-                </div>
+                <RouterOutlet />
               </div>
             </main>
             <ServiceWorkerRegister />

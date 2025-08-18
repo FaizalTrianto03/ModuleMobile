@@ -21,7 +21,7 @@ export default component$(() => {
   }
 
   return (
-    <div class="prose lg:prose-xl prose-neutral">
+    <div class="prose prose-neutral w-full max-w-screen-lg">
       <ModulComponent />
     </div>
   );
