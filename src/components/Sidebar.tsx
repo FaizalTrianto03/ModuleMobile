@@ -1,21 +1,21 @@
 import { component$, QRL } from "@qwik.dev/core";
 import { Link } from "@qwik.dev/router";
+import { BrandLogo } from "./BrandLogo";
 import {
   LuHome,
-  LuFolder,
+  LuBookOpen,
+  LuUser,
   LuFileText,
-  LuFile,
-  LuImage,
   LuFileArchive,
+  LuImage,
 } from "@qwikest/icons/lucide";
 
 interface SidebarProps {
-  open?: boolean; // for mobile drawer
-  onClose$?: QRL<() => void>; // for mobile drawer close
+  open?: boolean;
+  onClose$?: QRL<() => void>;
 }
 
 export const Sidebar = component$<SidebarProps>(({ open, onClose$ }) => {
-  // Overlay for mobile, rendered outside the aside
   return (
     <>
       {/* Overlay for mobile */}
@@ -28,113 +28,74 @@ export const Sidebar = component$<SidebarProps>(({ open, onClose$ }) => {
       )}
       <aside
         class={[
-          // Mobile: fixed, overlays content, slides in/out
-          "bg-base-100 text-base-content border-base-300 fixed top-0 left-0 z-50 h-full w-72 border-r p-4 transition-transform duration-300",
+          "bg-base-100 text-base-content border-base-300 fixed top-0 left-0 z-50 flex h-full w-72 flex-col border-r p-0 transition-transform duration-300",
           open ? "translate-x-0" : "-translate-x-full",
-          // Desktop: static, part of flex layout, always visible, full height, no rounded corners
-          "lg:static lg:h-screen lg:w-72 lg:flex-shrink-0 lg:translate-x-0 lg:rounded-none",
+          "lg:static lg:h-screen lg:w-72 lg:flex-shrink-0 lg:translate-x-0",
         ]}
-        style={
-          {
-            // No extra style needed; classes handle layout
-          }
-        }
       >
-        <ul class="menu menu-md min-h-full w-full gap-1 lg:h-full">
-          <li>
-            <Link href="/" onClick$={onClose$}>
-              <LuHome class="h-4 w-4" /> Home
-            </Link>
-          </li>
-          <li>
-            <details open>
-              <summary>
-                <LuFolder class="h-4 w-4" /> Modul{" "}
-              </summary>
-              <ul>
-                {[1, 2, 3, 4, 5, 6].map((modul) => (
-                  <li key={modul}>
-                    <Link href={`/modul/${modul}`} onClick$={onClose$}>
-                      <LuFileText class="h-4 w-4" /> Modul {modul}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </details>
-          </li>
-          <li>
-            <details>
-              <summary>
-                <LuFileArchive class="h-4 w-4" /> Resources{" "}
-              </summary>
-              <ul>
-                <li>
-                  <button type="button">
-                    <LuFile class="h-4 w-4" /> resume.pdf
-                  </button>
-                </li>
-                <li>
-                  <details open>
-                    <summary>
-                      <LuFolder class="h-4 w-4" /> My Files{" "}
-                    </summary>
-                    <ul>
-                      <li>
-                        <button type="button">
-                          <LuFileText class="h-4 w-4" /> Project-final.psd
-                        </button>
+        <div class="flex h-full flex-col">
+          <div class="border-base-300 flex h-16 items-center border-b px-6">
+            <BrandLogo />
+          </div>
+          <nav class="flex-1 overflow-y-auto px-2 py-4">
+            <ul class="menu menu-lg min-h-full w-full lg:h-full">
+              <li>
+                <Link href="/" onClick$={onClose$}>
+                  <LuHome class="h-4 w-4" /> Home
+                </Link>
+              </li>
+              <li>
+                <details open>
+                  <summary>
+                    <LuBookOpen class="h-4 w-4" /> Modul
+                  </summary>
+                  <ul>
+                    {[1, 2, 3, 4, 5, 6].map((modul) => (
+                      <li key={modul}>
+                        <Link href={`/modul/${modul}`} onClick$={onClose$}>
+                          <LuFileText class="h-4 w-4" /> Modul {modul}
+                        </Link>
                       </li>
-                      <li>
-                        <button type="button">
-                          <LuFileText class="h-4 w-4" /> Project-final-2.psd
-                        </button>
-                      </li>
-                      <li>
-                        <details open>
-                          <summary>
-                            <LuImage class="h-4 w-4" /> Images{" "}
-                          </summary>
-                          <ul>
-                            <li>
-                              <button type="button">
-                                <LuImage class="h-4 w-4" /> Screenshot1.png
-                              </button>
-                            </li>
-                            <li>
-                              <button type="button">
-                                <LuImage class="h-4 w-4" /> Screenshot2.png
-                              </button>
-                            </li>
-                            <li>
-                              <details open>
-                                <summary>
-                                  <LuFolder class="h-4 w-4" /> Others{" "}
-                                </summary>
-                                <ul>
-                                  <li>
-                                    <button type="button">
-                                      <LuImage class="h-4 w-4" />{" "}
-                                      Screenshot3.png
-                                    </button>
-                                  </li>
-                                </ul>
-                              </details>
-                            </li>
-                          </ul>
-                        </details>
-                      </li>
-                    </ul>
-                  </details>
-                </li>
-                <li>
-                  <button type="button">
-                    <LuFile class="h-4 w-4" /> reports-final-2.pdf
-                  </button>
-                </li>
-              </ul>
-            </details>
-          </li>
-        </ul>
+                    ))}
+                  </ul>
+                </details>
+              </li>
+              <li>
+                <details>
+                  <summary>
+                    <LuFileArchive class="h-4 w-4" /> Resources
+                  </summary>
+                  <ul>
+                    <li>
+                      <Link href="/resources/files" onClick$={onClose$}>
+                        <LuFileArchive class="h-4 w-4" /> Files
+                      </Link>
+                    </li>
+                    <li>
+                      <Link href="/resources/images" onClick$={onClose$}>
+                        <LuImage class="h-4 w-4" /> Images
+                      </Link>
+                    </li>
+                  </ul>
+                </details>
+              </li>
+              <li>
+                <details>
+                  <summary>
+                    <LuUser class="h-4 w-4" /> Profile
+                  </summary>
+                  <ul>
+                    <li>
+                      <Link href="/profile" onClick$={onClose$}>
+                        <LuUser class="h-4 w-4" /> Profile
+                      </Link>
+                    </li>
+                  </ul>
+                </details>
+              </li>
+            </ul>
+          </nav>
+        </div>
       </aside>
     </>
   );
