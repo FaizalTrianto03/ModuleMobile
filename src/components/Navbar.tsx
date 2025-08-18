@@ -38,7 +38,7 @@ export const Navbar = component$<NavbarProps>(
         style={{ zIndex: drawerOpen ? 0 : 20 }}
       >
         {/* Left: Brand (mobile only) */}
-        <div class="flex flex-shrink-0 items-center gap-2 md:hidden">
+        <div class="flex flex-shrink-0 items-center gap-2 lg:hidden">
           <BrandLogo />
         </div>
         {/* Center: empty (no menu) */}
@@ -48,7 +48,7 @@ export const Navbar = component$<NavbarProps>(
           <ThemeToggle />
           <button
             aria-label="Open sidebar"
-            class="btn btn-square btn-ghost border-base-300 border md:hidden"
+            class="btn btn-square btn-ghost border-base-300 border lg:hidden"
             type="button"
             onClick$={onMenuClick$}
           >

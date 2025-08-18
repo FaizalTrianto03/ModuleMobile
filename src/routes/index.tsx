@@ -13,48 +13,90 @@ const modules = [
 export default component$(() => {
   return (
     <>
-      <section class="hero bg-base-100 border-b border-base-300 mb-8 rounded-box shadow-none py-10 px-4 flex items-center justify-center">
-        <div class="hero-content flex flex-col md:flex-row items-center gap-8 w-full max-w-4xl">
-          <div class="flex-1 flex flex-col items-start text-left">
-            <h1 class="mb-3 text-4xl md:text-5xl font-bold text-base-content leading-tight">
+      <section class="hero bg-base-100 border-base-300 rounded-box mb-8 flex items-center justify-center border-b px-4 py-10 shadow-none">
+        <div class="hero-content flex w-full max-w-4xl flex-col items-center gap-8 md:flex-row">
+          <div class="flex flex-1 flex-col items-start text-left">
+            <h1 class="text-base-content mb-3 text-4xl leading-tight font-bold md:text-5xl">
               Modul Praktikum Mobile
             </h1>
-            <p class="mb-6 text-base text-base-content/70 max-w-md">
-              Website resmi modul pembelajaran praktikum Laboratorium Informatika UMM.<br />
-              Pilih modul di bawah untuk mulai belajar, atau kunjungi blog untuk materi tambahan.
+            <p class="text-base-content/70 mb-6 max-w-md text-base">
+              Website resmi modul pembelajaran praktikum Laboratorium
+              Informatika UMM.
+              <br />
+              Pilih modul di bawah untuk mulai belajar, atau kunjungi blog untuk
+              materi tambahan.
             </p>
-            <div class="flex gap-3 mt-2">
-              <a href="#modul-list" class="btn btn-neutral btn-md rounded-lg px-6 font-medium border border-base-300 shadow-none">
+            <div class="mt-2 flex gap-3">
+              <a
+                href="#modul-list"
+                class="btn btn-neutral btn-md border-base-300 rounded-lg border px-6 font-medium shadow-none"
+              >
                 Mulai Belajar
               </a>
-              <a href="/blog" class="btn btn-outline btn-md rounded-lg px-6 font-medium border border-base-300 shadow-none">
+              <a
+                href="/blog"
+                class="btn btn-outline btn-md border-base-300 rounded-lg border px-6 font-medium shadow-none"
+              >
                 Blog Materi
               </a>
             </div>
           </div>
-          <div class="flex-1 flex justify-center items-center">
-            <div class="w-64 h-64 flex items-center justify-center bg-base-200 border border-base-300 rounded-box">
-              <svg width="96" height="96" fill="none" viewBox="0 0 96 96" class="text-base-content/40">
-                <rect x="12" y="24" width="72" height="48" rx="12" fill="currentColor" />
-                <rect x="28" y="36" width="40" height="24" rx="6" fill="white" />
-                <rect x="40" y="44" width="16" height="8" rx="2" fill="#e5e7eb" />
+          <div class="flex flex-1 items-center justify-center">
+            <div class="bg-base-200 border-base-300 rounded-box flex h-64 w-64 items-center justify-center border">
+              <svg
+                width="96"
+                height="96"
+                fill="none"
+                viewBox="0 0 96 96"
+                class="text-base-content/40"
+              >
+                <rect
+                  x="12"
+                  y="24"
+                  width="72"
+                  height="48"
+                  rx="12"
+                  fill="currentColor"
+                />
+                <rect
+                  x="28"
+                  y="36"
+                  width="40"
+                  height="24"
+                  rx="6"
+                  fill="white"
+                />
+                <rect
+                  x="40"
+                  y="44"
+                  width="16"
+                  height="8"
+                  rx="2"
+                  fill="#e5e7eb"
+                />
               </svg>
             </div>
           </div>
         </div>
       </section>
       <div>
-        <h2 class="mt-8 mb-6 text-center text-2xl md:text-3xl font-bold text-base-content border-b border-base-300 pb-2 bg-base-100 rounded-box w-full max-w-xl mx-auto">
+        <h2 class="text-base-content bg-base-100 rounded-box mx-auto mt-8 mb-6 w-full max-w-xl pb-2 text-center text-2xl font-bold md:text-3xl">
           Daftar Modul Praktikum
         </h2>
         <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3" id="modul-list">
           {modules.map((modul) => (
-            <div class="card bg-base-100 border border-base-300 rounded-box" key={modul.id}>
+            <div
+              class="card bg-base-100 border-base-300 rounded-box border"
+              key={modul.id}
+            >
               <div class="card-body flex flex-col justify-between">
                 <h3 class="card-title text-base-content">{modul.title}</h3>
-                <p class="mb-4 text-base-content/70">{modul.desc}</p>
+                <p class="text-base-content/70 mb-4">{modul.desc}</p>
                 <div class="card-actions justify-end">
-                  <Link href={`/modul/${modul.id}`} class="btn btn-neutral border border-base-300 rounded-lg shadow-none">
+                  <Link
+                    href={`/modul/${modul.id}`}
+                    class="btn btn-neutral border-base-300 rounded-lg border shadow-none"
+                  >
                     Buka Modul
                   </Link>
                 </div>

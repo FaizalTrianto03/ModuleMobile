@@ -5,11 +5,13 @@ import type { Post } from "~/constants/posts";
 export const PostCard = component$(
   ({ title, slug, date, description }: Post) => {
     return (
-      <div class="card bg-base-100 h-full border border-primary transition-transform duration-200 hover:scale-105">
+      <div class="card bg-base-100 border-primary h-full border transition-transform duration-200 hover:scale-105">
         {/* Optional: Add a cover image here if available in the future */}
         <div class="card-body flex flex-col justify-between">
           <div>
-            <h2 class="card-title mb-2 text-2xl font-bold text-primary">{title}</h2>
+            <h2 class="card-title text-primary mb-2 text-2xl font-bold">
+              {title}
+            </h2>
             <p class="text-base-content/70 mb-4 text-sm">{description}</p>
           </div>
           <div class="mt-auto flex items-center justify-between">
