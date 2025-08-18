@@ -10,7 +10,7 @@ export default component$(() => {
     <div class="bg-base-200 min-h-screen">
       {/* Hero Section */}
       <div class="hero bg-base-100 border-base-300 mb-8 border-b">
-        <div class="hero-content flex-col px-4 py-10 text-center">
+        <div class="hero-content flex-col text-center">
           <h1 class="mb-2 text-4xl font-bold tracking-tight">Modul List</h1>
           <p class="mx-auto max-w-xl text-base opacity-80">
             Explore all learning modules. Each module is presented in a clean
@@ -19,7 +19,7 @@ export default component$(() => {
         </div>
       </div>
       {/* Grid Card List */}
-      <div class="container mx-auto px-2 md:px-6">
+      <div>
         <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           {moduleList.map(([path]) => {
             const match = path.match(/\/src\/contents\/([^/]+)\/index\.mdx$/);

@@ -45,7 +45,7 @@ export default component$(() => {
         {/* Component system now integrated as Qwik components */}
         <RouterHead />
       </head>
-      <body lang="en" class="min-h-screen">
+      <body lang="en" class="container mx-auto min-h-screen">
         <div class="drawer lg:drawer-open">
           <input
             id="main-sidebar"
@@ -59,10 +59,14 @@ export default component$(() => {
               onMenuClick$={$(() => (sidebarOpen.value = true))}
               drawerOpen={sidebarOpen.value}
             />
-            <main class="container mx-auto flex-1 px-4 py-6">
+            <main class="px-4 py-6">
               {/* Optional dynamic render root for modules */}
               <div id="module-root" class="hidden" />
-              <RouterOutlet />
+              <div class="flex w-full justify-center">
+                <div class="w-full max-w-screen-lg">
+                  <RouterOutlet />
+                </div>
+              </div>
             </main>
             <ServiceWorkerRegister />
             <Footer />
