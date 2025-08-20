@@ -1,7 +1,10 @@
 import { component$ } from "@builder.io/qwik";
+import { isDev } from "@qwik.dev/core";
 
 // Import semua modul MDX dari src/contents
-const modules = import.meta.glob("/src/contents/*/index.mdx", { eager: true });
+const modules: Record<string, any> = import.meta.glob("/contents/*/index.mdx", {
+  eager: !isDev,
+});
 
 export default component$(() => {
   const moduleList = Object.entries(modules);
@@ -22,7 +25,7 @@ export default component$(() => {
       <div>
         <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           {moduleList.map(([path]) => {
-            const match = path.match(/\/src\/contents\/([^/]+)\/index\.mdx$/);
+            const match = path.match(/\/contents\/([^/]+)\/index\.mdx$/);
             const modulId = match ? match[1] : path;
             return (
               <div
