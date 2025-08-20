@@ -2,14 +2,17 @@ import { component$, isDev } from "@qwik.dev/core";
 import { useLocation } from "@qwik.dev/router";
 
 // Import semua modul MDX dari src/contents
-const modules: Record<string, any> = import.meta.glob("/contents/*/index.mdx", {
-  eager: !isDev,
-});
+const modules: Record<string, any> = import.meta.glob(
+  "/src/contents/*/index.mdx",
+  {
+    eager: !isDev,
+  },
+);
 
 export default component$(() => {
   const loc = useLocation();
   const modulId = loc.params.modulId;
-  const modulPath = `/contents/${modulId}/index.mdx`;
+  const modulPath = `/src/contents/${modulId}/index.mdx`;
   const ModulComponent = modules[modulPath]?.default;
 
   if (!ModulComponent) {
