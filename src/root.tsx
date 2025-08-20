@@ -36,12 +36,6 @@ export default component$(() => {
           })();
         `}
         />
-        {/* Font Awesome for icons used by the component system */}
-        <link
-          rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-          referrerPolicy="no-referrer"
-        />
         {/* Component system now integrated as Qwik components */}
         <RouterHead />
       </head>
@@ -59,12 +53,10 @@ export default component$(() => {
               onMenuClick$={$(() => (sidebarOpen.value = true))}
               drawerOpen={sidebarOpen.value}
             />
-            <main class="px-4 py-6">
+            <main class="flex w-full justify-center px-4 py-6">
               {/* Optional dynamic render root for modules */}
               <div id="module-root" class="hidden" />
-              <div class="flex w-full justify-center">
-                <RouterOutlet />
-              </div>
+              <RouterOutlet />
             </main>
             <ServiceWorkerRegister />
             <Footer />
