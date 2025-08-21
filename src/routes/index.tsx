@@ -1,18 +1,10 @@
 import { component$ } from "@qwik.dev/core";
 import { Link } from "@qwik.dev/router";
-
-const modules = [
-  { id: 1, title: "Modul 1", desc: "Pengenalan & Setup Lingkungan Mobile" },
-  { id: 2, title: "Modul 2", desc: "Dasar-dasar Pemrograman Mobile" },
-  { id: 3, title: "Modul 3", desc: "UI/UX Mobile & Komponen Dasar" },
-  { id: 4, title: "Modul 4", desc: "Networking & API di Mobile" },
-  { id: 5, title: "Modul 5", desc: "State Management & Storage" },
-  { id: 6, title: "Modul 6", desc: "Deployment & Testing Mobile App" },
-];
+import { ModulList } from "~/components/ModulList";
 
 export default component$(() => {
   return (
-    <>
+    <div>
       <section class="hero bg-base-100 border-base-300 rounded-box mb-8 flex items-center justify-center border-b px-4 py-10 shadow-none">
         <div class="hero-content flex w-full max-w-4xl flex-col items-center gap-8 md:flex-row">
           <div class="flex flex-1 flex-col items-start text-left">
@@ -27,18 +19,18 @@ export default component$(() => {
               materi tambahan.
             </p>
             <div class="mt-2 flex gap-3">
-              <a
+              <Link
                 href="#modul-list"
                 class="btn btn-neutral btn-md border-base-300 rounded-lg border px-6 font-medium shadow-none"
               >
                 Mulai Belajar
-              </a>
-              <a
-                href="/blog"
+              </Link>
+              <Link
+                href="/modul"
                 class="btn btn-outline btn-md border-base-300 rounded-lg border px-6 font-medium shadow-none"
               >
-                Blog Materi
-              </a>
+                Daftar Modul
+              </Link>
             </div>
           </div>
           <div class="flex flex-1 items-center justify-center">
@@ -79,32 +71,22 @@ export default component$(() => {
           </div>
         </div>
       </section>
-      <div>
-        <h2 class="text-base-content bg-base-100 rounded-box mx-auto mt-8 mb-6 w-full max-w-xl pb-2 text-center text-2xl font-bold md:text-3xl">
-          Daftar Modul Praktikum
-        </h2>
-        <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3" id="modul-list">
-          {modules.map((modul) => (
-            <div
-              class="card bg-base-100 border-base-300 rounded-box border"
-              key={modul.id}
-            >
-              <div class="card-body flex flex-col justify-between">
-                <h3 class="card-title text-base-content">{modul.title}</h3>
-                <p class="text-base-content/70 mb-4">{modul.desc}</p>
-                <div class="card-actions justify-end">
-                  <Link
-                    href={`/modul/${modul.id}`}
-                    class="btn btn-neutral border-base-300 rounded-lg border shadow-none"
-                  >
-                    Buka Modul
-                  </Link>
-                </div>
-              </div>
-            </div>
-          ))}
+      {/* Hero Section */}
+      <div
+        id="modul-list"
+        class="hero bg-base-100 border-base-300 mb-8 border-b"
+      >
+        <div class="hero-content flex-col text-center">
+          <h1 class="mb-2 text-4xl font-bold tracking-tight">
+            Daftar Modul Praktikum
+          </h1>
+          <p class="mx-auto max-w-xl text-base opacity-80">
+            Pilih modul di bawah untuk mulai belajar.
+          </p>
         </div>
       </div>
-    </>
+      {/* Grid Card List */}
+      <ModulList />
+    </div>
   );
 });

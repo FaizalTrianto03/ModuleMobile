@@ -9,6 +9,7 @@ import {
   LuFileArchive,
   LuImage,
 } from "@qwikest/icons/lucide";
+import { getAllModulMeta } from "~/utils/modul-utils";
 
 interface SidebarProps {
   open?: boolean;
@@ -16,6 +17,7 @@ interface SidebarProps {
 }
 
 export const Sidebar = component$<SidebarProps>(({ open, onClose$ }) => {
+  const modulList = getAllModulMeta();
   return (
     <>
       {/* Overlay for mobile */}
@@ -50,10 +52,11 @@ export const Sidebar = component$<SidebarProps>(({ open, onClose$ }) => {
                     <LuBookOpen class="h-4 w-4" /> Modul
                   </summary>
                   <ul>
-                    {[1, 2, 3, 4, 5, 6].map((modul) => (
-                      <li key={modul}>
-                        <Link href={`/modul/${modul}`} onClick$={onClose$}>
-                          <LuFileText class="h-4 w-4" /> Modul {modul}
+                    {modulList.map(({ modulId, title }) => (
+                      <li key={modulId}>
+                        <Link href={`/modul/${modulId}`} onClick$={onClose$}>
+                          <LuFileText class="h-4 w-4" />{" "}
+                          {title || `Modul ${modulId}`}
                         </Link>
                       </li>
                     ))}
