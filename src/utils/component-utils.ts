@@ -1,4 +1,4 @@
-import { $ } from "@qwik.dev/core";
+import { $ } from "@builder.io/qwik";
 
 // Utility functions for component system
 export function escapeHtml(text: string): string {

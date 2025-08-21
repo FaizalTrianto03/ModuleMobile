@@ -1,4 +1,4 @@
-import { component$, useSignal, useTask$, $ } from "@qwik.dev/core";
+import { component$, useSignal, useTask$, $ } from "@builder.io/qwik";
 import { ComponentRenderer, ComponentData } from "./ComponentRenderer";
 import { showToast } from "~/utils/component-utils";
 

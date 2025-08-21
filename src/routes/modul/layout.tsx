@@ -1,5 +1,5 @@
-import { component$, Slot } from "@qwik.dev/core";
-import { useDocumentHead } from "@qwik.dev/router";
+import { component$, Slot } from "@builder.io/qwik";
+import { useDocumentHead } from "@builder.io/qwik-city";
 
 export default component$(() => {
   const head = useDocumentHead();

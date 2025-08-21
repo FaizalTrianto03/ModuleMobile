@@ -1,4 +1,4 @@
-import { component$, QRL, useSignal, useVisibleTask$ } from "@qwik.dev/core";
+import { component$, QRL, useSignal, useVisibleTask$ } from "@builder.io/qwik";
 import { ThemeToggle } from "./ThemeToggle";
 import { BrandLogo } from "./BrandLogo";
 import { LuMenu } from "@qwikest/icons/lucide";

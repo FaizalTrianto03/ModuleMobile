@@ -1,4 +1,4 @@
-import { component$ } from "@qwik.dev/core";
+import { component$ } from "@builder.io/qwik";
 import { generateSectionId, shareSection } from "~/utils/component-utils";
 
 interface InfoProps {

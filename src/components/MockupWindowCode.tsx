@@ -1,4 +1,4 @@
-import { component$, Slot } from "@qwik.dev/core";
+import { component$, Slot } from "@builder.io/qwik";
 
 /**
  * Komponen DaisyUI mockup-window untuk membungkus blok kode atau konten apapun.

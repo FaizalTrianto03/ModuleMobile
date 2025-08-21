@@ -1,9 +1,9 @@
-import { component$, useSignal, $ } from "@qwik.dev/core";
+import { component$, useSignal, $, isDev } from "@builder.io/qwik";
 import {
-  QwikRouterProvider,
+  QwikCityProvider,
   RouterOutlet,
   ServiceWorkerRegister,
-} from "@qwik.dev/router";
+} from "@builder.io/qwik-city";
 import { RouterHead } from "./components/router-head/router-head";
 import { Navbar } from "./components/Navbar";
 import { Sidebar } from "./components/Sidebar";
@@ -15,10 +15,15 @@ export default component$(() => {
   const sidebarOpen = useSignal(false);
 
   return (
-    <QwikRouterProvider>
+    <QwikCityProvider>
       <head>
         <meta charset="utf-8" />
-        <link rel="manifest" href="/manifest.json" />
+        {!isDev && (
+          <link
+            rel="manifest"
+            href={`${import.meta.env.BASE_URL}manifest.json`}
+          />
+        )}
         {/* Inline theme script to prevent flicker */}
         <script
           dangerouslySetInnerHTML={`
@@ -74,6 +79,6 @@ export default component$(() => {
           </div>
         </div>
       </body>
-    </QwikRouterProvider>
+    </QwikCityProvider>
   );
 });

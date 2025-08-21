@@ -1,4 +1,4 @@
-import { component$ } from "@qwik.dev/core";
+import { component$ } from "@builder.io/qwik";
 import { ModuleHeader } from "./ModuleHeader";
 import { Info } from "./Info";
 import { Material } from "./Material";

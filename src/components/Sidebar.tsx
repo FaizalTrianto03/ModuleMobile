@@ -1,5 +1,5 @@
-import { component$, QRL } from "@qwik.dev/core";
-import { Link } from "@qwik.dev/router";
+import { component$, QRL } from "@builder.io/qwik";
+import { Link } from "@builder.io/qwik-city";
 import { BrandLogo } from "./BrandLogo";
 import {
   LuHome,
