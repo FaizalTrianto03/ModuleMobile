@@ -32,7 +32,7 @@ export const Navbar = component$<NavbarProps>(
     return (
       <nav
         class={[
-          "navbar bg-base-100 border-base-300 sticky top-0 flex h-16 w-full items-center border-b px-4 transition-transform duration-300 md:px-8",
+          "navbar bg-base-100 border-base-300 sticky top-0 flex h-16 w-full items-center border-b pr-4 pl-6 transition-transform duration-300 md:px-8",
           showNavbar.value ? "translate-y-0" : "-translate-y-full",
         ]}
         style={{ zIndex: drawerOpen ? 0 : 20 }}

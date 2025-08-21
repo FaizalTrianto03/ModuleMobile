@@ -5,7 +5,7 @@ import { ModulList } from "~/components/ModulList";
 export default component$(() => {
   return (
     <div>
-      <section class="hero bg-base-100 border-base-300 rounded-box mb-8 flex items-center justify-center border-b px-4 py-10 shadow-none">
+      <section class="hero bg-base-100 border-base-300 mb-8 flex items-center justify-center border-b shadow-none">
         <div class="hero-content flex w-full max-w-4xl flex-col items-center gap-8 md:flex-row">
           <div class="flex flex-1 flex-col items-start text-left">
             <h1 class="text-base-content mb-3 text-4xl leading-tight font-bold md:text-5xl">
@@ -21,20 +21,20 @@ export default component$(() => {
             <div class="mt-2 flex gap-3">
               <Link
                 href="#modul-list"
-                class="btn btn-primary btn-md border-base-300 rounded-lg border px-6 font-medium shadow-none"
+                class="btn btn-primary btn-md border-base-300 border px-6 font-medium shadow-none"
               >
                 Mulai Belajar
               </Link>
               <Link
                 href="/modul"
-                class="btn btn-outline btn-md border-base-300 rounded-lg border px-6 font-medium shadow-none"
+                class="btn btn-outline btn-md border-base-300 border px-6 font-medium shadow-none"
               >
                 Daftar Modul
               </Link>
             </div>
           </div>
           <div class="flex flex-1 items-center justify-center">
-            <div class="bg-base-200 border-base-300 rounded-box flex h-64 w-64 items-center justify-center border">
+            <div class="bg-base-200 border-base-300 flex h-64 w-64 items-center justify-center border">
               <svg
                 width="96"
                 height="96"

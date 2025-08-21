@@ -23,7 +23,7 @@ export const Sidebar = component$<SidebarProps>(({ open, onClose$ }) => {
       {/* Overlay for mobile */}
       {open && (
         <div
-          class="bg-opacity-40 fixed inset-0 z-40 bg-black transition-opacity duration-300 lg:hidden"
+          class="fixed inset-0 z-40 transition-opacity duration-300 lg:hidden"
           style={{ opacity: open ? 1 : 0 }}
           onClick$={onClose$}
         ></div>

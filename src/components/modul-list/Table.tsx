@@ -34,7 +34,7 @@ export const Table = component$<TableProps>(
         </div>
 
         <div class="overflow-x-auto">
-          <table class="table-zebra bg-base-100 border-base-300 rounded-box table border">
+          <table class="table-zebra bg-base-100 border-base-300 table border">
             <thead>
               <tr>
                 {headers.map((header, index) => (

@@ -10,7 +10,7 @@ export const ModulList = component$(() => {
       {moduleList.map(({ modulId, title, description }) => (
         <div
           key={modulId}
-          class="card card-border bg-base-100 border-base-300 hover:border-primary/70 rounded-xl border transition-all"
+          class="card card-border bg-base-100 border-base-300 hover:border-primary/70 border transition-all"
         >
           <div class="card-body flex flex-col gap-2 p-5">
             <h2 class="mb-1 text-lg font-semibold">
@@ -21,10 +21,7 @@ export const ModulList = component$(() => {
                 "Click below to open this module and start learning."}
             </div>
             <div class="mt-auto flex justify-end">
-              <Link
-                href={`/modul/${modulId}`}
-                class="btn btn-outline btn-primary btn-sm rounded-lg"
-              >
+              <Link href={`/modul/${modulId}`} class="btn btn-outline btn-sm">
                 Open
               </Link>
             </div>

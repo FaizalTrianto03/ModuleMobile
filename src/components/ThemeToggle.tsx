@@ -101,7 +101,11 @@ export const ThemeToggle = component$(() => {
 
   return (
     <div class="dropdown dropdown-end">
-      <button type="button" class="btn btn-ghost" aria-label="Toggle theme">
+      <button
+        type="button"
+        class="btn btn-ghost border-base-300"
+        aria-label="Toggle theme"
+      >
         {/* Ganti ikon menjadi palet warna dan tambahkan teks Tema */}
         <span class="flex items-center gap-2">
           <LuPalette class="h-5 w-5" />
