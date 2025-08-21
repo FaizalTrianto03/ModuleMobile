@@ -1,29 +1,5 @@
 {
   "name": "module-mobile",
-  "description": "Modul Pemrograman Mobile 2025 LAB IT UMM",
-  "engines": {
-    "node": "^18.17.0 || ^20.3.0 || >=21.0.0"
-  },
-  "engines-annotation": "Mostly required by sharp which needs a Node-API v9 compatible runtime",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "build": "qwik build",
-    "build.client": "vite build",
-    "build.preview": "vite build --ssr src/entry.preview.tsx",
-    "build.server": "vite build -c adapters/bun/vite.config.mts",
-    "build.types": "tsc --incremental --noEmit",
-    "deploy": "echo 'Run \"npm run qwik add\" to install a server adapter'",
-    "dev": "vite --mode ssr",
-    "dev.debug": "node --inspect-brk ./node_modules/vite/bin/vite.js --mode ssr --force",
-    "fmt": "prettier --write .",
-    "fmt.check": "prettier --check .",
-    "lint": "eslint \"src/**/*.ts*\"",
-    "preview": "qwik build preview && vite preview --open",
-    "serve": "bun server/entry.bun.js",
-    "start": "vite --open --mode ssr",
-    "qwik": "qwik"
-  },
   "devDependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
@@ -64,5 +40,28 @@
     "vite-tsconfig-paths": "^5.1.4",
     "wrangler": "^4.31.0"
   },
-  "dependencies": {}
+  "description": "Modul Pemrograman Mobile 2025 LAB IT UMM",
+  "engines": {
+    "node": "^18.17.0 || ^20.3.0 || >=21.0.0"
+  },
+  "engines-annotation": "Mostly required by sharp which needs a Node-API v9 compatible runtime",
+  "private": true,
+  "scripts": {
+    "build": "qwik build",
+    "build.client": "vite build",
+    "build.preview": "vite build --ssr src/entry.preview.tsx",
+    "build.server": "vite build -c adapters/bun/vite.config.mts",
+    "build.types": "tsc --incremental --noEmit",
+    "deploy": "echo 'Run \"npm run qwik add\" to install a server adapter'",
+    "dev": "vite --mode ssr",
+    "dev.debug": "node --inspect-brk ./node_modules/vite/bin/vite.js --mode ssr --force",
+    "fmt": "prettier --write .",
+    "fmt.check": "prettier --check .",
+    "lint": "eslint \"src/**/*.ts*\"",
+    "preview": "qwik build preview && vite preview --open",
+    "serve": "bun server/entry.bun.js",
+    "start": "vite --open --mode ssr",
+    "qwik": "qwik"
+  },
+  "type": "module"
 }
