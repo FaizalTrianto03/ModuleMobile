@@ -1,0 +1,233 @@
+---
+title: "Modul 5: Location Based Application"
+description: "Belajar aplikasi berbasis lokasi, penggunaan GPS, Google Maps, dan update lokasi real-time di Flutter."
+---
+
+# Modul 5: Location Based Application
+
+## 1. Pengantar Aplikasi Berbasis Lokasi
+
+Aplikasi berbasis lokasi memanfaatkan GPS dan sensor lokasi untuk memberikan layanan berbasis posisi pengguna, seperti navigasi, pelacakan, dan rekomendasi lokasi.
+
+---
+
+## 2. Mendapatkan Lokasi Pengguna di Flutter
+
+### 2.1. Instalasi Package `geolocator`
+
+Tambahkan pada `pubspec.yaml`:
+
+```yaml
+dependencies:
+  geolocator: ^10.1.0
+  get: ^4.6.5
+```
+
+### 2.2. Permission Lokasi
+
+Pastikan menambahkan permission di AndroidManifest.xml dan Info.plist (iOS).
+
+#### Android (AndroidManifest.xml)
+
+```xml
+<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+```
+
+#### iOS (Info.plist)
+
+```xml
+<key>NSLocationWhenInUseUsageDescription</key>
+<string>App membutuhkan akses lokasi untuk menampilkan posisi Anda.</string>
+```
+
+### 2.3. Mendapatkan Lokasi Saat Ini
+
+```dart
+import 'package:geolocator/geolocator.dart';
+
+Future<Position> getCurrentLocation() async {
+  bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+  if (!serviceEnabled) {
+    return Future.error('Layanan lokasi tidak aktif');
+  }
+
+  LocationPermission permission = await Geolocator.checkPermission();
+  if (permission == LocationPermission.denied) {
+    permission = await Geolocator.requestPermission();
+    if (permission == LocationPermission.denied) {
+      return Future.error('Permission lokasi ditolak');
+    }
+  }
+
+  if (permission == LocationPermission.deniedForever) {
+    return Future.error('Permission lokasi ditolak permanen');
+  }
+
+  return await Geolocator.getCurrentPosition();
+}
+```
+
+---
+
+## 3. Menampilkan Lokasi di Peta
+
+### 3.1. Instalasi Package `google_maps_flutter`
+
+Tambahkan pada `pubspec.yaml`:
+
+```yaml
+dependencies:
+  google_maps_flutter: ^2.5.0
+```
+
+### 3.2. Menampilkan Peta dan Marker Lokasi
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:geolocator/geolocator.dart';
+
+class MapPage extends StatefulWidget {
+  const MapPage({super.key});
+
+  @override
+  State<MapPage> createState() => _MapPageState();
+}
+
+class _MapPageState extends State<MapPage> {
+  GoogleMapController? mapController;
+  LatLng? currentPosition;
+
+  @override
+  void initState() {
+    super.initState();
+    getCurrentLocation().then((pos) {
+      setState(() {
+        currentPosition = LatLng(pos.latitude, pos.longitude);
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Lokasi Saya')),
+      body: currentPosition == null
+          ? const Center(child: CircularProgressIndicator())
+          : GoogleMap(
+              initialCameraPosition: CameraPosition(
+                target: currentPosition!,
+                zoom: 15,
+              ),
+              markers: {
+                Marker(
+                  markerId: const MarkerId('current'),
+                  position: currentPosition!,
+                  infoWindow: const InfoWindow(title: 'Lokasi Saya'),
+                ),
+              },
+              onMapCreated: (controller) => mapController = controller,
+            ),
+    );
+  }
+}
+```
+
+---
+
+## 4. Integrasi Lokasi dengan GetX
+
+### 4.1. Controller Lokasi
+
+```dart
+import 'package:get/get.dart';
+import 'package:geolocator/geolocator.dart';
+
+class LocationController extends GetxController {
+  var position = Rxn<Position>();
+
+  void updateLocation() async {
+    position.value = await Geolocator.getCurrentPosition();
+  }
+}
+```
+
+### 4.2. UI dengan GetX
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'location_controller.dart';
+
+class LocationPage extends StatelessWidget {
+  final LocationController c = Get.put(LocationController());
+
+  LocationPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Lokasi Real-time')),
+      body: Center(
+        child: Obx(() {
+          if (c.position.value == null) {
+            return ElevatedButton(
+              onPressed: c.updateLocation,
+              child: const Text('Ambil Lokasi'),
+            );
+          }
+          return Text(
+            'Lat: ${c.position.value!.latitude}\nLng: ${c.position.value!.longitude}',
+            style: const TextStyle(fontSize: 24),
+          );
+        }),
+      ),
+    );
+  }
+}
+```
+
+---
+
+## 5. Studi Kasus: Update Lokasi Real-time
+
+Untuk update lokasi secara real-time, gunakan stream dari Geolocator.
+
+```dart
+import 'package:get/get.dart';
+import 'package:geolocator/geolocator.dart';
+
+class RealtimeLocationController extends GetxController {
+  var position = Rxn<Position>();
+
+  @override
+  void onInit() {
+    super.onInit();
+    Geolocator.getPositionStream().listen((pos) {
+      position.value = pos;
+    });
+  }
+}
+```
+
+---
+
+## 6. Best Practice Penggunaan Lokasi
+
+- Selalu cek dan minta permission lokasi.
+- Gunakan stream untuk update lokasi real-time.
+- Jangan akses lokasi terus-menerus jika tidak diperlukan (hemat baterai).
+- Perhatikan privasi dan keamanan data lokasi pengguna.
+
+---
+
+## 7. Referensi
+
+- [geolocator](https://pub.dev/packages/geolocator)
+- [google_maps_flutter](https://pub.dev/packages/google_maps_flutter)
+- [GetX Documentation](https://pub.dev/packages/get)
+
+---
+
+**Dengan memahami aplikasi berbasis lokasi, Anda dapat membangun aplikasi yang interaktif dan kontekstual. Lanjutkan ke Modul 6 untuk mempelajari Asynchronous Computing.**

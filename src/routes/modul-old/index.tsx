@@ -1,4 +1,5 @@
-import { component$, isDev } from "@qwik.dev/core";
+import { component$ } from "@builder.io/qwik";
+import { isDev } from "@qwik.dev/core";
 
 // Import semua modul MDX dari src/contents
 const modules: Record<string, any> = import.meta.glob(
@@ -26,33 +27,21 @@ export default component$(() => {
       {/* Grid Card List */}
       <div>
         <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-          {moduleList.map(([path, mod]) => {
+          {moduleList.map(([path]) => {
             const match = path.match(
               /\/src\/routes\/modul\/([^/]+)\/index\.mdx$/,
             );
             const modulId = match ? match[1] : path;
-            // Coba ambil title/description dari frontmatter, jika tidak ada ambil dari named export
-            const title = mod.frontmatter?.title || mod.title;
-            const description = mod.frontmatter?.description || mod.description;
             return (
               <div
                 key={modulId}
                 class="card card-border bg-base-100 border-base-300 hover:border-primary/70 rounded-xl border transition-all"
               >
                 <div class="card-body flex flex-col gap-2 p-5">
-                  <h2 class="mb-1 text-lg font-semibold">
-                    {title || `Module ${modulId}`}
-                  </h2>
+                  <h2 class="mb-1 text-lg font-semibold">Module {modulId}</h2>
                   <div class="text-base-content/70 mb-2 flex-1 text-sm">
-                    {description ||
-                      "Click below to open this module and start learning."}
+                    Click below to open this module and start learning.
                   </div>
-                  {/* Debug: tampilkan isi mod jika title/desc tetap kosong */}
-                  {!title && !description && (
-                    <pre class="text-error bg-base-200 rounded p-2 text-xs">
-                      {JSON.stringify(mod, null, 2)}
-                    </pre>
-                  )}
                   <div class="mt-auto flex justify-end">
                     <a
                       href={`/modul/${modulId}`}
