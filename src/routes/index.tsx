@@ -21,7 +21,7 @@ export default component$(() => {
             <div class="mt-2 flex gap-3">
               <Link
                 href="#modul-list"
-                class="btn btn-neutral btn-md border-base-300 rounded-lg border px-6 font-medium shadow-none"
+                class="btn btn-primary btn-md border-base-300 rounded-lg border px-6 font-medium shadow-none"
               >
                 Mulai Belajar
               </Link>
