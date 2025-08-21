@@ -102,12 +102,7 @@ Sebagai contoh, jika Anda ingin membuat sebuah aplikasi sederhana yang memiliki 
 
 import main from "./code/main.dart?raw";
 
-<CodeBlock
-  desc="main.dart"
-  language="dart"
-  code={`
-${main}`}
-/>
+<CodeBlock desc="main.dart" language="dart" code={main} />
 
 Pada kode ini, aplikasi dimulai dengan root widget `MaterialApp`, yang membungkus seluruh aplikasi. Di dalamnya, terdapat widget `Scaffold` yang menyediakan struktur dasar layar, termasuk `AppBar` untuk menampilkan judul aplikasi, dan `body` untuk menampilkan konten utama. Konten utama terdiri dari widget `Column` sebagai induk, yang menyusun elemen secara vertikal. Di dalam `Column`, terdapat widget `Text` untuk menampilkan teks "Parent Widget", serta widget `Row` yang menyusun dua teks anak secara horizontal.
 

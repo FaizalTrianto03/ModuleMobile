@@ -18,9 +18,7 @@ export const Footer = component$(() => (
           Modul Mobile
         </div>
         <div class="mb-2 text-sm opacity-70">
-          Lab Informatika UMM
-          <br />
-          Providing reliable tech & education since 1992
+          made by UMM Infotech Information System Division
         </div>
         <div class="mt-2 flex gap-3">
           <Link
@@ -76,15 +74,15 @@ export const Footer = component$(() => (
         </ul>
       </div>
       <div>
-        <div class="mb-2 text-base font-semibold">Company</div>
+        <div class="mb-2 text-base font-semibold">Shortcut</div>
         <ul class="flex flex-col gap-1">
           <li>
             <Link
-              href="https://informatika.umm.ac.id/"
+              href="https://infotech.umm.ac.id/"
               target="_blank"
               class="hover:underline"
             >
-              Website Jurusan
+              I-Lab
             </Link>
           </li>
           <li>

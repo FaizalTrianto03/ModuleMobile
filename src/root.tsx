@@ -53,7 +53,7 @@ export default component$(() => {
               onMenuClick$={$(() => (sidebarOpen.value = true))}
               drawerOpen={sidebarOpen.value}
             />
-            <main class="flex w-full justify-center px-4 py-6">
+            <main class="w-full justify-center px-4 py-6 lg:flex">
               {/* Optional dynamic render root for modules */}
               <div id="module-root" class="hidden" />
               <RouterOutlet />

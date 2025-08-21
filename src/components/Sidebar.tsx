@@ -54,7 +54,11 @@ export const Sidebar = component$<SidebarProps>(({ open, onClose$ }) => {
                   <ul>
                     {modulList.map(({ modulId, title }) => (
                       <li key={modulId}>
-                        <Link href={`/modul/${modulId}`} onClick$={onClose$}>
+                        <Link
+                          class="text-sm"
+                          href={`/modul/${modulId}`}
+                          onClick$={onClose$}
+                        >
                           <LuFileText class="h-4 w-4" />{" "}
                           {title || `Modul ${modulId}`}
                         </Link>
