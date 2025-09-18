@@ -92,12 +92,11 @@ Write-Host "📦 Extracting $ZipPath to $CmdlineDir ..."
 Expand-Archive -Path $ZipPath -DestinationPath $CmdlineDir -Force
 
 # --- STEP 3: MOVE ke latest ---
-$possibleDir = (Get-ChildItem -Path $CmdlineDir -Directory | Where-Object { $_.Name -eq "cmdline-tools" } | Select-Object -First 1)
+$possibleDir = Get-ChildItem -Path $CmdlineDir -Directory | Where-Object { $_.Name -eq "cmdline-tools" } | Select-Object -ExpandProperty FullName -First 1
 
-if ($null -ne $possibleDir) {
-    $sourcePath = $possibleDir.FullName  # fix: pastikan string path
+if ($possibleDir -and (Test-Path -LiteralPath $possibleDir)) {
     if (Test-Path -LiteralPath $LatestDir) { Remove-Item -LiteralPath $LatestDir -Recurse -Force }
-    Move-Item -LiteralPath $sourcePath -Destination $LatestDir -Force
+    Move-Item -LiteralPath $possibleDir -Destination $LatestDir -Force
 }
 Remove-Item $ZipPath -Force -ErrorAction SilentlyContinue
 
