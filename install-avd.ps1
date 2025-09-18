@@ -1,26 +1,26 @@
 <#
 .SYNOPSIS
   Install Android Command Line Tools (avdmanager, sdkmanager, emulator) on Windows
-  without requiring Android Studio.
+  without requiring Android Studio or admin rights.
 
 .DESCRIPTION
   This script:
     1. Downloads latest Android Command Line Tools
-    2. Extracts them to C:\Android\cmdline-tools\latest
-    3. Sets up environment variables (PATH) permanently
+    2. Extracts them to $HOME\AppData\Local\Android\cmdline-tools\latest
+    3. Sets up PATH (User Environment only, no admin required)
 
 .NOTES
-  Run this script with admin privileges (required for setting system environment vars).
+  Run in PowerShell. Restart terminal after installation.
 #>
 
 $ErrorActionPreference = "Stop"
 
 # --- CONFIG ---
-$AndroidRoot    = "C:\Android"
-$CmdlineDir     = "$AndroidRoot\cmdline-tools"
-$LatestDir      = "$CmdlineDir\latest"
-$DownloadUrl    = "https://dl.google.com/android/repository/commandlinetools-win-13114758_latest.zip"
-$ZipPath        = "$env:TEMP\commandlinetools.zip"
+$AndroidRoot = "$env:LOCALAPPDATA\Android"
+$CmdlineDir  = "$AndroidRoot\cmdline-tools"
+$LatestDir   = "$CmdlineDir\latest"
+$DownloadUrl = "https://dl.google.com/android/repository/commandlinetools-win-13114758_latest.zip"
+$ZipPath     = "$env:TEMP\commandlinetools.zip"
 
 Write-Host "📥 Downloading Android Command Line Tools..."
 Invoke-WebRequest -Uri $DownloadUrl -OutFile $ZipPath
@@ -40,26 +40,26 @@ if (Test-Path "$CmdlineDir\cmdline-tools") {
 
 Remove-Item $ZipPath -Force
 
-# --- ENVIRONMENT VARIABLES ---
+# --- ENVIRONMENT VARIABLES (User Only) ---
 $envPaths = @(
     "$LatestDir\bin",
     "$AndroidRoot\platform-tools",
     "$AndroidRoot\emulator"
 )
 
-Write-Host "⚙️  Updating PATH..."
+Write-Host "⚙️ Updating PATH (User scope)..."
 foreach ($p in $envPaths) {
     if (-not (Test-Path $p)) { New-Item -ItemType Directory -Path $p -Force | Out-Null }
-    $currentPath = [Environment]::GetEnvironmentVariable("Path", "Machine")
+    $currentPath = [Environment]::GetEnvironmentVariable("Path", "User")
     if ($currentPath -notlike "*$p*") {
         [Environment]::SetEnvironmentVariable(
             "Path",
             "$currentPath;$p",
-            "Machine"
+            "User"
         )
     }
 }
 
 Write-Host "✅ Installation complete!"
-Write-Host "👉 Please restart your terminal or run 'refreshenv' (if you use Chocolatey)."
+Write-Host "👉 Restart your terminal to apply PATH changes."
 Write-Host "You can now run 'avdmanager' or 'sdkmanager'."
