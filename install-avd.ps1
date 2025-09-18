@@ -21,6 +21,7 @@ $ZipPath     = "$env:TEMP\commandlinetools.zip"
 # --- FAST DOWNLOAD FUNCTION ---
 function Download-File($url, $outFile) {
     Write-Host "📥 Downloading: $url"
+    Add-Type -AssemblyName System.Net.Http
     $client = New-Object System.Net.Http.HttpClient
     $client.Timeout = [System.TimeSpan]::FromMinutes(15)
     $response = $client.GetAsync($url, [System.Net.Http.HttpCompletionOption]::ResponseHeadersRead).Result
