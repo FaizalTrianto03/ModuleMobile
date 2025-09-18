@@ -1,45 +1,19 @@
 <#
 .SYNOPSIS
   Install Android Command Line Tools (avdmanager, sdkmanager, emulator) on Windows.
-  Will always start in a NEW elevated PowerShell window.
-
-.DESCRIPTION
-  - Always triggers "Run as Administrator" first
-  - Downloads Command Line Tools
-  - Extracts to C:\android\sdk\cmdline-tools\latest
-  - Updates System PATH
+  Harus dijalankan elevated (admin).
 #>
 
 $ErrorActionPreference = "Stop"
 
-# --- STEP 1: Relaunch Elevated ---
-function Ensure-Admin {
-    $currentUser = [Security.Principal.WindowsIdentity]::GetCurrent()
-    $principal   = New-Object Security.Principal.WindowsPrincipal($currentUser)
-    $isAdmin     = $principal.IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator)
-
-    if (-not $isAdmin) {
-        Write-Host "⚡ Relaunching in elevated PowerShell..."
-        $psExe = (Get-Process -Id $PID).Path
-        $scriptUrl = "https://raw.githubusercontent.com/<username>/<repo>/main/install-avd.ps1"
-
-        Start-Process -FilePath $psExe `
-            -ArgumentList "-NoProfile -ExecutionPolicy Bypass -Command `"irm $scriptUrl | iex`"" `
-            -Verb RunAs
-
-        exit
-    }
-}
-Ensure-Admin
-
-# --- STEP 2: CONFIG ---
+# --- CONFIG ---
 $SdkRoot     = "C:\android\sdk"
 $CmdlineDir  = "$SdkRoot\cmdline-tools"
 $LatestDir   = "$CmdlineDir\latest"
 $DownloadUrl = "https://dl.google.com/android/repository/commandlinetools-win-13114758_latest.zip"
 $ZipPath     = "$env:TEMP\commandlinetools.zip"
 
-# --- STEP 3: FAST DOWNLOAD ---
+# --- FAST DOWNLOAD ---
 function Download-File($url, $outFile) {
     Write-Host "📥 Downloading: $url"
     try { Add-Type -AssemblyName System.Net.Http } catch {}
@@ -75,7 +49,7 @@ function Download-File($url, $outFile) {
     Write-Host "✅ Download complete: $outFile"
 }
 
-# --- STEP 4: DOWNLOAD & EXTRACT ---
+# --- DOWNLOAD & EXTRACT ---
 if (!(Test-Path $SdkRoot)) { New-Item -ItemType Directory -Path $SdkRoot -Force | Out-Null }
 Download-File $DownloadUrl $ZipPath
 
@@ -89,7 +63,7 @@ if (Test-Path "$CmdlineDir\cmdline-tools") {
 }
 Remove-Item $ZipPath -Force
 
-# --- STEP 5: SYSTEM PATH ---
+# --- PATH SETUP (System) ---
 $envPaths = @(
     "$LatestDir\bin",
     "$SdkRoot\platform-tools",
