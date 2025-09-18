@@ -1,27 +1,44 @@
 <#
 .SYNOPSIS
-  Install Android Command Line Tools (avdmanager, sdkmanager, emulator) on Windows
-  without requiring Android Studio or admin rights.
+  Install Android Command Line Tools (avdmanager, sdkmanager, emulator) on Windows.
+  Auto elevates to Admin if run in normal PowerShell.
 
 .DESCRIPTION
-  - Download dengan HttpClient (lebih cepat dari Invoke-WebRequest)
-  - Extract ke %LOCALAPPDATA%\Android\cmdline-tools\latest
-  - Update PATH di User scope (tanpa admin)
+  - Download Android SDK Command Line Tools
+  - Extract ke C:\android\sdk\cmdline-tools\latest
+  - Update PATH di System Environment (requires admin)
+  - Restart terminal untuk aktif
+
+.NOTES
+  Jalankan dengan:
+    irm https://raw.githubusercontent.com/<username>/<repo>/main/install-avd.ps1 | iex
 #>
 
 $ErrorActionPreference = "Stop"
 
+# --- AUTO-ELEVATE ---
+function Ensure-Admin {
+    $currentUser = [Security.Principal.WindowsIdentity]::GetCurrent()
+    $principal = New-Object Security.Principal.WindowsPrincipal($currentUser)
+    if (-not $principal.IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator)) {
+        Write-Host "⚠️  Not running as admin. Relaunching with elevation..."
+        Start-Process -FilePath "powershell.exe" -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs
+        exit
+    }
+}
+Ensure-Admin
+
 # --- CONFIG ---
-$AndroidRoot = "$env:LOCALAPPDATA\Android"
-$CmdlineDir  = "$AndroidRoot\cmdline-tools"
+$SdkRoot     = "C:\android\sdk"
+$CmdlineDir  = "$SdkRoot\cmdline-tools"
 $LatestDir   = "$CmdlineDir\latest"
 $DownloadUrl = "https://dl.google.com/android/repository/commandlinetools-win-13114758_latest.zip"
 $ZipPath     = "$env:TEMP\commandlinetools.zip"
 
-# --- FAST DOWNLOAD FUNCTION ---
+# --- FAST DOWNLOAD ---
 function Download-File($url, $outFile) {
     Write-Host "📥 Downloading: $url"
-    Add-Type -AssemblyName System.Net.Http
+    try { Add-Type -AssemblyName System.Net.Http } catch {}
     $client = New-Object System.Net.Http.HttpClient
     $client.Timeout = [System.TimeSpan]::FromMinutes(15)
     $response = $client.GetAsync($url, [System.Net.Http.HttpCompletionOption]::ResponseHeadersRead).Result
@@ -54,12 +71,11 @@ function Download-File($url, $outFile) {
 }
 
 # --- DOWNLOAD ---
+if (!(Test-Path $SdkRoot)) { New-Item -ItemType Directory -Path $SdkRoot -Force | Out-Null }
 Download-File $DownloadUrl $ZipPath
 
 # --- EXTRACT ---
-if (!(Test-Path $CmdlineDir)) {
-    New-Item -ItemType Directory -Path $CmdlineDir -Force | Out-Null
-}
+if (!(Test-Path $CmdlineDir)) { New-Item -ItemType Directory -Path $CmdlineDir -Force | Out-Null }
 Write-Host "📦 Extracting..."
 Expand-Archive -Path $ZipPath -DestinationPath $CmdlineDir -Force
 
@@ -70,21 +86,22 @@ if (Test-Path "$CmdlineDir\cmdline-tools") {
 }
 Remove-Item $ZipPath -Force
 
-# --- PATH SETUP (User only) ---
+# --- PATH SETUP (System) ---
 $envPaths = @(
     "$LatestDir\bin",
-    "$AndroidRoot\platform-tools",
-    "$AndroidRoot\emulator"
+    "$SdkRoot\platform-tools",
+    "$SdkRoot\emulator"
 )
 
-Write-Host "⚙️ Updating PATH (User scope)..."
+Write-Host "⚙️ Updating PATH (System scope)..."
 foreach ($p in $envPaths) {
     if (-not (Test-Path $p)) { New-Item -ItemType Directory -Path $p -Force | Out-Null }
-    $currentPath = [Environment]::GetEnvironmentVariable("Path", "User")
+    $currentPath = [Environment]::GetEnvironmentVariable("Path", "Machine")
     if ($currentPath -notlike "*$p*") {
-        [Environment]::SetEnvironmentVariable("Path", "$currentPath;$p", "User")
+        [Environment]::SetEnvironmentVariable("Path", "$currentPath;$p", "Machine")
     }
 }
 
-Write-Host "🎉 All done!"
-Write-Host "👉 Restart your terminal and try:  sdkmanager --list"
+Write-Host "🎉 Installation finished!"
+Write-Host "👉 Restart your terminal or VSCode, then run: sdkmanager --list"
+Write-Host "👉 Folder structure now: $SdkRoot"
