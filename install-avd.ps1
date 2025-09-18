@@ -1,7 +1,6 @@
 <#
 .SYNOPSIS
   Install Android Command Line Tools (avdmanager, sdkmanager, emulator) on Windows.
-  Auto elevates to Admin if run in normal PowerShell.
 
 .DESCRIPTION
   - Download Android SDK Command Line Tools
@@ -10,98 +9,127 @@
   - Restart terminal untuk aktif
 
 .NOTES
-  Jalankan dengan:
-    irm https://raw.githubusercontent.com/<username>/<repo>/main/install-avd.ps1 | iex
+  Dipanggil via bootstrapper:
+    irm https://raw.githubusercontent.com/<username>/<repo>/main/install.ps1 | iex
 #>
 
+param()
 $ErrorActionPreference = "Stop"
 
-# --- AUTO-ELEVATE ---
-function Ensure-Admin {
-    $currentUser = [Security.Principal.WindowsIdentity]::GetCurrent()
-    $principal = New-Object Security.Principal.WindowsPrincipal($currentUser)
+function Assert-RunAsAdmin {
+    $id = [Security.Principal.WindowsIdentity]::GetCurrent()
+    $principal = New-Object Security.Principal.WindowsPrincipal($id)
     if (-not $principal.IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator)) {
-        Write-Host "⚠️  Not running as admin. Relaunching with elevation..."
-        Start-Process -FilePath "powershell.exe" -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs
-        exit
+        Write-Error "❌ Script harus dijalankan sebagai Administrator!"
+        exit 1
     }
 }
-Ensure-Admin
+Assert-RunAsAdmin
 
 # --- CONFIG ---
 $SdkRoot     = "C:\android\sdk"
-$CmdlineDir  = "$SdkRoot\cmdline-tools"
-$LatestDir   = "$CmdlineDir\latest"
+$CmdlineDir  = Join-Path $SdkRoot "cmdline-tools"
+$LatestDir   = Join-Path $CmdlineDir "latest"
 $DownloadUrl = "https://dl.google.com/android/repository/commandlinetools-win-13114758_latest.zip"
-$ZipPath     = "$env:TEMP\commandlinetools.zip"
+$ZipPath     = Join-Path $env:TEMP "commandlinetools.zip"
 
-# --- FAST DOWNLOAD ---
-function Download-File($url, $outFile) {
-    Write-Host "📥 Downloading: $url"
-    try { Add-Type -AssemblyName System.Net.Http } catch {}
-    $client = New-Object System.Net.Http.HttpClient
-    $client.Timeout = [System.TimeSpan]::FromMinutes(15)
-    $response = $client.GetAsync($url, [System.Net.Http.HttpCompletionOption]::ResponseHeadersRead).Result
-    $response.EnsureSuccessStatusCode()
-
-    $total = $response.Content.Headers.ContentLength
-    $stream = $response.Content.ReadAsStreamAsync().Result
-    $fileStream = [System.IO.File]::Create($outFile)
-
-    $buffer = New-Object byte[] 8192
-    $totalRead = 0
-    $lastProgress = -1
-
-    while (($read = $stream.Read($buffer, 0, $buffer.Length)) -gt 0) {
-        $fileStream.Write($buffer, 0, $read)
-        $totalRead += $read
-        if ($total) {
-            $progress = [math]::Floor(($totalRead / $total) * 100)
-            if ($progress -ne $lastProgress) {
-                Write-Progress -Activity "Downloading..." -Status "$progress% Complete" -PercentComplete $progress
-                $lastProgress = $progress
+# --- DOWNLOAD FUNCTIONS ---
+function Download-WithHttpClient {
+    param($url, $outfile)
+    Write-Host "📥 (HttpClient) Downloading $url ..."
+    try {
+        Add-Type -ErrorAction SilentlyContinue -AssemblyName System.Net.Http
+        $client = New-Object System.Net.Http.HttpClient
+        $client.Timeout = [System.TimeSpan]::FromMinutes(20)
+        $resp = $client.GetAsync($url, [System.Net.Http.HttpCompletionOption]::ResponseHeadersRead).Result
+        $resp.EnsureSuccessStatusCode()
+        $total = $resp.Content.Headers.ContentLength
+        $stream = $resp.Content.ReadAsStreamAsync().Result
+        $fs = [System.IO.File]::Create($outfile)
+        $buffer = New-Object byte[] 65536
+        $done = 0
+        while (($read = $stream.Read($buffer, 0, $buffer.Length)) -gt 0) {
+            $fs.Write($buffer, 0, $read)
+            $done += $read
+            if ($total) {
+                $pct = [int](($done / $total) * 100)
+                Write-Progress -Activity "Downloading" -Status "$pct% Complete ($([math]::Round($done/1MB,2)) MB / $([math]::Round($total/1MB,2)) MB)" -PercentComplete $pct
             }
         }
+        $fs.Close(); $stream.Close(); $client.Dispose()
+        Write-Progress -Activity "Downloading" -Completed
+        Write-Host "✅ Downloaded to $outfile"
+        return $true
+    } catch {
+        Write-Warning "HttpClient download failed: $($_.Exception.Message)"
+        return $false
     }
-
-    $fileStream.Close()
-    $stream.Close()
-    $client.Dispose()
-    Write-Host "✅ Download complete: $outFile"
 }
 
-# --- DOWNLOAD ---
-if (!(Test-Path $SdkRoot)) { New-Item -ItemType Directory -Path $SdkRoot -Force | Out-Null }
-Download-File $DownloadUrl $ZipPath
+function Download-Fallback {
+    param($url, $outfile)
+    Write-Host "📥 (Fallback) Downloading $url ..."
+    try {
+        Invoke-WebRequest -Uri $url -OutFile $outfile -UseBasicParsing -TimeoutSec 300
+        Write-Host "✅ Downloaded to $outfile"
+        return $true
+    } catch {
+        Write-Warning "Fallback download failed: $($_.Exception.Message)"
+        return $false
+    }
+}
 
-# --- EXTRACT ---
-if (!(Test-Path $CmdlineDir)) { New-Item -ItemType Directory -Path $CmdlineDir -Force | Out-Null }
-Write-Host "📦 Extracting..."
+# --- STEP 1: DOWNLOAD ---
+if (-not (Test-Path $SdkRoot)) { New-Item -ItemType Directory -Path $SdkRoot -Force | Out-Null }
+$ok = Download-WithHttpClient -url $DownloadUrl -outfile $ZipPath
+if (-not $ok) { $ok = Download-Fallback -url $DownloadUrl -outfile $ZipPath }
+if (-not $ok) { Write-Error "❌ Gagal mendownload Command Line Tools"; exit 1 }
+
+# --- STEP 2: EXTRACT ---
+if (-not (Test-Path $CmdlineDir)) { New-Item -ItemType Directory -Path $CmdlineDir -Force | Out-Null }
+Write-Host "📦 Extracting $ZipPath to $CmdlineDir ..."
 Expand-Archive -Path $ZipPath -DestinationPath $CmdlineDir -Force
 
-# Move into "latest"
-if (Test-Path "$CmdlineDir\cmdline-tools") {
-    if (Test-Path $LatestDir) { Remove-Item $LatestDir -Recurse -Force }
-    Move-Item "$CmdlineDir\cmdline-tools" $LatestDir
+# --- STEP 3: MOVE ke latest ---
+$possibleDir = Get-ChildItem -Path $CmdlineDir -Directory | Where-Object { $_.Name -eq "cmdline-tools" } | Select-Object -First 1
+if ($possibleDir) {
+    if (Test-Path -LiteralPath $LatestDir) { Remove-Item -LiteralPath $LatestDir -Recurse -Force }
+    Move-Item -LiteralPath $possibleDir.FullName -Destination $LatestDir -Force
 }
-Remove-Item $ZipPath -Force
+Remove-Item $ZipPath -Force -ErrorAction SilentlyContinue
 
-# --- PATH SETUP (System) ---
-$envPaths = @(
-    "$LatestDir\bin",
-    "$SdkRoot\platform-tools",
-    "$SdkRoot\emulator"
+# --- STEP 4: PASTIKAN FOLDER ---
+$requiredBins = @(
+    Join-Path $LatestDir "bin",
+    Join-Path $SdkRoot "platform-tools",
+    Join-Path $SdkRoot "emulator"
 )
-
-Write-Host "⚙️ Updating PATH (System scope)..."
-foreach ($p in $envPaths) {
+foreach ($p in $requiredBins) {
     if (-not (Test-Path $p)) { New-Item -ItemType Directory -Path $p -Force | Out-Null }
-    $currentPath = [Environment]::GetEnvironmentVariable("Path", "Machine")
-    if ($currentPath -notlike "*$p*") {
-        [Environment]::SetEnvironmentVariable("Path", "$currentPath;$p", "Machine")
+}
+
+# --- STEP 5: UPDATE PATH (System) ---
+Write-Host "⚙️ Updating System PATH..."
+$machinePath = [Environment]::GetEnvironmentVariable("Path", "Machine")
+$toAdd = @(
+    (Join-Path $LatestDir "bin"),
+    (Join-Path $SdkRoot "platform-tools"),
+    (Join-Path $SdkRoot "emulator")
+)
+foreach ($entry in $toAdd) {
+    if ($machinePath -notlike "*$entry*") {
+        $machinePath = $machinePath + ";" + $entry
     }
 }
+[Environment]::SetEnvironmentVariable("Path", $machinePath, "Machine")
+Write-Host "✔ System PATH updated."
 
-Write-Host "🎉 Installation finished!"
-Write-Host "👉 Restart your terminal or VSCode, then run: sdkmanager --list"
-Write-Host "👉 Folder structure now: $SdkRoot"
+# --- STEP 6: SELESAI ---
+Write-Host ""
+Write-Host "🎉 Instalasi selesai!"
+Write-Host "📂 SDK root: $SdkRoot"
+Write-Host "👉 Restart terminal/VSCode agar PATH baru terbaca."
+Write-Host "👉 Tes dengan:  sdkmanager --list"
+Write-Host ""
+# Pause agar log bisa terbaca
+Read-Host -Prompt "Tekan Enter untuk menutup jendela"
