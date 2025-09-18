@@ -9,7 +9,8 @@
   - Restart terminal untuk aktif
 
 .NOTES
-  Dipanggil via bootstrapper:
+  Jalankan elevated (Admin).
+  Biasanya dipanggil via bootstrapper:
     irm https://raw.githubusercontent.com/<username>/<repo>/main/install.ps1 | iex
 #>
 
@@ -91,10 +92,12 @@ Write-Host "📦 Extracting $ZipPath to $CmdlineDir ..."
 Expand-Archive -Path $ZipPath -DestinationPath $CmdlineDir -Force
 
 # --- STEP 3: MOVE ke latest ---
-$possibleDir = Get-ChildItem -Path $CmdlineDir -Directory | Where-Object { $_.Name -eq "cmdline-tools" } | Select-Object -First 1
-if ($possibleDir) {
+$possibleDir = (Get-ChildItem -Path $CmdlineDir -Directory | Where-Object { $_.Name -eq "cmdline-tools" } | Select-Object -First 1)
+
+if ($null -ne $possibleDir) {
+    $sourcePath = $possibleDir.FullName  # fix: pastikan string path
     if (Test-Path -LiteralPath $LatestDir) { Remove-Item -LiteralPath $LatestDir -Recurse -Force }
-    Move-Item -LiteralPath $possibleDir.FullName -Destination $LatestDir -Force
+    Move-Item -LiteralPath $sourcePath -Destination $LatestDir -Force
 }
 Remove-Item $ZipPath -Force -ErrorAction SilentlyContinue
 
@@ -131,5 +134,4 @@ Write-Host "📂 SDK root: $SdkRoot"
 Write-Host "👉 Restart terminal/VSCode agar PATH baru terbaca."
 Write-Host "👉 Tes dengan:  sdkmanager --list"
 Write-Host ""
-# Pause agar log bisa terbaca
 Read-Host -Prompt "Tekan Enter untuk menutup jendela"
