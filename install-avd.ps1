@@ -19,7 +19,7 @@ $ErrorActionPreference = "Stop"
 $AndroidRoot    = "C:\Android"
 $CmdlineDir     = "$AndroidRoot\cmdline-tools"
 $LatestDir      = "$CmdlineDir\latest"
-$DownloadUrl    = "https://dl.google.com/android/repository/commandlinetools-win-11076708_latest.zip"
+$DownloadUrl    = "https://dl.google.com/android/repository/commandlinetools-win-13114758_latest.zip"
 $ZipPath        = "$env:TEMP\commandlinetools.zip"
 
 Write-Host "📥 Downloading Android Command Line Tools..."
