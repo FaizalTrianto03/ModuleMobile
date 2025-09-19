@@ -31,63 +31,147 @@ if (-not (Test-Administrator)) {
 
 Write-Host "✅ Running with Administrator privileges" -ForegroundColor Green
 
-# --- HYPER-V CHECK AND ENABLE ---
+# --- VIRTUALIZATION FEATURES CHECK AND ENABLE ---
 Write-Host ""
-Write-Host "🔍 Checking Hyper-V status..." -ForegroundColor Cyan
+Write-Host "🔍 Checking Windows virtualization features..." -ForegroundColor Cyan
+
+# Initialize tracking variables
+$restartRequired = $false
+$enabledFeatures = @()
+$skippedFeatures = @()
+
+# Define features to check and enable
+$virtualizationFeatures = @(
+    @{
+        Name = "Microsoft-Hyper-V-All"
+        DisplayName = "Hyper-V"
+        Description = "Core virtualization platform for Windows"
+    },
+    @{
+        Name = "HypervisorPlatform"
+        DisplayName = "Windows Hypervisor Platform"
+        Description = "Allows third-party virtualization apps to use Hyper-V"
+    },
+    @{
+        Name = "VirtualMachinePlatform"
+        DisplayName = "Virtual Machine Platform"
+        Description = "Required for WSL2 and other virtualization technologies"
+    }
+)
 
 try {
-    # Check if Hyper-V feature is available and enabled
-    $hyperVFeature = Get-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V-All
-    $hyperVEnabled = $hyperVFeature.State -eq "Enabled"
+    # Check current status of all features
+    $featureStatus = @{}
+    $allFeaturesEnabled = $true
     
-    if ($hyperVEnabled) {
-        Write-Host "✅ Hyper-V is already enabled" -ForegroundColor Green
-    } else {
-        Write-Host "⚠️ Hyper-V is not enabled" -ForegroundColor Yellow
-        Write-Host "🎮 Hyper-V is required for Android Emulator optimal performance" -ForegroundColor Cyan
+    Write-Host "📋 Current virtualization features status:" -ForegroundColor Cyan
+    
+    foreach ($feature in $virtualizationFeatures) {
+        try {
+            $featureInfo = Get-WindowsOptionalFeature -Online -FeatureName $feature.Name
+            $isEnabled = $featureInfo.State -eq "Enabled"
+            $featureStatus[$feature.Name] = $isEnabled
+            
+            if ($isEnabled) {
+                Write-Host "  ✅ $($feature.DisplayName): Enabled" -ForegroundColor Green
+            } else {
+                Write-Host "  ❌ $($feature.DisplayName): Disabled" -ForegroundColor Red
+                $allFeaturesEnabled = $false
+            }
+        } catch {
+            Write-Host "  ⚠️ $($feature.DisplayName): Could not check status" -ForegroundColor Yellow
+            $featureStatus[$feature.Name] = $false
+            $allFeaturesEnabled = $false
+        }
+    }
+    
+    if ($allFeaturesEnabled) {
         Write-Host ""
-        Write-Host "Would you like to enable Hyper-V now? (System restart will be required)" -ForegroundColor Yellow
-        Write-Host "[Y] Yes, enable Hyper-V" -ForegroundColor Green
-        Write-Host "[N] No, skip Hyper-V (emulator may run slower)" -ForegroundColor Red
+        Write-Host "✅ All virtualization features are already enabled!" -ForegroundColor Green
+        Write-Host "🎮 Android Emulator will have optimal performance" -ForegroundColor Cyan
+    } else {
+        Write-Host ""
+        Write-Host "⚠️ Some virtualization features are not enabled" -ForegroundColor Yellow
+        Write-Host "🎮 These features are required for optimal Android Emulator performance" -ForegroundColor Cyan
+        Write-Host ""
+        Write-Host "📝 Benefits of enabling these features:" -ForegroundColor Cyan
+        Write-Host "  • Hyper-V: Core Windows virtualization platform" -ForegroundColor White
+        Write-Host "  • Windows Hypervisor Platform: Better compatibility with third-party emulators" -ForegroundColor White
+        Write-Host "  • Virtual Machine Platform: Required for WSL2 and modern virtualization" -ForegroundColor White
+        Write-Host ""
+        Write-Host "Would you like to enable the missing virtualization features?" -ForegroundColor Yellow
+        Write-Host "(System restart will be required)" -ForegroundColor Red
+        Write-Host ""
+        Write-Host "[Y] Yes, enable all missing features" -ForegroundColor Green
+        Write-Host "[N] No, skip virtualization setup (emulator may run slower)" -ForegroundColor Red
         Write-Host ""
         
         do {
-            $hyperVChoice = Read-Host "Enable Hyper-V? (Y/N)"
-            switch ($hyperVChoice.ToUpper()) {
+            $virtualizationChoice = Read-Host "Enable virtualization features? (Y/N)"
+            switch ($virtualizationChoice.ToUpper()) {
                 "Y" {
                     Write-Host ""
-                    Write-Host "🔧 Enabling Hyper-V..." -ForegroundColor Yellow
-                    Write-Host "This may take a few minutes..." -ForegroundColor Cyan
+                    Write-Host "🔧 Enabling virtualization features..." -ForegroundColor Yellow
+                    Write-Host "This may take several minutes..." -ForegroundColor Cyan
                     
-                    try {
-                        Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All -NoRestart
-                        Write-Host "✅ Hyper-V has been enabled successfully!" -ForegroundColor Green
+                    foreach ($feature in $virtualizationFeatures) {
+                        if (-not $featureStatus[$feature.Name]) {
+                            Write-Host ""
+                            Write-Host "⚙️ Enabling $($feature.DisplayName)..." -ForegroundColor Yellow
+                            Write-Host "   $($feature.Description)" -ForegroundColor Gray
+                            
+                            try {
+                                Enable-WindowsOptionalFeature -Online -FeatureName $feature.Name -All -NoRestart
+                                Write-Host "✅ $($feature.DisplayName) enabled successfully!" -ForegroundColor Green
+                                $enabledFeatures += $feature.DisplayName
+                                $restartRequired = $true
+                            } catch {
+                                Write-Host "❌ Failed to enable $($feature.DisplayName): $($_.Exception.Message)" -ForegroundColor Red
+                                Write-Host "💡 Manual command: Enable-WindowsOptionalFeature -Online -FeatureName $($feature.Name) -All" -ForegroundColor Gray
+                                $skippedFeatures += $feature.DisplayName
+                            }
+                        } else {
+                            Write-Host "✅ $($feature.DisplayName) was already enabled" -ForegroundColor Green
+                        }
+                    }
+                    
+                    Write-Host ""
+                    if ($enabledFeatures.Count -gt 0) {
+                        Write-Host "✅ Successfully enabled features:" -ForegroundColor Green
+                        foreach ($feature in $enabledFeatures) {
+                            Write-Host "  • $feature" -ForegroundColor White
+                        }
+                    }
+                    
+                    if ($skippedFeatures.Count -gt 0) {
+                        Write-Host "⚠️ Features that failed to enable:" -ForegroundColor Yellow
+                        foreach ($feature in $skippedFeatures) {
+                            Write-Host "  • $feature" -ForegroundColor White
+                        }
+                    }
+                    
+                    if ($restartRequired) {
+                        Write-Host ""
                         Write-Host "⚠️ IMPORTANT: System restart will be required after installation completes" -ForegroundColor Red
-                        $restartRequired = $true
-                    } catch {
-                        Write-Host "❌ Failed to enable Hyper-V: $($_.Exception.Message)" -ForegroundColor Red
-                        Write-Host "💡 You can manually enable it later via Windows Features or run:" -ForegroundColor Yellow
-                        Write-Host "   Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All" -ForegroundColor Gray
-                        $restartRequired = $false
                     }
                     break
                 }
                 "N" {
                     Write-Host ""
-                    Write-Host "⏭️ Skipping Hyper-V enablement" -ForegroundColor Yellow
+                    Write-Host "⏭️ Skipping virtualization features enablement" -ForegroundColor Yellow
                     Write-Host "💡 Note: Android Emulator will use software acceleration (may be slower)" -ForegroundColor Cyan
-                    $restartRequired = $false
+                    Write-Host "🔧 You can enable these features manually later via Windows Features" -ForegroundColor Gray
                     break
                 }
                 default {
                     Write-Host "❌ Invalid choice. Please enter Y or N." -ForegroundColor Red
                 }
             }
-        } while ($hyperVChoice.ToUpper() -notin @("Y", "N"))
+        } while ($virtualizationChoice.ToUpper() -notin @("Y", "N"))
     }
 } catch {
-    Write-Host "⚠️ Could not check Hyper-V status: $($_.Exception.Message)" -ForegroundColor Yellow
-    Write-Host "💡 Hyper-V check skipped - continuing with installation..." -ForegroundColor Cyan
+    Write-Host "⚠️ Could not check virtualization features status: $($_.Exception.Message)" -ForegroundColor Yellow
+    Write-Host "💡 Virtualization check skipped - continuing with installation..." -ForegroundColor Cyan
     $restartRequired = $false
 }
 
@@ -518,12 +602,37 @@ Write-Host "   • Android SDK Tools" -ForegroundColor White
 Write-Host "   • Android 34 (API Level 34)" -ForegroundColor White
 Write-Host "   • Build Tools 34.0.0" -ForegroundColor White
 
-if ($restartRequired) {
-    Write-Host "   • Hyper-V (requires restart)" -ForegroundColor Yellow
-} else {
-    if ($hyperVEnabled) {
-        Write-Host "   • Hyper-V (already enabled)" -ForegroundColor Green
+# Show virtualization features status
+if ($enabledFeatures.Count -gt 0) {
+    Write-Host ""
+    Write-Host "🎮 Enabled Virtualization Features:" -ForegroundColor Green
+    foreach ($feature in $enabledFeatures) {
+        Write-Host "   • $feature (requires restart)" -ForegroundColor Yellow
     }
+} else {
+    # Check what was already enabled
+    $alreadyEnabledFeatures = @()
+    foreach ($feature in $virtualizationFeatures) {
+        if ($featureStatus[$feature.Name]) {
+            $alreadyEnabledFeatures += $feature.DisplayName
+        }
+    }
+    if ($alreadyEnabledFeatures.Count -gt 0) {
+        Write-Host ""
+        Write-Host "🎮 Virtualization Features (already enabled):" -ForegroundColor Green
+        foreach ($feature in $alreadyEnabledFeatures) {
+            Write-Host "   • $feature" -ForegroundColor White
+        }
+    }
+}
+
+if ($skippedFeatures.Count -gt 0) {
+    Write-Host ""
+    Write-Host "⚠️ Virtualization Features (failed to enable):" -ForegroundColor Red
+    foreach ($feature in $skippedFeatures) {
+        Write-Host "   • $feature" -ForegroundColor White
+    }
+    Write-Host "💡 You can enable these manually via Windows Features" -ForegroundColor Gray
 }
 
 Write-Host ""
