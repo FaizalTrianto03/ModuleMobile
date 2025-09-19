@@ -1,136 +1,208 @@
 <#
 .SYNOPSIS
-  Install Android Command Line Tools (avdmanager, sdkmanager, emulator) on Windows.
+  Install Android Command Line Tools (avdmanager, sdkmanager, emulator) on Windows
+  following proper Android SDK folder structure with System environment variables.
 
 .DESCRIPTION
-  - Download Android SDK Command Line Tools
-  - Extract ke C:\android\sdk\cmdline-tools\latest
-  - Update PATH di System Environment (requires admin)
-  - Restart terminal untuk aktif
-
-.NOTES
-  Jalankan elevated (Admin).
-  Biasanya dipanggil via bootstrapper:
-    irm https://raw.githubusercontent.com/<username>/<repo>/main/install.ps1 | iex
+  - Check for Administrator privileges
+  - Download dengan HttpClient (lebih cepat dari Invoke-WebRequest)
+  - Extract ke C:\android\sdk\cmdline-tools\latest (proper Android SDK structure)
+  - Update PATH di System scope (requires admin)
+  - Follow official Android SDK folder structure guidelines
 #>
 
-param()
 $ErrorActionPreference = "Stop"
 
-function Assert-RunAsAdmin {
-    $id = [Security.Principal.WindowsIdentity]::GetCurrent()
-    $principal = New-Object Security.Principal.WindowsPrincipal($id)
-    if (-not $principal.IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator)) {
-        Write-Error "❌ Script harus dijalankan sebagai Administrator!"
-        exit 1
-    }
+# --- ADMIN CHECK ---
+function Test-Administrator {
+    $currentUser = [Security.Principal.WindowsIdentity]::GetCurrent()
+    $principal = New-Object Security.Principal.WindowsPrincipal($currentUser)
+    return $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 }
-Assert-RunAsAdmin
 
-# --- CONFIG ---
-$SdkRoot     = "C:\android\sdk"
-$CmdlineDir  = Join-Path $SdkRoot "cmdline-tools"
-$LatestDir   = Join-Path $CmdlineDir "latest"
-$DownloadUrl = "https://dl.google.com/android/repository/commandlinetools-win-13114758_latest.zip"
-$ZipPath     = Join-Path $env:TEMP "commandlinetools.zip"
+if (-not (Test-Administrator)) {
+    Write-Host "❌ ERROR: This script requires Administrator privileges!" -ForegroundColor Red
+    Write-Host "👉 Please run PowerShell as Administrator and try again." -ForegroundColor Yellow
+    Write-Host ""
+    Write-Host "Right-click on PowerShell → 'Run as Administrator'" -ForegroundColor Cyan
+    pause
+    exit 1
+}
 
-# --- DOWNLOAD FUNCTIONS ---
-function Download-WithHttpClient {
-    param($url, $outfile)
-    Write-Host "📥 (HttpClient) Downloading $url ..."
+Write-Host "✅ Running with Administrator privileges" -ForegroundColor Green
+
+# --- CONFIG (Following proper Android SDK structure) ---
+$AndroidSdkRoot = "C:\android\sdk"
+$CmdlineDir     = "$AndroidSdkRoot\cmdline-tools"
+$LatestDir      = "$CmdlineDir\latest"
+$PlatformTools  = "$AndroidSdkRoot\platform-tools"
+$EmulatorDir    = "$AndroidSdkRoot\emulator"
+$DownloadUrl    = "https://dl.google.com/android/repository/commandlinetools-win-13114758_latest.zip"
+$ZipPath        = "$env:TEMP\commandlinetools.zip"
+
+# --- FAST DOWNLOAD FUNCTION ---
+function Download-File($url, $outFile) {
+    Write-Host "📥 Downloading: $url"
+    Add-Type -AssemblyName System.Net.Http
+    $client = New-Object System.Net.Http.HttpClient
+    $client.Timeout = [System.TimeSpan]::FromMinutes(15)
+    
     try {
-        Add-Type -ErrorAction SilentlyContinue -AssemblyName System.Net.Http
-        $client = New-Object System.Net.Http.HttpClient
-        $client.Timeout = [System.TimeSpan]::FromMinutes(20)
-        $resp = $client.GetAsync($url, [System.Net.Http.HttpCompletionOption]::ResponseHeadersRead).Result
-        $resp.EnsureSuccessStatusCode()
-        $total = $resp.Content.Headers.ContentLength
-        $stream = $resp.Content.ReadAsStreamAsync().Result
-        $fs = [System.IO.File]::Create($outfile)
-        $buffer = New-Object byte[] 65536
-        $done = 0
+        $response = $client.GetAsync($url, [System.Net.Http.HttpCompletionOption]::ResponseHeadersRead).Result
+        $response.EnsureSuccessStatusCode()
+
+        $total = $response.Content.Headers.ContentLength
+        $stream = $response.Content.ReadAsStreamAsync().Result
+        $fileStream = [System.IO.File]::Create($outFile)
+
+        $buffer = New-Object byte[] 8192
+        $totalRead = 0
+        $lastProgress = -1
+
         while (($read = $stream.Read($buffer, 0, $buffer.Length)) -gt 0) {
-            $fs.Write($buffer, 0, $read)
-            $done += $read
+            $fileStream.Write($buffer, 0, $read)
+            $totalRead += $read
             if ($total) {
-                $pct = [int](($done / $total) * 100)
-                Write-Progress -Activity "Downloading" -Status "$pct% Complete ($([math]::Round($done/1MB,2)) MB / $([math]::Round($total/1MB,2)) MB)" -PercentComplete $pct
+                $progress = [math]::Floor(($totalRead / $total) * 100)
+                if ($progress -ne $lastProgress) {
+                    Write-Progress -Activity "Downloading Android Command Line Tools..." -Status "$progress% Complete" -PercentComplete $progress
+                    $lastProgress = $progress
+                }
             }
         }
-        $fs.Close(); $stream.Close(); $client.Dispose()
-        Write-Progress -Activity "Downloading" -Completed
-        Write-Host "✅ Downloaded to $outfile"
-        return $true
-    } catch {
-        Write-Warning "HttpClient download failed: $($_.Exception.Message)"
-        return $false
+
+        $fileStream.Close()
+        $stream.Close()
+        Write-Host "✅ Download complete: $outFile" -ForegroundColor Green
+    }
+    finally {
+        $client.Dispose()
     }
 }
 
-function Download-Fallback {
-    param($url, $outfile)
-    Write-Host "📥 (Fallback) Downloading $url ..."
-    try {
-        Invoke-WebRequest -Uri $url -OutFile $outfile -UseBasicParsing -TimeoutSec 300
-        Write-Host "✅ Downloaded to $outfile"
-        return $true
-    } catch {
-        Write-Warning "Fallback download failed: $($_.Exception.Message)"
-        return $false
-    }
+# --- CREATE SDK ROOT DIRECTORY STRUCTURE ---
+Write-Host "📁 Creating Android SDK directory structure..."
+if (!(Test-Path $AndroidSdkRoot)) {
+    New-Item -ItemType Directory -Path $AndroidSdkRoot -Force | Out-Null
+    Write-Host "Created: $AndroidSdkRoot" -ForegroundColor Green
 }
 
-# --- STEP 1: DOWNLOAD ---
-if (-not (Test-Path $SdkRoot)) { New-Item -ItemType Directory -Path $SdkRoot -Force | Out-Null }
-$ok = Download-WithHttpClient -url $DownloadUrl -outfile $ZipPath
-if (-not $ok) { $ok = Download-Fallback -url $DownloadUrl -outfile $ZipPath }
-if (-not $ok) { Write-Error "❌ Gagal mendownload Command Line Tools"; exit 1 }
+if (!(Test-Path $CmdlineDir)) {
+    New-Item -ItemType Directory -Path $CmdlineDir -Force | Out-Null
+    Write-Host "Created: $CmdlineDir" -ForegroundColor Green
+}
 
-# --- STEP 2: EXTRACT ---
-if (-not (Test-Path $CmdlineDir)) { New-Item -ItemType Directory -Path $CmdlineDir -Force | Out-Null }
-Write-Host "📦 Extracting $ZipPath to $CmdlineDir ..."
+# --- DOWNLOAD ---
+Write-Host ""
+Download-File $DownloadUrl $ZipPath
+
+# --- EXTRACT ---
+Write-Host ""
+Write-Host "📦 Extracting Android Command Line Tools..."
 Expand-Archive -Path $ZipPath -DestinationPath $CmdlineDir -Force
 
-# --- STEP 3: MOVE ke latest ---
-$possibleDir = Get-ChildItem -Path $CmdlineDir -Directory | Where-Object { $_.Name -eq "cmdline-tools" } | Select-Object -ExpandProperty FullName -First 1
-
-if ($possibleDir -and (Test-Path -LiteralPath $possibleDir)) {
-    if (Test-Path -LiteralPath $LatestDir) { Remove-Item -LiteralPath $LatestDir -Recurse -Force }
-    Move-Item -LiteralPath $possibleDir -Destination $LatestDir -Force
-}
-Remove-Item $ZipPath -Force -ErrorAction SilentlyContinue
-
-# --- STEP 4: PASTIKAN FOLDER ---
-$requiredBins = @(
-    Join-Path $LatestDir "bin",
-    Join-Path $SdkRoot "platform-tools",
-    Join-Path $SdkRoot "emulator"
-)
-foreach ($p in $requiredBins) {
-    if (-not (Test-Path $p)) { New-Item -ItemType Directory -Path $p -Force | Out-Null }
+# Move extracted cmdline-tools to "latest" (proper structure)
+if (Test-Path "$CmdlineDir\cmdline-tools") {
+    if (Test-Path $LatestDir) { 
+        Remove-Item $LatestDir -Recurse -Force 
+        Write-Host "Removed existing latest directory" -ForegroundColor Yellow
+    }
+    Move-Item "$CmdlineDir\cmdline-tools" $LatestDir
+    Write-Host "✅ Moved to proper structure: $LatestDir" -ForegroundColor Green
 }
 
-# --- STEP 5: UPDATE PATH (System) ---
-Write-Host "⚙️ Updating System PATH..."
-$machinePath = [Environment]::GetEnvironmentVariable("Path", "Machine")
-$toAdd = @(
-    (Join-Path $LatestDir "bin"),
-    (Join-Path $SdkRoot "platform-tools"),
-    (Join-Path $SdkRoot "emulator")
-)
-foreach ($entry in $toAdd) {
-    if ($machinePath -notlike "*$entry*") {
-        $machinePath = $machinePath + ";" + $entry
+# Clean up download
+Remove-Item $ZipPath -Force
+Write-Host "🗑️ Cleaned up temporary files" -ForegroundColor Green
+
+# --- CREATE ADDITIONAL SDK DIRECTORIES ---
+Write-Host ""
+Write-Host "📁 Creating additional SDK directories..."
+$additionalDirs = @($PlatformTools, $EmulatorDir)
+foreach ($dir in $additionalDirs) {
+    if (!(Test-Path $dir)) {
+        New-Item -ItemType Directory -Path $dir -Force | Out-Null
+        Write-Host "Created: $dir" -ForegroundColor Green
     }
 }
-[Environment]::SetEnvironmentVariable("Path", $machinePath, "Machine")
-Write-Host "✔ System PATH updated."
 
-# --- STEP 6: SELESAI ---
+# --- SYSTEM ENVIRONMENT VARIABLES SETUP ---
 Write-Host ""
-Write-Host "🎉 Instalasi selesai!"
-Write-Host "📂 SDK root: $SdkRoot"
-Write-Host "👉 Restart terminal/VSCode agar PATH baru terbaca."
-Write-Host "👉 Tes dengan:  sdkmanager --list"
+Write-Host "⚙️ Setting up System environment variables..."
+
+# Set ANDROID_SDK_ROOT
+[Environment]::SetEnvironmentVariable("ANDROID_SDK_ROOT", $AndroidSdkRoot, "Machine")
+Write-Host "✅ ANDROID_SDK_ROOT = $AndroidSdkRoot" -ForegroundColor Green
+
+# Update System PATH
+$envPaths = @(
+    "$LatestDir\bin",
+    $PlatformTools,
+    $EmulatorDir
+)
+
+$currentSystemPath = [Environment]::GetEnvironmentVariable("Path", "Machine")
+$pathUpdated = $false
+
+foreach ($p in $envPaths) {
+    if ($currentSystemPath -notlike "*$p*") {
+        $currentSystemPath = "$currentSystemPath;$p"
+        $pathUpdated = $true
+        Write-Host "✅ Added to PATH: $p" -ForegroundColor Green
+    } else {
+        Write-Host "⚠️ Already in PATH: $p" -ForegroundColor Yellow
+    }
+}
+
+if ($pathUpdated) {
+    [Environment]::SetEnvironmentVariable("Path", $currentSystemPath, "Machine")
+    Write-Host "✅ System PATH updated successfully!" -ForegroundColor Green
+} else {
+    Write-Host "ℹ️ All paths already exist in System PATH" -ForegroundColor Cyan
+}
+
+# --- VERIFICATION ---
 Write-Host ""
-Read-Host -Prompt "Tekan Enter untuk menutup jendela"
+Write-Host "🔍 Verifying installation..."
+$binPath = "$LatestDir\bin"
+$requiredFiles = @("sdkmanager.bat", "avdmanager.bat")
+
+foreach ($file in $requiredFiles) {
+    $fullPath = Join-Path $binPath $file
+    if (Test-Path $fullPath) {
+        Write-Host "✅ Found: $file" -ForegroundColor Green
+    } else {
+        Write-Host "❌ Missing: $file" -ForegroundColor Red
+    }
+}
+
+# --- FINAL FOLDER STRUCTURE DISPLAY ---
+Write-Host ""
+Write-Host "📋 Final Android SDK folder structure:" -ForegroundColor Cyan
+Write-Host "C:/android/sdk/ (SDK Root)" -ForegroundColor White
+Write-Host "├── cmdline-tools/" -ForegroundColor White
+Write-Host "│   └── latest/" -ForegroundColor White
+Write-Host "│       ├── lib/" -ForegroundColor White
+Write-Host "│       └── bin/" -ForegroundColor White
+Write-Host "│           ├── avdmanager.bat" -ForegroundColor White
+Write-Host "│           └── sdkmanager.bat" -ForegroundColor White
+Write-Host "├── platform-tools/ (for future use)" -ForegroundColor Gray
+Write-Host "└── emulator/ (for future use)" -ForegroundColor Gray
+
+# --- SUCCESS MESSAGE ---
+Write-Host ""
+Write-Host "🎉 Android SDK Command Line Tools installation completed!" -ForegroundColor Green
+Write-Host ""
+Write-Host "📝 Next Steps:" -ForegroundColor Yellow
+Write-Host "1. 🔄 Restart your terminal/command prompt to refresh environment variables"
+Write-Host "2. 🧪 Test the installation with: sdkmanager --list"
+Write-Host "3. 📱 Accept licenses with: sdkmanager --licenses"
+Write-Host "4. 📦 Install platform-tools with: sdkmanager platform-tools"
+Write-Host ""
+Write-Host "💡 Environment Variables Set:" -ForegroundColor Cyan
+Write-Host "   ANDROID_SDK_ROOT = $AndroidSdkRoot"
+Write-Host "   PATH includes cmdline-tools, platform-tools, and emulator directories"
+Write-Host ""
+Write-Host "🚀 You can now use Android SDK tools system-wide!" -ForegroundColor Green
+
+pause
