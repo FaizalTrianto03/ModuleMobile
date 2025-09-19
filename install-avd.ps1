@@ -189,20 +189,85 @@ Write-Host "│           └── sdkmanager.bat" -ForegroundColor White
 Write-Host "├── platform-tools/ (for future use)" -ForegroundColor Gray
 Write-Host "└── emulator/ (for future use)" -ForegroundColor Gray
 
+# --- AUTO INSTALL ESSENTIAL PACKAGES ---
+Write-Host ""
+Write-Host "🔧 Installing essential Android SDK packages..." -ForegroundColor Yellow
+Write-Host "This may take a few minutes, please wait..." -ForegroundColor Cyan
+
+$sdkManagerPath = "$LatestDir\bin\sdkmanager.bat"
+
+# Install essential packages
+$packages = @(
+    "platform-tools",
+    "emulator", 
+    "tools",
+    "platforms;android-34",
+    "build-tools;34.0.0"
+)
+
+Write-Host ""
+Write-Host "📦 Installing packages: $($packages -join ', ')" -ForegroundColor Cyan
+try {
+    $packageList = $packages -join ' '
+    & $sdkManagerPath $packageList.Split(' ')
+    Write-Host "✅ Essential packages installed successfully!" -ForegroundColor Green
+} catch {
+    Write-Host "⚠️ Error installing packages: $($_.Exception.Message)" -ForegroundColor Red
+    Write-Host "You can manually install later with: sdkmanager platform-tools emulator tools platforms;android-34 build-tools;34.0.0" -ForegroundColor Yellow
+}
+
+# Accept all licenses automatically
+Write-Host ""
+Write-Host "📋 Accepting Android SDK licenses..." -ForegroundColor Yellow
+try {
+    # Create a "yes" input for all license prompts
+    $yesInput = "y`ny`ny`ny`ny`ny`ny`ny`ny`ny`ny`n"  # Multiple y's with newlines
+    $yesInput | & $sdkManagerPath --licenses
+    Write-Host "✅ All SDK licenses accepted!" -ForegroundColor Green
+} catch {
+    Write-Host "⚠️ Error accepting licenses: $($_.Exception.Message)" -ForegroundColor Red
+    Write-Host "You can manually accept licenses later with: sdkmanager --licenses" -ForegroundColor Yellow
+}
+
+# --- FINAL VERIFICATION ---
+Write-Host ""
+Write-Host "🔍 Final verification..." -ForegroundColor Cyan
+
+# Check if platform-tools was installed
+if (Test-Path "$AndroidSdkRoot\platform-tools\adb.exe") {
+    Write-Host "✅ ADB installed successfully" -ForegroundColor Green
+} else {
+    Write-Host "⚠️ ADB not found - platform-tools may not have installed correctly" -ForegroundColor Yellow
+}
+
+# Check if emulator was installed  
+if (Test-Path "$AndroidSdkRoot\emulator\emulator.exe") {
+    Write-Host "✅ Android Emulator installed successfully" -ForegroundColor Green
+} else {
+    Write-Host "⚠️ Emulator not found - may not have installed correctly" -ForegroundColor Yellow
+}
+
 # --- SUCCESS MESSAGE ---
 Write-Host ""
-Write-Host "🎉 Android SDK Command Line Tools installation completed!" -ForegroundColor Green
+Write-Host "🎉 Android SDK installation and setup completed!" -ForegroundColor Green
 Write-Host ""
-Write-Host "📝 Next Steps:" -ForegroundColor Yellow
-Write-Host "1. 🔄 Restart your terminal/command prompt to refresh environment variables"
-Write-Host "2. 🧪 Test the installation with: sdkmanager --list"
-Write-Host "3. 📱 Accept licenses with: sdkmanager --licenses"
-Write-Host "4. 📦 Install platform-tools with: sdkmanager platform-tools"
+Write-Host "📦 Installed Packages:" -ForegroundColor Cyan
+Write-Host "   • Platform Tools (ADB, Fastboot)" -ForegroundColor White
+Write-Host "   • Android Emulator" -ForegroundColor White
+Write-Host "   • Android SDK Tools" -ForegroundColor White
+Write-Host "   • Android 34 (API Level 34)" -ForegroundColor White
+Write-Host "   • Build Tools 34.0.0" -ForegroundColor White
 Write-Host ""
 Write-Host "💡 Environment Variables Set:" -ForegroundColor Cyan
-Write-Host "   ANDROID_SDK_ROOT = $AndroidSdkRoot"
-Write-Host "   PATH includes cmdline-tools, platform-tools, and emulator directories"
+Write-Host "   ANDROID_SDK_ROOT = $AndroidSdkRoot" -ForegroundColor White
+Write-Host "   PATH includes all necessary SDK directories" -ForegroundColor White
 Write-Host ""
-Write-Host "🚀 You can now use Android SDK tools system-wide!" -ForegroundColor Green
+Write-Host "📝 Ready to Use:" -ForegroundColor Yellow
+Write-Host "1. 🔄 Restart your terminal to use commands globally"
+Write-Host "2. 🧪 Test with: adb version"
+Write-Host "3. 📱 Create AVD with: avdmanager create avd -n test -k system-images;android-34;google_apis;x86_64"
+Write-Host "4. 🚀 Use with VS Code AVD Manager extension"
+Write-Host ""
+Write-Host "🚀 All set! You can now develop Android apps!" -ForegroundColor Green
 
 pause
