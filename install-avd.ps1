@@ -898,7 +898,7 @@ $aehd_exists = $false
 $gvm_exists = $false
 
 try {
-    $aehd_service = sc.exe query aehd 2>$null
+    $null = & sc.exe query aehd 2>$null
     if ($LASTEXITCODE -eq 0) {
         $aehd_exists = $true
         Write-Host $strings.ServiceExists.Replace("SERVICE", "AEHD") -ForegroundColor Green
@@ -908,7 +908,7 @@ try {
 }
 
 try {
-    $gvm_service = sc.exe query gvm 2>$null
+    $null = & sc.exe query gvm 2>$null
     if ($LASTEXITCODE -eq 0) {
         $gvm_exists = $true
         Write-Host $strings.ServiceExists.Replace("SERVICE", "GVM") -ForegroundColor Green
@@ -949,7 +949,7 @@ if (-not $aehd_exists -or -not $gvm_exists) {
             Write-Host $strings.VerifyingDriver -ForegroundColor Cyan
             
             try {
-                $aehd_service_after = sc.exe query aehd 2>$null
+                $null = & sc.exe query aehd 2>$null
                 if ($LASTEXITCODE -eq 0) {
                     Write-Host $strings.ServiceNowExists.Replace("SERVICE", "AEHD") -ForegroundColor Green
                 } else {
@@ -960,7 +960,7 @@ if (-not $aehd_exists -or -not $gvm_exists) {
             }
             
             try {
-                $gvm_service_after = sc.exe query gvm 2>$null
+                $null = & sc.exe query gvm 2>$null
                 if ($LASTEXITCODE -eq 0) {
                     Write-Host $strings.ServiceNowExists.Replace("SERVICE", "GVM") -ForegroundColor Green
                 } else {
@@ -1090,7 +1090,7 @@ Write-Host ""
 Write-Host $strings.HypervisorServices -ForegroundColor Cyan
 
 try {
-    $aehd_final = sc.exe query aehd 2>$null
+    $null = & sc.exe query aehd 2>$null
     if ($LASTEXITCODE -eq 0) {
         Write-Host $strings.ServiceInstalled.Replace("SERVICE", "AEHD") -ForegroundColor Green
     } else {
@@ -1101,7 +1101,7 @@ try {
 }
 
 try {
-    $gvm_final = sc.exe query gvm 2>$null
+    $null = & sc.exe query gvm 2>$null
     if ($LASTEXITCODE -eq 0) {
         Write-Host $strings.ServiceInstalled.Replace("SERVICE", "GVM") -ForegroundColor Green
     } else {
