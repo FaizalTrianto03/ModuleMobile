@@ -898,8 +898,8 @@ $aehd_exists = $false
 $gvm_exists = $false
 
 try {
-    $result = & cmd.exe /c "sc query aehd >nul 2>&1 && echo SUCCESS || echo FAILED"
-    if ($result -eq "SUCCESS") {
+    $service = Get-Service -Name "aehd" -ErrorAction SilentlyContinue
+    if ($service) {
         $aehd_exists = $true
         Write-Host $strings.ServiceExists.Replace("SERVICE", "AEHD") -ForegroundColor Green
     }
@@ -908,8 +908,8 @@ try {
 }
 
 try {
-    $result = & cmd.exe /c "sc query gvm >nul 2>&1 && echo SUCCESS || echo FAILED"
-    if ($result -eq "SUCCESS") {
+    $service = Get-Service -Name "gvm" -ErrorAction SilentlyContinue
+    if ($service) {
         $gvm_exists = $true
         Write-Host $strings.ServiceExists.Replace("SERVICE", "GVM") -ForegroundColor Green
     }
@@ -949,8 +949,8 @@ if (-not $aehd_exists -or -not $gvm_exists) {
             Write-Host $strings.VerifyingDriver -ForegroundColor Cyan
             
             try {
-                $result = & cmd.exe /c "sc query aehd >nul 2>&1 && echo SUCCESS || echo FAILED"
-                if ($result -eq "SUCCESS") {
+                $service = Get-Service -Name "aehd" -ErrorAction SilentlyContinue
+                if ($service) {
                     Write-Host $strings.ServiceNowExists.Replace("SERVICE", "AEHD") -ForegroundColor Green
                 } else {
                     Write-Host $strings.ServiceStillNotFound.Replace("SERVICE", "AEHD") -ForegroundColor Yellow
@@ -960,8 +960,8 @@ if (-not $aehd_exists -or -not $gvm_exists) {
             }
             
             try {
-                $result = & cmd.exe /c "sc query gvm >nul 2>&1 && echo SUCCESS || echo FAILED"
-                if ($result -eq "SUCCESS") {
+                $service = Get-Service -Name "gvm" -ErrorAction SilentlyContinue
+                if ($service) {
                     Write-Host $strings.ServiceNowExists.Replace("SERVICE", "GVM") -ForegroundColor Green
                 } else {
                     Write-Host $strings.ServiceStillNotFound.Replace("SERVICE", "GVM") -ForegroundColor Yellow
@@ -1090,8 +1090,8 @@ Write-Host ""
 Write-Host $strings.HypervisorServices -ForegroundColor Cyan
 
 try {
-    $result = & cmd.exe /c "sc query aehd >nul 2>&1 && echo SUCCESS || echo FAILED"
-    if ($result -eq "SUCCESS") {
+    $service = Get-Service -Name "aehd" -ErrorAction SilentlyContinue
+    if ($service) {
         Write-Host $strings.ServiceInstalled.Replace("SERVICE", "AEHD") -ForegroundColor Green
     } else {
         Write-Host $strings.ServiceNotFound.Replace("SERVICE", "AEHD") -ForegroundColor Red
@@ -1101,8 +1101,8 @@ try {
 }
 
 try {
-    $result = & cmd.exe /c "sc query gvm >nul 2>&1 && echo SUCCESS || echo FAILED"
-    if ($result -eq "SUCCESS") {
+    $service = Get-Service -Name "gvm" -ErrorAction SilentlyContinue
+    if ($service) {
         Write-Host $strings.ServiceInstalled.Replace("SERVICE", "GVM") -ForegroundColor Green
     } else {
         Write-Host $strings.ServiceNotFound.Replace("SERVICE", "GVM") -ForegroundColor Red
