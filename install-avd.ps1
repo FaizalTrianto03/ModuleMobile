@@ -1,4 +1,4 @@
-#
+<#
 .SYNOPSIS
   Install Android Command Line Tools (avdmanager, sdkmanager, emulator) on Windows
   following proper Android SDK folder structure with System environment variables.
@@ -9,7 +9,6 @@
   - Extract ke C:\android\sdk\cmdline-tools\latest (proper Android SDK structure)
   - Update PATH di System scope (requires admin)
   - Follow official Android SDK folder structure guidelines
-  - Install Android Emulator Hypervisor Driver if needed
 #>
 
 $ErrorActionPreference = "Stop"
@@ -32,7 +31,7 @@ if (-not (Test-Administrator)) {
 
 Write-Host "✅ Running with Administrator privileges" -ForegroundColor Green
 
-# --- VIRTUALIZATION FEATURES CHECK ---
+# --- VIRTUALIZATION FEATURES CHECK AND ENABLE ---
 Write-Host ""
 Write-Host "🔍 Checking Windows virtualization features..." -ForegroundColor Cyan
 
@@ -41,26 +40,29 @@ $restartRequired = $false
 $enabledFeatures = @()
 $skippedFeatures = @()
 
-# Define features to check and enable (removed HypervisorPlatform)
+# Define features to check and enable
 $virtualizationFeatures = @(
     @{
         Name = "Microsoft-Hyper-V-All"
         DisplayName = "Hyper-V"
-        Description = "Core virtualization platform for Windows (optional but recommended for better performance)"
-        Required = $false  # Not required anymore
+        Description = "Core virtualization platform for Windows"
+    },
+    @{
+        Name = "HypervisorPlatform"
+        DisplayName = "Windows Hypervisor Platform"
+        Description = "Allows third-party virtualization apps to use Hyper-V"
     },
     @{
         Name = "VirtualMachinePlatform"
         DisplayName = "Virtual Machine Platform"
         Description = "Required for WSL2 and other virtualization technologies"
-        Required = $true
     }
 )
 
 try {
     # Check current status of all features
     $featureStatus = @{}
-    $allRequiredFeaturesEnabled = $true
+    $allFeaturesEnabled = $true
     
     Write-Host "📋 Current virtualization features status:" -ForegroundColor Cyan
     
@@ -74,64 +76,46 @@ try {
                 Write-Host "  ✅ $($feature.DisplayName): Enabled" -ForegroundColor Green
             } else {
                 Write-Host "  ❌ $($feature.DisplayName): Disabled" -ForegroundColor Red
-                if ($feature.Required) {
-                    $allRequiredFeaturesEnabled = $false
-                }
-            }
-            
-            # Special info for Hyper-V
-            if ($feature.Name -eq "Microsoft-Hyper-V-All" -and $isEnabled) {
-                Write-Host "    🚀 Android Emulator will use Hyper-V for optimal performance" -ForegroundColor Green
-            } elseif ($feature.Name -eq "Microsoft-Hyper-V-All" -and -not $isEnabled) {
-                Write-Host "    💡 Android Emulator will use Android Emulator Hypervisor Driver instead" -ForegroundColor Yellow
+                $allFeaturesEnabled = $false
             }
         } catch {
             Write-Host "  ⚠️ $($feature.DisplayName): Could not check status" -ForegroundColor Yellow
             $featureStatus[$feature.Name] = $false
-            if ($feature.Required) {
-                $allRequiredFeaturesEnabled = $false
-            }
+            $allFeaturesEnabled = $false
         }
     }
     
-    if ($allRequiredFeaturesEnabled) {
+    if ($allFeaturesEnabled) {
         Write-Host ""
-        Write-Host "✅ All required virtualization features are enabled!" -ForegroundColor Green
-        
-        # Check if Hyper-V is enabled
-        $hyperVEnabled = $featureStatus["Microsoft-Hyper-V-All"]
-        if ($hyperVEnabled) {
-            Write-Host "🎮 Android Emulator will use Hyper-V for maximum performance" -ForegroundColor Cyan
-        } else {
-            Write-Host "🎮 Android Emulator will use Android Emulator Hypervisor Driver" -ForegroundColor Cyan
-        }
+        Write-Host "✅ All virtualization features are already enabled!" -ForegroundColor Green
+        Write-Host "🎮 Android Emulator will have optimal performance" -ForegroundColor Cyan
     } else {
         Write-Host ""
-        Write-Host "⚠️ Some required virtualization features are not enabled" -ForegroundColor Yellow
+        Write-Host "⚠️ Some virtualization features are not enabled" -ForegroundColor Yellow
+        Write-Host "🎮 These features are required for optimal Android Emulator performance" -ForegroundColor Cyan
         Write-Host ""
-        Write-Host "📝 Required features:" -ForegroundColor Cyan
-        Write-Host "  • Virtual Machine Platform: Required for modern virtualization" -ForegroundColor White
+        Write-Host "📝 Benefits of enabling these features:" -ForegroundColor Cyan
+        Write-Host "  • Hyper-V: Core Windows virtualization platform" -ForegroundColor White
+        Write-Host "  • Windows Hypervisor Platform: Better compatibility with third-party emulators" -ForegroundColor White
+        Write-Host "  • Virtual Machine Platform: Required for WSL2 and modern virtualization" -ForegroundColor White
         Write-Host ""
-        Write-Host "📝 Optional features:" -ForegroundColor Cyan
-        Write-Host "  • Hyper-V: Better performance but will use Android Emulator Hypervisor Driver if disabled" -ForegroundColor White
-        Write-Host ""
-        Write-Host "Would you like to enable the missing required features?" -ForegroundColor Yellow
+        Write-Host "Would you like to enable the missing virtualization features?" -ForegroundColor Yellow
         Write-Host "(System restart will be required)" -ForegroundColor Red
         Write-Host ""
-        Write-Host "[Y] Yes, enable missing required features" -ForegroundColor Green
-        Write-Host "[N] No, skip virtualization setup" -ForegroundColor Red
+        Write-Host "[Y] Yes, enable all missing features" -ForegroundColor Green
+        Write-Host "[N] No, skip virtualization setup (emulator may run slower)" -ForegroundColor Red
         Write-Host ""
         
         do {
-            $virtualizationChoice = Read-Host "Enable required virtualization features? (Y/N)"
+            $virtualizationChoice = Read-Host "Enable virtualization features? (Y/N)"
             switch ($virtualizationChoice.ToUpper()) {
                 "Y" {
                     Write-Host ""
-                    Write-Host "🔧 Enabling required virtualization features..." -ForegroundColor Yellow
+                    Write-Host "🔧 Enabling virtualization features..." -ForegroundColor Yellow
                     Write-Host "This may take several minutes..." -ForegroundColor Cyan
                     
                     foreach ($feature in $virtualizationFeatures) {
-                        if ($feature.Required -and -not $featureStatus[$feature.Name]) {
+                        if (-not $featureStatus[$feature.Name]) {
                             Write-Host ""
                             Write-Host "⚙️ Enabling $($feature.DisplayName)..." -ForegroundColor Yellow
                             Write-Host "   $($feature.Description)" -ForegroundColor Gray
@@ -146,8 +130,6 @@ try {
                                 Write-Host "💡 Manual command: Enable-WindowsOptionalFeature -Online -FeatureName $($feature.Name) -All" -ForegroundColor Gray
                                 $skippedFeatures += $feature.DisplayName
                             }
-                        } elseif (-not $feature.Required) {
-                            Write-Host "ℹ️ $($feature.DisplayName) is optional - skipping" -ForegroundColor Cyan
                         } else {
                             Write-Host "✅ $($feature.DisplayName) was already enabled" -ForegroundColor Green
                         }
@@ -352,7 +334,6 @@ $CmdlineDir     = "$AndroidSdkRoot\cmdline-tools"
 $LatestDir      = "$CmdlineDir\latest"
 $PlatformTools  = "$AndroidSdkRoot\platform-tools"
 $EmulatorDir    = "$AndroidSdkRoot\emulator"
-$ExtrasDir      = "$AndroidSdkRoot\extras\google\Android_Emulator_Hypervisor_Driver"
 $DownloadUrl    = "https://dl.google.com/android/repository/commandlinetools-win-13114758_latest.zip"
 $ZipPath        = "$env:TEMP\commandlinetools.zip"
 
@@ -503,8 +484,7 @@ Write-Host "│       └── bin/" -ForegroundColor White
 Write-Host "│           ├── avdmanager.bat" -ForegroundColor White
 Write-Host "│           └── sdkmanager.bat" -ForegroundColor White
 Write-Host "├── platform-tools/ (for future use)" -ForegroundColor Gray
-Write-Host "├── emulator/ (for future use)" -ForegroundColor Gray
-Write-Host "└── extras/ (for hypervisor driver)" -ForegroundColor Gray
+Write-Host "└── emulator/ (for future use)" -ForegroundColor Gray
 
 # --- AUTO INSTALL ESSENTIAL PACKAGES ---
 Write-Host ""
@@ -513,14 +493,13 @@ Write-Host "This may take a few minutes, please wait..." -ForegroundColor Cyan
 
 $sdkManagerPath = "$LatestDir\bin\sdkmanager.bat"
 
-# Install essential packages including hypervisor driver
+# Install essential packages
 $packages = @(
     "platform-tools",
     "emulator", 
     "tools",
     "platforms;android-34",
-    "build-tools;34.0.0",
-    "extras;google;Android_Emulator_Hypervisor_Driver"
+    "build-tools;34.0.0"
 )
 
 Write-Host ""
@@ -531,7 +510,7 @@ try {
     Write-Host "✅ Essential packages installed successfully!" -ForegroundColor Green
 } catch {
     Write-Host "⚠️ Error installing packages: $($_.Exception.Message)" -ForegroundColor Red
-    Write-Host "You can manually install later with: sdkmanager platform-tools emulator tools platforms;android-34 build-tools;34.0.0 extras;google;Android_Emulator_Hypervisor_Driver" -ForegroundColor Yellow
+    Write-Host "You can manually install later with: sdkmanager platform-tools emulator tools platforms;android-34 build-tools;34.0.0" -ForegroundColor Yellow
 }
 
 # Accept all licenses automatically
@@ -545,99 +524,6 @@ try {
 } catch {
     Write-Host "⚠️ Error accepting licenses: $($_.Exception.Message)" -ForegroundColor Red
     Write-Host "You can manually accept licenses later with: sdkmanager --licenses" -ForegroundColor Yellow
-}
-
-# --- ANDROID EMULATOR HYPERVISOR DRIVER CHECK AND INSTALLATION ---
-Write-Host ""
-Write-Host "🔍 Checking Android Emulator Hypervisor Driver services..." -ForegroundColor Cyan
-
-# Check if services exist
-$aehd_exists = $false
-$gvm_exists = $false
-
-try {
-    $aehd_service = sc.exe query aehd 2>$null
-    if ($LASTEXITCODE -eq 0) {
-        $aehd_exists = $true
-        Write-Host "✅ AEHD service exists" -ForegroundColor Green
-    }
-} catch {
-    # Service doesn't exist
-}
-
-try {
-    $gvm_service = sc.exe query gvm 2>$null
-    if ($LASTEXITCODE -eq 0) {
-        $gvm_exists = $true
-        Write-Host "✅ GVM service exists" -ForegroundColor Green
-    }
-} catch {
-    # Service doesn't exist
-}
-
-if (-not $aehd_exists) {
-    Write-Host "❌ AEHD service does not exist" -ForegroundColor Red
-}
-
-if (-not $gvm_exists) {
-    Write-Host "❌ GVM service does not exist" -ForegroundColor Red
-}
-
-# If either service doesn't exist, install the driver
-if (-not $aehd_exists -or -not $gvm_exists) {
-    Write-Host ""
-    Write-Host "🔧 Android Emulator Hypervisor Driver services not found. Installing driver..." -ForegroundColor Yellow
-    
-    # Check if driver files exist
-    $driverInstallerPath = "$ExtrasDir\silent_install.bat"
-    if (Test-Path $driverInstallerPath) {
-        Write-Host "📁 Found driver installer at: $driverInstallerPath" -ForegroundColor Green
-        
-        try {
-            Write-Host "⚙️ Running Android Emulator Hypervisor Driver installer..." -ForegroundColor Yellow
-            Write-Host "This may take a few moments..." -ForegroundColor Cyan
-            
-            # Run the silent installer
-            Start-Process -FilePath $driverInstallerPath -WorkingDirectory $ExtrasDir -Wait -WindowStyle Hidden
-            
-            Write-Host "✅ Android Emulator Hypervisor Driver installation completed!" -ForegroundColor Green
-            
-            # Verify installation again
-            Write-Host ""
-            Write-Host "🔍 Verifying driver installation..." -ForegroundColor Cyan
-            
-            try {
-                $aehd_service_after = sc.exe query aehd 2>$null
-                if ($LASTEXITCODE -eq 0) {
-                    Write-Host "✅ AEHD service now exists" -ForegroundColor Green
-                } else {
-                    Write-Host "⚠️ AEHD service still not found" -ForegroundColor Yellow
-                }
-            } catch {
-                Write-Host "⚠️ Could not verify AEHD service" -ForegroundColor Yellow
-            }
-            
-            try {
-                $gvm_service_after = sc.exe query gvm 2>$null
-                if ($LASTEXITCODE -eq 0) {
-                    Write-Host "✅ GVM service now exists" -ForegroundColor Green
-                } else {
-                    Write-Host "⚠️ GVM service still not found" -ForegroundColor Yellow
-                }
-            } catch {
-                Write-Host "⚠️ Could not verify GVM service" -ForegroundColor Yellow
-            }
-            
-        } catch {
-            Write-Host "❌ Failed to install Android Emulator Hypervisor Driver: $($_.Exception.Message)" -ForegroundColor Red
-            Write-Host "💡 You can manually install later by running: $driverInstallerPath" -ForegroundColor Yellow
-        }
-    } else {
-        Write-Host "❌ Driver installer not found at: $driverInstallerPath" -ForegroundColor Red
-        Write-Host "💡 Make sure the 'extras;google;Android_Emulator_Hypervisor_Driver' package was installed correctly" -ForegroundColor Yellow
-    }
-} else {
-    Write-Host "✅ Android Emulator Hypervisor Driver services are already installed!" -ForegroundColor Green
 }
 
 # --- FINAL VERIFICATION ---
@@ -658,20 +544,13 @@ if (Test-Path "$AndroidSdkRoot\emulator\emulator.exe") {
     Write-Host "⚠️ Emulator not found - may not have installed correctly" -ForegroundColor Yellow
 }
 
-# Check if hypervisor driver was installed
-if (Test-Path $ExtrasDir) {
-    Write-Host "✅ Android Emulator Hypervisor Driver package downloaded" -ForegroundColor Green
-} else {
-    Write-Host "⚠️ Hypervisor driver package not found" -ForegroundColor Yellow
-}
-
 # --- SUCCESS MESSAGE ---
 Write-Host ""
 if ($restartRequired) {
-    Write-Host "🎉 Android SDK installation completed with virtualization features enabled!" -ForegroundColor Green
+    Write-Host "🎉 Android SDK installation completed with Hyper-V enabled!" -ForegroundColor Green
     Write-Host ""
     Write-Host "⚠️ SYSTEM RESTART REQUIRED!" -ForegroundColor Red
-    Write-Host "🔄 Virtual Machine Platform requires a system restart to function properly" -ForegroundColor Yellow
+    Write-Host "🔄 Hyper-V requires a system restart to function properly" -ForegroundColor Yellow
     Write-Host ""
     Write-Host "📝 After restart, you can:" -ForegroundColor Cyan
     Write-Host "1. 🧪 Test ADB with: adb version" -ForegroundColor White
@@ -697,7 +576,7 @@ if ($restartRequired) {
             "N" {
                 Write-Host ""
                 Write-Host "⏭️ Restart postponed. Please restart manually when convenient." -ForegroundColor Yellow
-                Write-Host "💡 Virtual Machine Platform will not work until system is restarted!" -ForegroundColor Red
+                Write-Host "💡 Hyper-V will not work until system is restarted!" -ForegroundColor Red
                 break
             }
             default {
@@ -722,76 +601,13 @@ Write-Host "   • Android Emulator" -ForegroundColor White
 Write-Host "   • Android SDK Tools" -ForegroundColor White
 Write-Host "   • Android 34 (API Level 34)" -ForegroundColor White
 Write-Host "   • Build Tools 34.0.0" -ForegroundColor White
-Write-Host "   • Android Emulator Hypervisor Driver" -ForegroundColor White
 
-# Show virtualization setup status
-Write-Host ""
-Write-Host "🎮 Emulator Acceleration Status:" -ForegroundColor Cyan
-
-# Check final Hyper-V status
-try {
-    $hyperVStatus = Get-WindowsOptionalFeature -Online -FeatureName "Microsoft-Hyper-V-All"
-    if ($hyperVStatus.State -eq "Enabled") {
-        Write-Host "   🚀 Hyper-V: Enabled (Maximum Performance)" -ForegroundColor Green
-        Write-Host "      • Android Emulator will use Hyper-V acceleration" -ForegroundColor White
-    } else {
-        Write-Host "   💡 Hyper-V: Disabled" -ForegroundColor Yellow
-        Write-Host "      • Android Emulator will use Android Emulator Hypervisor Driver" -ForegroundColor White
-        Write-Host "      • Performance may be slightly lower than Hyper-V but still good" -ForegroundColor Gray
-    }
-} catch {
-    Write-Host "   ⚠️ Could not determine Hyper-V status" -ForegroundColor Yellow
-}
-
-# Check VMP status
-try {
-    $vmpStatus = Get-WindowsOptionalFeature -Online -FeatureName "VirtualMachinePlatform"
-    if ($vmpStatus.State -eq "Enabled") {
-        Write-Host "   ✅ Virtual Machine Platform: Enabled" -ForegroundColor Green
-    } else {
-        Write-Host "   ❌ Virtual Machine Platform: Disabled" -ForegroundColor Red
-        Write-Host "      • This may affect emulator performance" -ForegroundColor Gray
-    }
-} catch {
-    Write-Host "   ⚠️ Could not determine Virtual Machine Platform status" -ForegroundColor Yellow
-}
-
-# Show hypervisor driver status
-Write-Host ""
-Write-Host "🔧 Hypervisor Driver Services:" -ForegroundColor Cyan
-
-try {
-    $aehd_final = sc.exe query aehd 2>$null
-    if ($LASTEXITCODE -eq 0) {
-        Write-Host "   ✅ AEHD Service: Installed" -ForegroundColor Green
-    } else {
-        Write-Host "   ❌ AEHD Service: Not Found" -ForegroundColor Red
-    }
-} catch {
-    Write-Host "   ⚠️ Could not check AEHD service" -ForegroundColor Yellow
-}
-
-try {
-    $gvm_final = sc.exe query gvm 2>$null
-    if ($LASTEXITCODE -eq 0) {
-        Write-Host "   ✅ GVM Service: Installed" -ForegroundColor Green
-    } else {
-        Write-Host "   ❌ GVM Service: Not Found" -ForegroundColor Red
-    }
-} catch {
-    Write-Host "   ⚠️ Could not check GVM service" -ForegroundColor Yellow
-}
-
-# Show enabled features summary
+# Show virtualization features status
 if ($enabledFeatures.Count -gt 0) {
     Write-Host ""
-    Write-Host "🔧 Features Enabled During Installation:" -ForegroundColor Green
+    Write-Host "🎮 Enabled Virtualization Features:" -ForegroundColor Green
     foreach ($feature in $enabledFeatures) {
-        if ($restartRequired) {
-            Write-Host "   • $feature (requires restart)" -ForegroundColor Yellow
-        } else {
-            Write-Host "   • $feature" -ForegroundColor White
-        }
+        Write-Host "   • $feature (requires restart)" -ForegroundColor Yellow
     }
 } else {
     # Check what was already enabled
@@ -803,7 +619,7 @@ if ($enabledFeatures.Count -gt 0) {
     }
     if ($alreadyEnabledFeatures.Count -gt 0) {
         Write-Host ""
-        Write-Host "🔧 Virtualization Features (already enabled):" -ForegroundColor Green
+        Write-Host "🎮 Virtualization Features (already enabled):" -ForegroundColor Green
         foreach ($feature in $alreadyEnabledFeatures) {
             Write-Host "   • $feature" -ForegroundColor White
         }
@@ -812,7 +628,7 @@ if ($enabledFeatures.Count -gt 0) {
 
 if ($skippedFeatures.Count -gt 0) {
     Write-Host ""
-    Write-Host "⚠️ Features That Failed to Enable:" -ForegroundColor Red
+    Write-Host "⚠️ Virtualization Features (failed to enable):" -ForegroundColor Red
     foreach ($feature in $skippedFeatures) {
         Write-Host "   • $feature" -ForegroundColor White
     }
@@ -823,15 +639,8 @@ Write-Host ""
 Write-Host "💡 Environment Variables Set:" -ForegroundColor Cyan
 Write-Host "   ANDROID_SDK_ROOT = $AndroidSdkRoot" -ForegroundColor White
 Write-Host "   PATH includes all necessary SDK directories" -ForegroundColor White
-
 Write-Host ""
-Write-Host "📝 Performance Notes:" -ForegroundColor Cyan
-Write-Host "   • Hyper-V provides the best emulator performance" -ForegroundColor White
-Write-Host "   • Android Emulator Hypervisor Driver is a good alternative" -ForegroundColor White
-Write-Host "   • Both provide hardware acceleration for smooth emulation" -ForegroundColor White
-
-Write-Host ""
-Write-Host "🚀 All set! You can now develop Android apps with hardware-accelerated emulation!" -ForegroundColor Green
+Write-Host "🚀 All set! You can now develop Android apps!" -ForegroundColor Green
 
 if (-not $restartRequired) {
     pause
