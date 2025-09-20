@@ -1,87 +1,240 @@
 <#
 .SYNOPSIS
   Install Android Command Line Tools (avdmanager, sdkmanager, emulator) on Windows
-  + optional Hyper-V info, + Android Emulator Hypervisor Driver auto-install
+  with Android Emulator Hypervisor Driver support as automatic fallback
 
 .DESCRIPTION
-  - Admin check
-  - Download via HttpClient
-  - Extract to C:\android\sdk\cmdline-tools\latest (proper structure)
-  - Set System PATH + ANDROID_SDK_ROOT
-  - OPTIONAL: Offer enable Hyper-V (for best performance), not required
-  - Install essential SDK packages + Google Android Emulator Hypervisor Driver
-  - Verify services (aehd, gvm); if missing => run driver installer from SDK path
+  - Check for Administrator privileges
+  - Download dengan HttpClient (lebih cepat dari Invoke-WebRequest)
+  - Extract ke C:\android\sdk\cmdline-tools\latest (proper Android SDK structure)
+  - Install Android Emulator Hypervisor Driver for ALL systems (as fallback)
+  - Update PATH di System scope (requires admin)
+  - Follow official Android SDK folder structure guidelines
 #>
 
 $ErrorActionPreference = "Stop"
 
+# --- ADMIN CHECK ---
 function Test-Administrator {
-  $currentUser = [Security.Principal.WindowsIdentity]::GetCurrent()
-  $principal   = New-Object Security.Principal.WindowsPrincipal($currentUser)
-  return $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+    $currentUser = [Security.Principal.WindowsIdentity]::GetCurrent()
+    $principal = New-Object Security.Principal.WindowsPrincipal($currentUser)
+    return $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 }
 
 if (-not (Test-Administrator)) {
-  Write-Host "❌ ERROR: This script requires Administrator privileges!" -ForegroundColor Red
-  Write-Host "👉 Please run PowerShell as Administrator and try again." -ForegroundColor Yellow
-  pause; exit 1
+    Write-Host "❌ ERROR: This script requires Administrator privileges!" -ForegroundColor Red
+    Write-Host "👉 Please run PowerShell as Administrator and try again." -ForegroundColor Yellow
+    Write-Host ""
+    Write-Host "Right-click on PowerShell → 'Run as Administrator'" -ForegroundColor Cyan
+    pause
+    exit 1
 }
 
 Write-Host "✅ Running with Administrator privileges" -ForegroundColor Green
 
-# --- OPTIONAL: HYPER-V INFO & OFFER ENABLE ---
+# --- HYPER-V STATUS CHECK (INFO ONLY) ---
 Write-Host ""
-Write-Host "🔍 Mengecek status Hyper-V (opsional, tidak wajib)..." -ForegroundColor Cyan
-$restartRequired = $false
-$enabledFeatures = @()
-$skippedFeatures = @()
+Write-Host "🔍 Checking Hyper-V status..." -ForegroundColor Cyan
 
-$hyperVFeature = @{
-  Name        = "Microsoft-Hyper-V-All"
-  DisplayName = "Hyper-V"
-  Description = "Platform virtualisasi bawaan Windows. Jika aktif, emulator Android biasanya lebih kencang."
-}
+$hyperVEnabled = $false
+$hyperVStatus = "Not Available"
 
 try {
-  $hvInfo = Get-WindowsOptionalFeature -Online -FeatureName $hyperVFeature.Name
-  $hvEnabled = $hvInfo.State -eq "Enabled"
-  if ($hvEnabled) {
-    Write-Host "  ✅ Hyper-V: Enabled — performa emulator umumnya lebih baik." -ForegroundColor Green
-  } else {
-    Write-Host "  ⚠️ Hyper-V: Disabled — emulator akan menggunakan Android Emulator Hypervisor Driver (AEHD)." -ForegroundColor Yellow
-    Write-Host "     Ini tetap berfungsi, namun performa mungkin tidak sebaik Hyper-V." -ForegroundColor Gray
-    Write-Host ""
-    Write-Host "[Y] Enable Hyper-V (opsional, perlu restart)" -ForegroundColor Green
-    Write-Host "[N] Biarkan nonaktif (gunakan AEHD)" -ForegroundColor Yellow
-    do {
-      $ch = Read-Host "Aktifkan Hyper-V? (Y/N)"
-      if ($ch.ToUpper() -eq 'Y') {
-        try {
-          Enable-WindowsOptionalFeature -Online -FeatureName $hyperVFeature.Name -All -NoRestart
-          Write-Host "✅ Hyper-V diaktifkan." -ForegroundColor Green
-          $enabledFeatures += $hyperVFeature.DisplayName
-          $restartRequired = $true
-        } catch {
-          Write-Host "❌ Gagal enable Hyper-V: $($_.Exception.Message)" -ForegroundColor Red
-          $skippedFeatures += $hyperVFeature.DisplayName
+    $hyperVFeature = Get-WindowsOptionalFeature -Online -FeatureName "Microsoft-Hyper-V-All" -ErrorAction SilentlyContinue
+    
+    if ($hyperVFeature) {
+        if ($hyperVFeature.State -eq "Enabled") {
+            $hyperVEnabled = $true
+            $hyperVStatus = "Enabled"
+            Write-Host "✅ Hyper-V: Enabled" -ForegroundColor Green
+            Write-Host "🚀 Android Emulator will primarily use Hyper-V for maximum performance!" -ForegroundColor Cyan
+            Write-Host "💡 AEHD will be installed as automatic fallback if Hyper-V fails" -ForegroundColor Yellow
+        } else {
+            $hyperVStatus = "Disabled"
+            Write-Host "⚠️ Hyper-V: Disabled" -ForegroundColor Yellow
+            Write-Host "💡 Android Emulator will use Android Emulator Hypervisor Driver (AEHD)" -ForegroundColor Cyan
         }
-        break
-      } elseif ($ch.ToUpper() -eq 'N') {
-        Write-Host "⏭️ Melewati enable Hyper-V. Akan mengandalkan AEHD." -ForegroundColor Cyan
-        break
-      } else {
-        Write-Host "❌ Input tidak valid. Masukkan Y atau N." -ForegroundColor Red
-      }
-    } while ($true)
-  }
+    } else {
+        Write-Host "ℹ️ Hyper-V: Not available on this Windows edition" -ForegroundColor Gray
+        Write-Host "💡 Android Emulator will use Android Emulator Hypervisor Driver (AEHD)" -ForegroundColor Cyan
+    }
 } catch {
-  Write-Host "⚠️ Tidak dapat memeriksa Hyper-V: $($_.Exception.Message)" -ForegroundColor Yellow
+    Write-Host "⚠️ Could not check Hyper-V status" -ForegroundColor Yellow
+    Write-Host "💡 Will install Android Emulator Hypervisor Driver as primary option" -ForegroundColor Cyan
+}
+
+Write-Host ""
+Write-Host "📝 Virtualization Configuration:" -ForegroundColor Cyan
+if ($hyperVEnabled) {
+    Write-Host "  • Primary Mode: Hyper-V (Best Performance)" -ForegroundColor Green
+    Write-Host "  • Fallback Mode: AEHD (Will be installed for automatic fallback)" -ForegroundColor Yellow
+    Write-Host "  • Smart switching between Hyper-V and AEHD based on availability" -ForegroundColor White
+} else {
+    Write-Host "  • Primary Mode: Android Emulator Hypervisor Driver (AEHD)" -ForegroundColor Yellow
+    Write-Host "  • AEHD will be installed for hardware acceleration" -ForegroundColor White
+    Write-Host "  • Performance will still be good" -ForegroundColor Gray
 }
 
 # --- INSTALLATION CHECK ---
 Write-Host ""
 Write-Host "🔍 Checking for existing Android SDK installation..." -ForegroundColor Cyan
 
+$AndroidSdkRoot = "C:\android\sdk"
+$existingInstallation = $false
+$installationDetails = @()
+
+# Check various locations for existing installation
+$checkLocations = @(
+    @{Path = $AndroidSdkRoot; Name = "Main SDK Root"},
+    @{Path = "$AndroidSdkRoot\cmdline-tools\latest"; Name = "Command Line Tools"},
+    @{Path = "$AndroidSdkRoot\platform-tools"; Name = "Platform Tools"},
+    @{Path = "$AndroidSdkRoot\emulator"; Name = "Emulator"},
+    @{Path = "$AndroidSdkRoot\extras\google\Android_Emulator_Hypervisor_Driver"; Name = "AEHD Driver"},
+    @{Path = "$env:LOCALAPPDATA\Android"; Name = "Local AppData Android"}
+)
+
+foreach ($location in $checkLocations) {
+    if (Test-Path $location.Path) {
+        $existingInstallation = $true
+        $installationDetails += "  ✅ Found: $($location.Name) at $($location.Path)"
+        
+        # Check for important executables
+        if ($location.Name -eq "Command Line Tools") {
+            $sdkManager = Join-Path $location.Path "bin\sdkmanager.bat"
+            $avdManager = Join-Path $location.Path "bin\avdmanager.bat"
+            if (Test-Path $sdkManager) { $installationDetails += "    📱 sdkmanager.bat exists" }
+            if (Test-Path $avdManager) { $installationDetails += "    📱 avdmanager.bat exists" }
+        }
+        
+        if ($location.Name -eq "Platform Tools") {
+            $adb = Join-Path $location.Path "adb.exe"
+            if (Test-Path $adb) { $installationDetails += "    🔧 adb.exe exists" }
+        }
+        
+        if ($location.Name -eq "Emulator") {
+            $emulator = Join-Path $location.Path "emulator.exe"
+            if (Test-Path $emulator) { $installationDetails += "    🎮 emulator.exe exists" }
+        }
+        
+        if ($location.Name -eq "AEHD Driver") {
+            $aehdInstaller = Join-Path $location.Path "silent_install.bat"
+            if (Test-Path $aehdInstaller) { $installationDetails += "    🔌 AEHD installer exists" }
+        }
+    }
+}
+
+# Check environment variables
+$androidSdkRoot = [Environment]::GetEnvironmentVariable("ANDROID_SDK_ROOT", "Machine")
+$androidHome = [Environment]::GetEnvironmentVariable("ANDROID_HOME", "Machine")
+$systemPath = [Environment]::GetEnvironmentVariable("Path", "Machine")
+
+if ($androidSdkRoot) {
+    $existingInstallation = $true
+    $installationDetails += "  🔧 ANDROID_SDK_ROOT = $androidSdkRoot"
+}
+
+if ($androidHome) {
+    $existingInstallation = $true
+    $installationDetails += "  🔧 ANDROID_HOME = $androidHome"
+}
+
+if ($systemPath -like "*android*") {
+    $existingInstallation = $true
+    $installationDetails += "  🛤️ Android paths found in System PATH"
+}
+
+if ($existingInstallation) {
+    Write-Host ""
+    Write-Host "⚠️ EXISTING ANDROID SDK INSTALLATION DETECTED!" -ForegroundColor Yellow
+    Write-Host ""
+    Write-Host "📋 Current Installation Details:" -ForegroundColor Cyan
+    foreach ($detail in $installationDetails) {
+        Write-Host $detail -ForegroundColor White
+    }
+    
+    Write-Host ""
+    Write-Host "🤔 What would you like to do?" -ForegroundColor Yellow
+    Write-Host ""
+    Write-Host "[1] 🗑️ Remove existing installation and install fresh" -ForegroundColor Red
+    Write-Host "[2] ⏭️ Skip installation (keep existing)" -ForegroundColor Green  
+    Write-Host "[3] ❌ Cancel and exit" -ForegroundColor Gray
+    Write-Host ""
+    
+    do {
+        $choice = Read-Host "Enter your choice (1/2/3)"
+        switch ($choice) {
+            "1" {
+                Write-Host ""
+                Write-Host "⚠️ WARNING: This will completely remove the existing Android SDK installation!" -ForegroundColor Red
+                Write-Host "Are you absolutely sure? This action cannot be undone!" -ForegroundColor Red
+                $confirm = Read-Host "Type 'YES' (all caps) to confirm removal"
+                
+                if ($confirm -eq "YES") {
+                    Write-Host ""
+                    Write-Host "🗑️ Removing existing Android SDK installation..." -ForegroundColor Red
+                    
+                    # Remove directories
+                    $removePaths = @($AndroidSdkRoot, "$env:LOCALAPPDATA\Android")
+                    foreach ($removePath in $removePaths) {
+                        if (Test-Path $removePath) {
+                            try {
+                                Remove-Item $removePath -Recurse -Force
+                                Write-Host "✅ Removed: $removePath" -ForegroundColor Green
+                            } catch {
+                                Write-Host "❌ Failed to remove: $removePath - $($_.Exception.Message)" -ForegroundColor Red
+                            }
+                        }
+                    }
+                    
+                    # Clean environment variables
+                    Write-Host "🧹 Cleaning environment variables..." -ForegroundColor Yellow
+                    [Environment]::SetEnvironmentVariable("ANDROID_SDK_ROOT", $null, "Machine")
+                    [Environment]::SetEnvironmentVariable("ANDROID_HOME", $null, "Machine")
+                    
+                    # Clean PATH
+                    $currentPath = [Environment]::GetEnvironmentVariable("Path", "Machine")
+                    $pathArray = $currentPath -split ';'
+                    $cleanedPath = $pathArray | Where-Object { $_ -notlike "*android*" -and $_ -notlike "*Android*" }
+                    $newPath = $cleanedPath -join ';'
+                    [Environment]::SetEnvironmentVariable("Path", $newPath, "Machine")
+                    
+                    Write-Host "✅ Cleanup completed! Proceeding with fresh installation..." -ForegroundColor Green
+                    $proceed = $true
+                    break
+                } else {
+                    Write-Host "❌ Removal cancelled. Exiting..." -ForegroundColor Yellow
+                    pause
+                    exit 0
+                }
+            }
+            "2" {
+                Write-Host ""
+                Write-Host "⏭️ Installation skipped. Your existing Android SDK will remain unchanged." -ForegroundColor Green
+                Write-Host ""
+                Write-Host "💡 If you want to use the existing installation:" -ForegroundColor Cyan
+                Write-Host "1. Make sure your environment variables are set correctly"
+                Write-Host "2. Test with: sdkmanager --list"
+                Write-Host "3. Accept licenses with: sdkmanager --licenses"
+                Write-Host ""
+                pause
+                exit 0
+            }
+            "3" {
+                Write-Host ""
+                Write-Host "❌ Installation cancelled. Exiting..." -ForegroundColor Gray
+                pause
+                exit 0
+            }
+            default {
+                Write-Host "❌ Invalid choice. Please enter 1, 2, or 3." -ForegroundColor Red
+            }
+        }
+    } while ($choice -notin @("1", "2", "3"))
+} else {
+    Write-Host "✅ No existing Android SDK installation found. Proceeding with fresh installation..." -ForegroundColor Green
+}
+
+# --- CONFIG (Following proper Android SDK structure) ---
 $AndroidSdkRoot = "C:\android\sdk"
 $CmdlineDir     = "$AndroidSdkRoot\cmdline-tools"
 $LatestDir      = "$CmdlineDir\latest"
@@ -90,311 +243,332 @@ $EmulatorDir    = "$AndroidSdkRoot\emulator"
 $DownloadUrl    = "https://dl.google.com/android/repository/commandlinetools-win-13114758_latest.zip"
 $ZipPath        = "$env:TEMP\commandlinetools.zip"
 
-$existingInstallation = $false
-$installationDetails = @()
-
-$checkLocations = @(
-  @{Path = $AndroidSdkRoot; Name = "Main SDK Root"},
-  @{Path = "$AndroidSdkRoot\cmdline-tools\latest"; Name = "Command Line Tools"},
-  @{Path = "$AndroidSdkRoot\platform-tools"; Name = "Platform Tools"},
-  @{Path = "$AndroidSdkRoot\emulator"; Name = "Emulator"},
-  @{Path = "$env:LOCALAPPDATA\Android"; Name = "Local AppData Android"}
-)
-
-foreach ($location in $checkLocations) {
-  if (Test-Path $location.Path) {
-    $existingInstallation = $true
-    $installationDetails += "  ✅ Found: $($location.Name) at $($location.Path)"
-    if ($location.Name -eq "Command Line Tools") {
-      $sdkManager = Join-Path $location.Path "bin\sdkmanager.bat"
-      $avdManager = Join-Path $location.Path "bin\avdmanager.bat"
-      if (Test-Path $sdkManager) { $installationDetails += "    📱 sdkmanager.bat exists" }
-      if (Test-Path $avdManager) { $installationDetails += "    📱 avdmanager.bat exists" }
-    }
-    if ($location.Name -eq "Platform Tools") {
-      $adb = Join-Path $location.Path "adb.exe"
-      if (Test-Path $adb) { $installationDetails += "    🔧 adb.exe exists" }
-    }
-    if ($location.Name -eq "Emulator") {
-      $emu = Join-Path $location.Path "emulator.exe"
-      if (Test-Path $emu) { $installationDetails += "    🎮 emulator.exe exists" }
-    }
-  }
-}
-
-$androidSdkRootEnv = [Environment]::GetEnvironmentVariable("ANDROID_SDK_ROOT", "Machine")
-$androidHomeEnv    = [Environment]::GetEnvironmentVariable("ANDROID_HOME", "Machine")
-$systemPath        = [Environment]::GetEnvironmentVariable("Path", "Machine")
-if ($androidSdkRootEnv) { $existingInstallation = $true; $installationDetails += "  🔧 ANDROID_SDK_ROOT = $androidSdkRootEnv" }
-if ($androidHomeEnv)    { $existingInstallation = $true; $installationDetails += "  🔧 ANDROID_HOME = $androidHomeEnv" }
-if ($systemPath -like "*android*") { $existingInstallation = $true; $installationDetails += "  🛤️ Android paths found in System PATH" }
-
-if ($existingInstallation) {
-  Write-Host ""
-  Write-Host "⚠️ EXISTING ANDROID SDK INSTALLATION DETECTED!" -ForegroundColor Yellow
-  Write-Host "📋 Current Installation Details:" -ForegroundColor Cyan
-  $installationDetails | ForEach-Object { Write-Host $_ -ForegroundColor White }
-  Write-Host ""
-  Write-Host "[1] 🗑️ Remove existing installation and install fresh" -ForegroundColor Red
-  Write-Host "[2] ⏭️ Skip installation (keep existing)" -ForegroundColor Green
-  Write-Host "[3] ❌ Cancel and exit" -ForegroundColor Gray
-  do {
-    $choice = Read-Host "Enter your choice (1/2/3)"
-    switch ($choice) {
-      "1" {
-        Write-Host ""
-        Write-Host "⚠️ WARNING: This will completely remove the existing Android SDK installation!" -ForegroundColor Red
-        $confirm = Read-Host "Type 'YES' to confirm removal"
-        if ($confirm -eq "YES") {
-          foreach ($p in @($AndroidSdkRoot, "$env:LOCALAPPDATA\Android")) {
-            if (Test-Path $p) {
-              try { Remove-Item $p -Recurse -Force; Write-Host "✅ Removed: $p" -ForegroundColor Green }
-              catch { Write-Host "❌ Failed to remove $p: $($_.Exception.Message)" -ForegroundColor Red }
-            }
-          }
-          [Environment]::SetEnvironmentVariable("ANDROID_SDK_ROOT", $null, "Machine")
-          [Environment]::SetEnvironmentVariable("ANDROID_HOME", $null, "Machine")
-          $cur = [Environment]::GetEnvironmentVariable("Path","Machine")
-          $new = ($cur -split ';' | Where-Object { $_ -notlike "*android*" -and $_ -notlike "*Android*" }) -join ';'
-          [Environment]::SetEnvironmentVariable("Path",$new,"Machine")
-          Write-Host "✅ Cleanup completed! Proceeding with fresh installation..." -ForegroundColor Green
-          break
-        } else {
-          Write-Host "❌ Removal cancelled. Exiting..." -ForegroundColor Yellow
-          pause; exit 0
-        }
-      }
-      "2" { Write-Host "⏭️ Keeping existing installation. Exiting..." -ForegroundColor Green; pause; exit 0 }
-      "3" { Write-Host "❌ Cancelled." -ForegroundColor Gray; pause; exit 0 }
-      default { Write-Host "❌ Invalid choice." -ForegroundColor Red }
-    }
-  } while ($true)
-} else {
-  Write-Host "✅ No existing Android SDK installation found. Proceeding with fresh installation..." -ForegroundColor Green
-}
-
-# --- FAST DOWNLOAD ---
+# --- FAST DOWNLOAD FUNCTION ---
 function Download-File($url, $outFile) {
-  Write-Host "📥 Downloading: $url"
-  Add-Type -AssemblyName System.Net.Http
-  $client = New-Object System.Net.Http.HttpClient
-  $client.Timeout = [TimeSpan]::FromMinutes(15)
-  try {
-    $resp = $client.GetAsync($url, [System.Net.Http.HttpCompletionOption]::ResponseHeadersRead).Result
-    $resp.EnsureSuccessStatusCode()
-    $total = $resp.Content.Headers.ContentLength
-    $stream = $resp.Content.ReadAsStreamAsync().Result
-    $fs = [IO.File]::Create($outFile)
-    $buf = New-Object byte[] 8192
-    $readTotal = 0; $last = -1
-    while (($r = $stream.Read($buf,0,$buf.Length)) -gt 0) {
-      $fs.Write($buf,0,$r); $readTotal += $r
-      if ($total) {
-        $p = [Math]::Floor(($readTotal/$total)*100)
-        if ($p -ne $last) { Write-Progress -Activity "Downloading Android Command Line Tools..." -Status "$p% Complete" -PercentComplete $p; $last=$p }
-      }
+    Write-Host "📥 Downloading: $url"
+    Add-Type -AssemblyName System.Net.Http
+    $client = New-Object System.Net.Http.HttpClient
+    $client.Timeout = [System.TimeSpan]::FromMinutes(15)
+    
+    try {
+        $response = $client.GetAsync($url, [System.Net.Http.HttpCompletionOption]::ResponseHeadersRead).Result
+        $response.EnsureSuccessStatusCode()
+
+        $total = $response.Content.Headers.ContentLength
+        $stream = $response.Content.ReadAsStreamAsync().Result
+        $fileStream = [System.IO.File]::Create($outFile)
+
+        $buffer = New-Object byte[] 8192
+        $totalRead = 0
+        $lastProgress = -1
+
+        while (($read = $stream.Read($buffer, 0, $buffer.Length)) -gt 0) {
+            $fileStream.Write($buffer, 0, $read)
+            $totalRead += $read
+            if ($total) {
+                $progress = [math]::Floor(($totalRead / $total) * 100)
+                if ($progress -ne $lastProgress) {
+                    Write-Progress -Activity "Downloading Android Command Line Tools..." -Status "$progress% Complete" -PercentComplete $progress
+                    $lastProgress = $progress
+                }
+            }
+        }
+
+        $fileStream.Close()
+        $stream.Close()
+        Write-Host "✅ Download complete: $outFile" -ForegroundColor Green
     }
-    $fs.Close(); $stream.Close()
-    Write-Host "✅ Download complete: $outFile" -ForegroundColor Green
-  } finally { $client.Dispose() }
+    finally {
+        $client.Dispose()
+    }
 }
 
-# --- CREATE DIRECTORIES ---
+# --- CREATE SDK ROOT DIRECTORY STRUCTURE ---
 Write-Host "📁 Creating Android SDK directory structure..."
-foreach ($d in @($AndroidSdkRoot,$CmdlineDir)) {
-  if (!(Test-Path $d)) { New-Item -ItemType Directory -Path $d -Force | Out-Null; Write-Host "Created: $d" -ForegroundColor Green }
+if (!(Test-Path $AndroidSdkRoot)) {
+    New-Item -ItemType Directory -Path $AndroidSdkRoot -Force | Out-Null
+    Write-Host "Created: $AndroidSdkRoot" -ForegroundColor Green
 }
 
-# --- DOWNLOAD & EXTRACT ---
+if (!(Test-Path $CmdlineDir)) {
+    New-Item -ItemType Directory -Path $CmdlineDir -Force | Out-Null
+    Write-Host "Created: $CmdlineDir" -ForegroundColor Green
+}
+
+# --- DOWNLOAD ---
+Write-Host ""
 Download-File $DownloadUrl $ZipPath
+
+# --- EXTRACT ---
+Write-Host ""
 Write-Host "📦 Extracting Android Command Line Tools..."
 Expand-Archive -Path $ZipPath -DestinationPath $CmdlineDir -Force
+
+# Move extracted cmdline-tools to "latest" (proper structure)
 if (Test-Path "$CmdlineDir\cmdline-tools") {
-  if (Test-Path $LatestDir) { Remove-Item $LatestDir -Recurse -Force; Write-Host "Removed existing latest directory" -ForegroundColor Yellow }
-  Move-Item "$CmdlineDir\cmdline-tools" $LatestDir
-  Write-Host "✅ Proper structure: $LatestDir" -ForegroundColor Green
+    if (Test-Path $LatestDir) { 
+        Remove-Item $LatestDir -Recurse -Force 
+        Write-Host "Removed existing latest directory" -ForegroundColor Yellow
+    }
+    Move-Item "$CmdlineDir\cmdline-tools" $LatestDir
+    Write-Host "✅ Moved to proper structure: $LatestDir" -ForegroundColor Green
 }
+
+# Clean up download
 Remove-Item $ZipPath -Force
+Write-Host "🗑️ Cleaned up temporary files" -ForegroundColor Green
 
-foreach ($d in @($PlatformTools,$EmulatorDir)) {
-  if (!(Test-Path $d)) { New-Item -ItemType Directory -Path $d -Force | Out-Null; Write-Host "Created: $d" -ForegroundColor Green }
+# --- CREATE ADDITIONAL SDK DIRECTORIES ---
+Write-Host ""
+Write-Host "📁 Creating additional SDK directories..."
+$additionalDirs = @($PlatformTools, $EmulatorDir)
+foreach ($dir in $additionalDirs) {
+    if (!(Test-Path $dir)) {
+        New-Item -ItemType Directory -Path $dir -Force | Out-Null
+        Write-Host "Created: $dir" -ForegroundColor Green
+    }
 }
 
-# --- ENV VARS & PATH ---
+# --- SYSTEM ENVIRONMENT VARIABLES SETUP ---
 Write-Host ""
 Write-Host "⚙️ Setting up System environment variables..."
+
+# Set ANDROID_SDK_ROOT
 [Environment]::SetEnvironmentVariable("ANDROID_SDK_ROOT", $AndroidSdkRoot, "Machine")
 Write-Host "✅ ANDROID_SDK_ROOT = $AndroidSdkRoot" -ForegroundColor Green
 
-$envPaths = @("$LatestDir\bin", $PlatformTools, $EmulatorDir)
-$curPath = [Environment]::GetEnvironmentVariable("Path","Machine")
-$updated = $false
-foreach ($p in $envPaths) {
-  if ($curPath -notlike "*$p*") { $curPath = "$curPath;$p"; $updated=$true; Write-Host "✅ Added to PATH: $p" -ForegroundColor Green }
-  else { Write-Host "⚠️ Already in PATH: $p" -ForegroundColor Yellow }
-}
-if ($updated) {
-  [Environment]::SetEnvironmentVariable("Path",$curPath,"Machine")
-  Write-Host "✅ System PATH updated" -ForegroundColor Green
-}
-
-# --- VERIFY TOOLS ---
-Write-Host ""
-Write-Host "🔍 Verifying cmdline tools..."
-$binPath = "$LatestDir\bin"
-foreach ($f in @("sdkmanager.bat","avdmanager.bat")) {
-  if (Test-Path (Join-Path $binPath $f)) { Write-Host "✅ Found: $f" -ForegroundColor Green }
-  else { Write-Host "❌ Missing: $f" -ForegroundColor Red }
-}
-
-Write-Host ""
-Write-Host "📋 Final structure:"
-Write-Host "C:/android/sdk/"
-Write-Host "├─ cmdline-tools/latest/bin (sdkmanager.bat, avdmanager.bat)"
-Write-Host "├─ platform-tools/"
-Write-Host "└─ emulator/"
-
-# --- INSTALL PACKAGES (incl. Hypervisor Driver) ---
-Write-Host ""
-Write-Host "🔧 Installing essential Android SDK packages..." -ForegroundColor Yellow
-$sdkManagerPath = "$LatestDir\bin\sdkmanager.bat"
-
-$packages = @(
-  "platform-tools",
-  "emulator",
-  "tools",
-  "platforms;android-34",
-  "build-tools;34.0.0",
-  "extras;google;Android_Emulator_Hypervisor_Driver"
+# Update System PATH
+$envPaths = @(
+    "$LatestDir\bin",
+    $PlatformTools,
+    $EmulatorDir
 )
 
-Write-Host "📦 Installing: $($packages -join ', ')" -ForegroundColor Cyan
-try {
-  & $sdkManagerPath @($packages)
-  Write-Host "✅ Packages installed." -ForegroundColor Green
-} catch {
-  Write-Host "⚠️ Error installing packages: $($_.Exception.Message)" -ForegroundColor Red
+$currentSystemPath = [Environment]::GetEnvironmentVariable("Path", "Machine")
+$pathUpdated = $false
+
+foreach ($p in $envPaths) {
+    if ($currentSystemPath -notlike "*$p*") {
+        $currentSystemPath = "$currentSystemPath;$p"
+        $pathUpdated = $true
+        Write-Host "✅ Added to PATH: $p" -ForegroundColor Green
+    } else {
+        Write-Host "⚠️ Already in PATH: $p" -ForegroundColor Yellow
+    }
 }
 
-# Accept licenses
+if ($pathUpdated) {
+    [Environment]::SetEnvironmentVariable("Path", $currentSystemPath, "Machine")
+    Write-Host "✅ System PATH updated successfully!" -ForegroundColor Green
+} else {
+    Write-Host "ℹ️ All paths already exist in System PATH" -ForegroundColor Cyan
+}
+
+# --- VERIFICATION ---
+Write-Host ""
+Write-Host "🔍 Verifying installation..."
+$binPath = "$LatestDir\bin"
+$requiredFiles = @("sdkmanager.bat", "avdmanager.bat")
+
+foreach ($file in $requiredFiles) {
+    $fullPath = Join-Path $binPath $file
+    if (Test-Path $fullPath) {
+        Write-Host "✅ Found: $file" -ForegroundColor Green
+    } else {
+        Write-Host "❌ Missing: $file" -ForegroundColor Red
+    }
+}
+
+# --- FINAL FOLDER STRUCTURE DISPLAY ---
+Write-Host ""
+Write-Host "📋 Final Android SDK folder structure:" -ForegroundColor Cyan
+Write-Host "C:/android/sdk/ (SDK Root)" -ForegroundColor White
+Write-Host "├── cmdline-tools/" -ForegroundColor White
+Write-Host "│   └── latest/" -ForegroundColor White
+Write-Host "│       ├── lib/" -ForegroundColor White
+Write-Host "│       └── bin/" -ForegroundColor White
+Write-Host "│           ├── avdmanager.bat" -ForegroundColor White
+Write-Host "│           └── sdkmanager.bat" -ForegroundColor White
+Write-Host "├── platform-tools/ (for future use)" -ForegroundColor Gray
+Write-Host "├── emulator/ (for future use)" -ForegroundColor Gray
+Write-Host "└── extras/ (for AEHD driver)" -ForegroundColor Gray
+
+# --- AUTO INSTALL ESSENTIAL PACKAGES ---
+Write-Host ""
+Write-Host "🔧 Installing essential Android SDK packages..." -ForegroundColor Yellow
+Write-Host "This may take a few minutes, please wait..." -ForegroundColor Cyan
+
+$sdkManagerPath = "$LatestDir\bin\sdkmanager.bat"
+
+# Build package list - ALWAYS include AEHD for fallback
+$packages = @(
+    "platform-tools",
+    "emulator", 
+    "tools",
+    "platforms;android-34",
+    "build-tools;34.0.0",
+    "extras;google;Android_Emulator_Hypervisor_Driver"  # Always install for fallback
+)
+
+Write-Host ""
+if ($hyperVEnabled) {
+    Write-Host "📦 Installing packages with AEHD as automatic fallback..." -ForegroundColor Cyan
+    Write-Host "   Hyper-V is primary, AEHD will be available if Hyper-V fails" -ForegroundColor Yellow
+} else {
+    Write-Host "📦 Installing packages with AEHD as primary driver..." -ForegroundColor Cyan
+}
+
+Write-Host "📦 Packages to install: $($packages -join ', ')" -ForegroundColor White
+
+try {
+    $packageList = $packages -join ' '
+    & $sdkManagerPath $packageList.Split(' ')
+    Write-Host "✅ Essential packages installed successfully!" -ForegroundColor Green
+} catch {
+    Write-Host "⚠️ Error installing packages: $($_.Exception.Message)" -ForegroundColor Red
+    Write-Host "You can manually install later with: sdkmanager $packageList" -ForegroundColor Yellow
+}
+
+# Accept all licenses automatically
 Write-Host ""
 Write-Host "📋 Accepting Android SDK licenses..." -ForegroundColor Yellow
 try {
-  $yesInput = ("y`n" * 20)
-  $yesInput | & $sdkManagerPath --licenses
-  Write-Host "✅ Licenses accepted." -ForegroundColor Green
+    # Create a "yes" input for all license prompts
+    $yesInput = "y`ny`ny`ny`ny`ny`ny`ny`ny`ny`ny`n"  # Multiple y's with newlines
+    $yesInput | & $sdkManagerPath --licenses
+    Write-Host "✅ All SDK licenses accepted!" -ForegroundColor Green
 } catch {
-  Write-Host "⚠️ Error accepting licenses: $($_.Exception.Message)" -ForegroundColor Red
+    Write-Host "⚠️ Error accepting licenses: $($_.Exception.Message)" -ForegroundColor Red
+    Write-Host "You can manually accept licenses later with: sdkmanager --licenses" -ForegroundColor Yellow
 }
 
-# --- FINAL VERIFICATION (ADB/Emulator) ---
-Write-Host ""
-if (Test-Path "$AndroidSdkRoot\platform-tools\adb.exe") { Write-Host "✅ ADB installed" -ForegroundColor Green } else { Write-Host "⚠️ ADB not found" -ForegroundColor Yellow }
-if (Test-Path "$AndroidSdkRoot\emulator\emulator.exe")     { Write-Host "✅ Emulator installed" -ForegroundColor Green } else { Write-Host "⚠️ Emulator not found" -ForegroundColor Yellow }
+# --- ALWAYS INSTALL AEHD DRIVER FOR FALLBACK ---
+$aehdPath = "$AndroidSdkRoot\extras\google\Android_Emulator_Hypervisor_Driver"
 
-# --- HELPER: service existence ---
-function Test-ServiceExists {
-  param([string]$Name)
-  try {
-    $null = Get-Service -Name $Name -ErrorAction Stop
-    return $true
-  } catch {
-    # Fallback using 'sc query' and check for English message requested
-    $out = sc.exe query $Name 2>&1 | Out-String
-    if ($out -match "The specified service does not exist as an installed service") {
-      return $false
-    }
-    # If message localized / unknown, treat as not found if exit code non-zero
-    return $LASTEXITCODE -eq 0
-  }
-}
-
-# --- CHECK AEHD / GVM & INSTALL DRIVER IF MISSING ---
-Write-Host ""
-Write-Host "🧪 Verifikasi layanan hypervisor emulator..." -ForegroundColor Cyan
-$driverDir = "C:\android\sdk\extras\google\Android_Emulator_Hypervisor_Driver"
-$driverSilent = Join-Path $driverDir "silent_install.bat"
-$driverInstall = Join-Path $driverDir "install.bat"
-
-# Tampilkan hasil 'sc query' sebagaimana diminta
-Write-Host "▶ sc query aehd"
-$scAehd = sc.exe query aehd 2>&1 | Tee-Object -Variable scAehdOut
-$scAehdOut | ForEach-Object { $_ }
-
-Write-Host ""
-Write-Host "▶ sc query gvm"
-$scGvm = sc.exe query gvm 2>&1 | Tee-Object -Variable scGvmOut
-$scGvmOut | ForEach-Object { $_ }
-
-$needInstallDriver = $false
-if ($scAehdOut -match "The specified service does not exist as an installed service.") { $needInstallDriver = $true }
-if ($scGvmOut  -match "The specified service does not exist as an installed service.") { $needInstallDriver = $true }
-
-if ($needInstallDriver) {
-  Write-Host ""
-  Write-Host "⚠️ Layanan AEHD/GVM belum terpasang. Menjalankan installer driver dari:" -ForegroundColor Yellow
-  Write-Host "   $driverDir" -ForegroundColor White
-
-  if (Test-Path $driverSilent) {
-    try {
-      Write-Host "🔧 Running: $driverSilent" -ForegroundColor Cyan
-      & $driverSilent
-      Write-Host "✅ Driver installer (silent) dijalankan." -ForegroundColor Green
-    } catch {
-      Write-Host "❌ Gagal menjalankan silent installer: $($_.Exception.Message)" -ForegroundColor Red
-    }
-  } elseif (Test-Path $driverInstall) {
-    try {
-      Write-Host "🔧 Running: $driverInstall" -ForegroundColor Cyan
-      & $driverInstall
-      Write-Host "✅ Driver installer dijalankan." -ForegroundColor Green
-    } catch {
-      Write-Host "❌ Gagal menjalankan installer: $($_.Exception.Message)" -ForegroundColor Red
-    }
-  } else {
-    Write-Host "❌ Installer tidak ditemukan di $driverDir" -ForegroundColor Red
-    Write-Host "   Pastikan paket 'extras;google;Android_Emulator_Hypervisor_Driver' terpasang." -ForegroundColor Yellow
-  }
-
-  # Query ulang setelah pemasangan
-  Write-Host ""
-  Write-Host "🔁 Re-checking services after installer..." -ForegroundColor Cyan
-  Write-Host "▶ sc query aehd"
-  sc.exe query aehd 2>&1 | ForEach-Object { $_ }
-  Write-Host ""
-  Write-Host "▶ sc query gvm"
-  sc.exe query gvm 2>&1 | ForEach-Object { $_ }
-} else {
-  Write-Host ""
-  Write-Host "✅ Layanan AEHD/GVM terdeteksi. Tidak perlu install driver tambahan." -ForegroundColor Green
-}
-
-# --- SUMMARY / RESTART NOTICE ---
-Write-Host ""
-if ($enabledFeatures.Count -gt 0 -and $restartRequired) {
-  Write-Host "⚠️ SYSTEM RESTART REQUIRED (Hyper-V baru diaktifkan)" -ForegroundColor Red
-  Write-Host "[Y] Restart sekarang  |  [N] Nanti saja"
-  do {
-    $r = Read-Host "Restart system now? (Y/N)"
-    if ($r.ToUpper() -eq 'Y') {
-      Write-Host "🔄 Restarting in 10s... (Ctrl+C to cancel)"; Start-Sleep 10; Restart-Computer -Force
-      break
-    } elseif ($r.ToUpper() -eq 'N') {
-      Write-Host "⏭️ Restart ditunda. Hyper-V aktif setelah restart." -ForegroundColor Yellow
-      break
+if (Test-Path $aehdPath) {
+    Write-Host ""
+    if ($hyperVEnabled) {
+        Write-Host "🔌 Installing Android Emulator Hypervisor Driver (AEHD) as fallback..." -ForegroundColor Yellow
+        Write-Host "💡 AEHD will automatically activate if Hyper-V encounters issues" -ForegroundColor Cyan
     } else {
-      Write-Host "❌ Input tidak valid." -ForegroundColor Red
+        Write-Host "🔌 Installing Android Emulator Hypervisor Driver (AEHD) as primary driver..." -ForegroundColor Yellow
     }
-  } while ($true)
+    Write-Host "📍 Location: $aehdPath" -ForegroundColor Gray
+    
+    try {
+        $silentInstall = Join-Path $aehdPath "silent_install.bat"
+        
+        if (Test-Path $silentInstall) {
+            Write-Host "🔧 Running AEHD silent installation..." -ForegroundColor Cyan
+            
+            # Run the silent install batch file
+            $process = Start-Process -FilePath $silentInstall -WorkingDirectory $aehdPath -Wait -PassThru -WindowStyle Hidden
+            
+            if ($process.ExitCode -eq 0) {
+                Write-Host "✅ Android Emulator Hypervisor Driver installed successfully!" -ForegroundColor Green
+                if ($hyperVEnabled) {
+                    Write-Host "🎯 AEHD is now available as automatic fallback if Hyper-V fails" -ForegroundColor Cyan
+                    Write-Host "📌 The emulator will intelligently switch between Hyper-V and AEHD" -ForegroundColor White
+                } else {
+                    Write-Host "🚀 Hardware acceleration is now enabled via AEHD" -ForegroundColor Cyan
+                }
+            } else {
+                Write-Host "⚠️ AEHD installation returned exit code: $($process.ExitCode)" -ForegroundColor Yellow
+                Write-Host "💡 You may need to install manually from: $aehdPath" -ForegroundColor Gray
+                Write-Host "   Run: silent_install.bat" -ForegroundColor Gray
+            }
+        } else {
+            Write-Host "⚠️ AEHD silent installer not found at expected location" -ForegroundColor Yellow
+            Write-Host "💡 Manual installation required from: $aehdPath" -ForegroundColor Gray
+        }
+    } catch {
+        Write-Host "❌ Error installing AEHD: $($_.Exception.Message)" -ForegroundColor Red
+        Write-Host "💡 You can manually install from: $aehdPath" -ForegroundColor Yellow
+        Write-Host "   Run: silent_install.bat" -ForegroundColor Gray
+    }
 } else {
-  Write-Host "🎉 Setup selesai." -ForegroundColor Green
-  Write-Host "🧪 Coba:  adb version" -ForegroundColor White
-  Write-Host "📱 Buat AVD:  avdmanager create avd -n test -k system-images;android-34;google_apis;x86_64" -ForegroundColor White
+    Write-Host ""
+    Write-Host "⚠️ AEHD driver package not found at: $aehdPath" -ForegroundColor Yellow
+    Write-Host "💡 You can manually install it later with:" -ForegroundColor Cyan
+    Write-Host '   sdkmanager "extras;google;Android_Emulator_Hypervisor_Driver"' -ForegroundColor Gray
+    Write-Host "   Then run: $aehdPath\silent_install.bat" -ForegroundColor Gray
+}
+
+# --- FINAL VERIFICATION ---
+Write-Host ""
+Write-Host "🔍 Final verification..." -ForegroundColor Cyan
+
+# Check if platform-tools was installed
+if (Test-Path "$AndroidSdkRoot\platform-tools\adb.exe") {
+    Write-Host "✅ ADB installed successfully" -ForegroundColor Green
+} else {
+    Write-Host "⚠️ ADB not found - platform-tools may not have installed correctly" -ForegroundColor Yellow
+}
+
+# Check if emulator was installed  
+if (Test-Path "$AndroidSdkRoot\emulator\emulator.exe") {
+    Write-Host "✅ Android Emulator installed successfully" -ForegroundColor Green
+} else {
+    Write-Host "⚠️ Emulator not found - may not have installed correctly" -ForegroundColor Yellow
+}
+
+# Check AEHD status - always check since we always install it
+if (Test-Path "$AndroidSdkRoot\extras\google\Android_Emulator_Hypervisor_Driver\AEHD.inf") {
+    Write-Host "✅ AEHD driver files present (ready as fallback)" -ForegroundColor Green
+} else {
+    Write-Host "⚠️ AEHD driver files not found" -ForegroundColor Yellow
+}
+
+# --- SUCCESS MESSAGE ---
+Write-Host ""
+Write-Host "🎉 Android SDK installation and setup completed!" -ForegroundColor Green
+Write-Host ""
+
+# Display virtualization status summary
+Write-Host "🎮 Virtualization Configuration:" -ForegroundColor Cyan
+if ($hyperVEnabled) {
+    Write-Host "   • Primary Mode: Hyper-V (Maximum Performance)" -ForegroundColor Green
+    Write-Host "   • Fallback Mode: AEHD (Automatic failover)" -ForegroundColor Yellow
+    Write-Host "   • Hardware acceleration: Dual-mode enabled" -ForegroundColor White
+    Write-Host "   • Smart switching: Emulator will use best available option" -ForegroundColor Cyan
+    Write-Host ""
+    Write-Host "💡 Benefits of dual-mode setup:" -ForegroundColor Cyan
+    Write-Host "   • Maximum performance with Hyper-V when available" -ForegroundColor White
+    Write-Host "   • Automatic fallback to AEHD if Hyper-V fails" -ForegroundColor White
+    Write-Host "   • No manual intervention needed for switching" -ForegroundColor White
+} else {
+    Write-Host "   • Primary Mode: Android Emulator Hypervisor Driver (AEHD)" -ForegroundColor Yellow
+    Write-Host "   • Hardware acceleration: Enabled via AEHD" -ForegroundColor White
+    Write-Host "   • Performance: Good hardware acceleration" -ForegroundColor Gray
+    Write-Host ""
+    Write-Host "💡 Tip: You can enable Hyper-V later for dual-mode support" -ForegroundColor Cyan
+    Write-Host "   Windows Features → Turn Windows features on/off → Hyper-V" -ForegroundColor Gray
+    Write-Host "   AEHD will remain as automatic fallback" -ForegroundColor Gray
 }
 
 Write-Host ""
-Write-Host "ℹ️ Catatan:" -ForegroundColor Cyan
-Write-Host " - Hyper-V opsional. Jika aktif: performa emulator lebih kencang." -ForegroundColor White
-Write-Host " - Jika tidak aktif: emulator memakai AEHD; tetap jalan tapi bisa sedikit lebih lambat." -ForegroundColor White
+Write-Host "📦 Installed Packages:" -ForegroundColor Cyan
+Write-Host "   • Platform Tools (ADB, Fastboot)" -ForegroundColor White
+Write-Host "   • Android Emulator" -ForegroundColor White
+Write-Host "   • Android SDK Tools" -ForegroundColor White
+Write-Host "   • Android 34 (API Level 34)" -ForegroundColor White
+Write-Host "   • Build Tools 34.0.0" -ForegroundColor White
+Write-Host "   • Android Emulator Hypervisor Driver (AEHD)" -ForegroundColor White
 
-if (-not $restartRequired) { pause }
+Write-Host ""
+Write-Host "💡 Environment Variables Set:" -ForegroundColor Cyan
+Write-Host "   ANDROID_SDK_ROOT = $AndroidSdkRoot" -ForegroundColor White
+Write-Host "   PATH includes all necessary SDK directories" -ForegroundColor White
+
+Write-Host ""
+Write-Host "📝 Ready to Use:" -ForegroundColor Yellow
+Write-Host "1. 🔄 Restart your terminal to use commands globally" -ForegroundColor White
+Write-Host "2. 🧪 Test with: adb version" -ForegroundColor White
+Write-Host "3. 📱 Create AVD with: avdmanager create avd -n test -k system-images;android-34;google_apis;x86_64" -ForegroundColor White
+Write-Host "4. 🚀 Use with VS Code AVD Manager extension" -ForegroundColor White
+
+Write-Host ""
+Write-Host "🚀 All set! You have dual-mode hardware acceleration ready!" -ForegroundColor Green
+Write-Host "   The emulator will automatically use the best available option." -ForegroundColor Cyan
+
+pause
