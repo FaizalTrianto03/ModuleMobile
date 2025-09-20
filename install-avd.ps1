@@ -868,14 +868,12 @@ $packages = @(
 Write-Host ""
 Write-Host "$($strings.PackagesInstalling) $($packages -join ', ')" -ForegroundColor Cyan
 try {
-    foreach ($package in $packages) {
-        Write-Host "Installing: $package" -ForegroundColor Gray
-        & $sdkManagerPath $package
-    }
+    $packageList = $packages -join ' '
+    & $sdkManagerPath $packageList.Split(' ')
     Write-Host $strings.PackagesSuccess -ForegroundColor Green
 } catch {
     Write-Host "$($strings.PackagesError) $($_.Exception.Message)" -ForegroundColor Red
-    Write-Host "$($strings.ManualInstall) sdkmanager $($packages -join ' ')" -ForegroundColor Yellow
+    Write-Host "$($strings.ManualInstall) sdkmanager platform-tools emulator tools platforms;android-34 build-tools;34.0.0 extras;google;Android_Emulator_Hypervisor_Driver" -ForegroundColor Yellow
 }
 
 # Accept all licenses automatically
@@ -883,7 +881,7 @@ Write-Host ""
 Write-Host $strings.AcceptingLicenses -ForegroundColor Yellow
 try {
     # Create a "yes" input for all license prompts
-    $yesInput = @("y", "y", "y", "y", "y", "y", "y", "y", "y", "y") -join "`n"
+    $yesInput = "y`ny`ny`ny`ny`ny`ny`ny`ny`ny`ny`n"  # Multiple y's with newlines
     $yesInput | & $sdkManagerPath --licenses
     Write-Host $strings.LicensesAccepted -ForegroundColor Green
 } catch {
@@ -895,30 +893,93 @@ try {
 Write-Host ""
 Write-Host $strings.CheckingDriverServices -ForegroundColor Cyan
 
-# Check if driver files exist and install if needed
-$driverInstallerPath = "$ExtrasDir\silent_install.bat"
+# Check if services exist
+$aehd_exists = $false
+$gvm_exists = $false
 
-Write-Host "📁 Checking for Android Emulator Hypervisor Driver installation..." -ForegroundColor Cyan
+try {
+    $aehd_service = sc.exe query aehd 2>$null
+    if ($LASTEXITCODE -eq 0) {
+        $aehd_exists = $true
+        Write-Host $strings.ServiceExists.Replace("SERVICE", "AEHD") -ForegroundColor Green
+    }
+} catch {
+    # Service doesn't exist
+}
 
-if (Test-Path $driverInstallerPath) {
-    Write-Host "$($strings.FoundInstaller) $driverInstallerPath" -ForegroundColor Green
+try {
+    $gvm_service = sc.exe query gvm 2>$null
+    if ($LASTEXITCODE -eq 0) {
+        $gvm_exists = $true
+        Write-Host $strings.ServiceExists.Replace("SERVICE", "GVM") -ForegroundColor Green
+    }
+} catch {
+    # Service doesn't exist
+}
+
+if (-not $aehd_exists) {
+    Write-Host $strings.ServiceNotExist.Replace("SERVICE", "AEHD") -ForegroundColor Red
+}
+
+if (-not $gvm_exists) {
+    Write-Host $strings.ServiceNotExist.Replace("SERVICE", "GVM") -ForegroundColor Red
+}
+
+# If either service doesn't exist, install the driver
+if (-not $aehd_exists -or -not $gvm_exists) {
+    Write-Host ""
+    Write-Host $strings.InstallingDriver -ForegroundColor Yellow
     
-    try {
-        Write-Host $strings.RunningInstaller -ForegroundColor Yellow
-        Write-Host $strings.PleaseWait -ForegroundColor Cyan
+    # Check if driver files exist
+    $driverInstallerPath = "$ExtrasDir\silent_install.bat"
+    if (Test-Path $driverInstallerPath) {
+        Write-Host "$($strings.FoundInstaller) $driverInstallerPath" -ForegroundColor Green
         
-        # Run the silent installer
-        Start-Process -FilePath $driverInstallerPath -WorkingDirectory $ExtrasDir -Wait -WindowStyle Hidden
-        
-        Write-Host $strings.DriverInstallComplete -ForegroundColor Green
-        
-    } catch {
-        Write-Host "$($strings.DriverInstallFailed) $($_.Exception.Message)" -ForegroundColor Red
-        Write-Host "$($strings.ManualDriverInstall) $driverInstallerPath" -ForegroundColor Yellow
+        try {
+            Write-Host $strings.RunningInstaller -ForegroundColor Yellow
+            Write-Host $strings.PleaseWait -ForegroundColor Cyan
+            
+            # Run the silent installer
+            Start-Process -FilePath $driverInstallerPath -WorkingDirectory $ExtrasDir -Wait -WindowStyle Hidden
+            
+            Write-Host $strings.DriverInstallComplete -ForegroundColor Green
+            
+            # Verify installation again
+            Write-Host ""
+            Write-Host $strings.VerifyingDriver -ForegroundColor Cyan
+            
+            try {
+                $aehd_service_after = sc.exe query aehd 2>$null
+                if ($LASTEXITCODE -eq 0) {
+                    Write-Host $strings.ServiceNowExists.Replace("SERVICE", "AEHD") -ForegroundColor Green
+                } else {
+                    Write-Host $strings.ServiceStillNotFound.Replace("SERVICE", "AEHD") -ForegroundColor Yellow
+                }
+            } catch {
+                Write-Host $strings.CouldNotVerify.Replace("SERVICE", "AEHD") -ForegroundColor Yellow
+            }
+            
+            try {
+                $gvm_service_after = sc.exe query gvm 2>$null
+                if ($LASTEXITCODE -eq 0) {
+                    Write-Host $strings.ServiceNowExists.Replace("SERVICE", "GVM") -ForegroundColor Green
+                } else {
+                    Write-Host $strings.ServiceStillNotFound.Replace("SERVICE", "GVM") -ForegroundColor Yellow
+                }
+            } catch {
+                Write-Host $strings.CouldNotVerify.Replace("SERVICE", "GVM") -ForegroundColor Yellow
+            }
+            
+        } catch {
+            Write-Host "$($strings.DriverInstallFailed) $($_.Exception.Message)" -ForegroundColor Red
+            Write-Host "$($strings.ManualDriverInstall) $driverInstallerPath" -ForegroundColor Yellow
+        }
+    } else {
+        Write-Host "$($strings.DriverNotFound) $driverInstallerPath" -ForegroundColor Red
+        Write-Host $strings.CheckPackage -ForegroundColor Yellow
     }
 } else {
-    Write-Host "$($strings.DriverNotFound) $driverInstallerPath" -ForegroundColor Red
-    Write-Host $strings.CheckPackage -ForegroundColor Yellow
+    Write-Host $strings.DriverAlreadyInstalled -ForegroundColor Green
 }
 
 # --- FINAL VERIFICATION ---
@@ -1027,8 +1088,28 @@ try {
 # Show hypervisor driver status
 Write-Host ""
 Write-Host $strings.HypervisorServices -ForegroundColor Cyan
-Write-Host "   💡 Android Emulator Hypervisor Driver has been installed" -ForegroundColor Green
-Write-Host "   📝 Driver services will be available after system restart" -ForegroundColor Yellow
+
+try {
+    $aehd_final = sc.exe query aehd 2>$null
+    if ($LASTEXITCODE -eq 0) {
+        Write-Host $strings.ServiceInstalled.Replace("SERVICE", "AEHD") -ForegroundColor Green
+    } else {
+        Write-Host $strings.ServiceNotFound.Replace("SERVICE", "AEHD") -ForegroundColor Red
+    }
+} catch {
+    Write-Host $strings.CouldNotCheckService.Replace("SERVICE", "AEHD") -ForegroundColor Yellow
+}
+
+try {
+    $gvm_final = sc.exe query gvm 2>$null
+    if ($LASTEXITCODE -eq 0) {
+        Write-Host $strings.ServiceInstalled.Replace("SERVICE", "GVM") -ForegroundColor Green
+    } else {
+        Write-Host $strings.ServiceNotFound.Replace("SERVICE", "GVM") -ForegroundColor Red
+    }
+} catch {
+    Write-Host $strings.CouldNotCheckService.Replace("SERVICE", "GVM") -ForegroundColor Yellow
+}
 
 # Show enabled features summary
 if ($enabledFeatures.Count -gt 0) {
