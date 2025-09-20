@@ -868,12 +868,14 @@ $packages = @(
 Write-Host ""
 Write-Host "$($strings.PackagesInstalling) $($packages -join ', ')" -ForegroundColor Cyan
 try {
-    $packageList = $packages -join ' '
-    & $sdkManagerPath $packageList.Split(' ')
+    foreach ($package in $packages) {
+        Write-Host "Installing: $package" -ForegroundColor Gray
+        & $sdkManagerPath $package
+    }
     Write-Host $strings.PackagesSuccess -ForegroundColor Green
 } catch {
     Write-Host "$($strings.PackagesError) $($_.Exception.Message)" -ForegroundColor Red
-    Write-Host "$($strings.ManualInstall) sdkmanager platform-tools emulator tools platforms;android-34 build-tools;34.0.0 extras;google;Android_Emulator_Hypervisor_Driver" -ForegroundColor Yellow
+    Write-Host "$($strings.ManualInstall) sdkmanager $($packages -join ' ')" -ForegroundColor Yellow
 }
 
 # Accept all licenses automatically
@@ -881,7 +883,7 @@ Write-Host ""
 Write-Host $strings.AcceptingLicenses -ForegroundColor Yellow
 try {
     # Create a "yes" input for all license prompts
-    $yesInput = "y`ny`ny`ny`ny`ny`ny`ny`ny`ny`ny`n"  # Multiple y's with newlines
+    $yesInput = @("y", "y", "y", "y", "y", "y", "y", "y", "y", "y") -join "`n"
     $yesInput | & $sdkManagerPath --licenses
     Write-Host $strings.LicensesAccepted -ForegroundColor Green
 } catch {
