@@ -1,10 +1,31 @@
 ---
-title: "Modul 0: Introducing Flutter, Configure Flutter Environment, Architecture, dan State Management"
-description: "Setup Flutter environment, membuat Android Emulator, dan memahami dasar Flutter."
+title: "Modul 0: Introducing Flutter, Configure Flutter Environment, Dart Syntax, and Create New Flutter Project"
+description: "Setup Flutter environment, konfigurasi Flutter, Dart Syntax, dan membuat proyek Flutter baru."
 ---
 
 import { CodeBlock } from "/src/components/CodeBlock";
 import { MockupWindowCode } from "/src/components/MockupWindowCode";
+import installChocolatey from "./code/installChocolatey.ps1?raw";
+import setPATHFVM from "./code/setPATHFVM.ps1?raw";
+import { Information } from "~/components/modul-list";
+
+<Information 
+  title="Informasi Penting" 
+  content="<strong>Modul Mobile dalam versi website ini dibuat khusus untuk memudahkan copy-paste perintah/command instalasi yang ada.</strong><br/>Untuk materi lengkap dan penjelasan detail, silakan unduh dan baca <strong>file PDF modul</strong> yang tersedia."
+  footer="Terima kasih atas perhatiannya! 🙏"
+/>
+
+{/* With Link */}
+<Information 
+  title="Download PDF Modul"
+  content="Silakan download file PDF modul lengkap untuk penjelasan detail."
+  type="info"
+  link={{
+    text: "Download PDF Modul",
+    url: "https://drive.google.com/drive/folders/1gN3M1QrANcIi7qtuiCTI_Ge_UPAV67Xc?usp=sharing",
+    external: true
+  }}
+/>
 
 ---
 
@@ -13,10 +34,6 @@ import { MockupWindowCode } from "/src/components/MockupWindowCode";
 SEPTEMBER 2025
 
 ---
-
-# _MODUL 0 - Materi_
-
-# _Introducing Flutter, Configure Flutter Environment, Architecture, dan State Management_
 
 **DISUSUN OLEH**:
 
@@ -71,7 +88,6 @@ Flutter, FVM, Android SDK, PATH, Chocolatey, Homebrew, GetX, GetX CLI
 4. [**DART SYNTAX**](#dart-syntax)
    - [Variabel](#variabel)
    - [Data Type](#data-type)
-   - [Operators](#operators)
    - [Functions](#functions)
    - [Ternary](#ternary)
 5. [**MEMBUAT PROYEK FLUTTER BARU**](#membuat-proyek-flutter-baru)
@@ -193,11 +209,13 @@ Jika kalian menggunakan Firebase Studio, kalian tidak perlu melakukan instalasi 
 
    Pada PowerShell **Run as Administrator**, salin dan jalankan perintah:
 
-   <CodeBlock desc="Install Chocolatey" language="powershell" code={`
-   Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+   <CodeBlock desc="Install Chocolatey" language="powershell" code={installChocolatey} />
+
+   Verifikasi instalasi dengan perintah berikut ini
+
+   <CodeBlock desc="Verifikasi Instalasi Chocolatey" language="powershell" code={`
+   choco -v
    `} />
-   
-   Verifikasi instalasi dengan `choco -v`
 
 3. **Install GIT via Chocolatey (lewati jika GIT sudah terinstall)**
 
@@ -215,9 +233,13 @@ Jika kalian menggunakan Firebase Studio, kalian tidak perlu melakukan instalasi 
 
    <CodeBlock desc="Install Flutter via FVM" language="powershell" code={`
    fvm install stable
-   fvm global stable
-   [Environment]::SetEnvironmentVariable("PATH", "$env:USERPROFILE\fvm\default\bin;$([Environment]::GetEnvironmentVariable('PATH','User'))", "User")
    `} />
+
+   <CodeBlock desc="Set FVM Global Stable" language="powershell" code={`
+   fvm global stable
+   `} />
+
+   <CodeBlock desc="Set PATH FVM" language="powershell" code={setPATHFVM} />
 
 6. **Install Android SDK (tanpa Android Studio)**
 
@@ -249,6 +271,9 @@ Jika kalian menggunakan Firebase Studio, kalian tidak perlu melakukan instalasi 
 
    <CodeBlock desc="Install FVM via Homebrew" language="bash" code={`
    brew tap leoafarias/fvm
+   `} />
+
+   <CodeBlock desc="Install FVM via Homebrew" language="bash" code={`
    brew install fvm
    `} />
 
@@ -311,6 +336,9 @@ Jika kalian menggunakan Firebase Studio, kalian tidak perlu melakukan instalasi 
 
    <CodeBlock desc="Install Flutter via FVM" language="bash" code={`
    fvm install stable
+   `} />
+
+   <CodeBlock desc="Set FVM Global Stable" language="bash" code={`
    fvm global stable
    `} />
 
@@ -513,9 +541,9 @@ cd nama_proyek_anda
 
 Untuk membuka proyek di Visual Studio Code:
 
-```bash
+<CodeBlock desc="Membuka Proyek di Visual Studio Code" language="bash" code={`  
 code .
-```
+`} />
 
 Struktur proyek Flutter yang akan terbuat:
 - `lib/`: Folder utama untuk kode aplikasi

@@ -1,6 +1,7 @@
 // Export all modul components
 export { ModuleHeader } from "./ModuleHeader";
 export { Info } from "./Info";
+export { Information } from "./Information";
 export { Material } from "./Material";
 export { Code } from "./Code";
 export { Command } from "./Command";
