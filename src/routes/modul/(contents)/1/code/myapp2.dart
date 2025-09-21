@@ -1,9 +1,6 @@
-
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(MyApp());
-}
+void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   @override
@@ -22,7 +19,7 @@ class CounterApp extends StatefulWidget {
 class _CounterAppState extends State<CounterApp> {
   int counter = 0;
 
-  void incrementCounter() {
+  void _increment() {
     setState(() {
       counter++;
     });
@@ -31,20 +28,15 @@ class _CounterAppState extends State<CounterApp> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Stateful Counter'),
-      ),
+      appBar: AppBar(title: Text("Counter Stateful")),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
-              'Counter: $counter',
-              style: TextStyle(fontSize: 24),
-            ),
+            Text("Counter: $counter"),
             ElevatedButton(
-              onPressed: incrementCounter,
-              child: Text('Increment'),
+              onPressed: _increment,
+              child: Text("Tambah"),
             ),
           ],
         ),

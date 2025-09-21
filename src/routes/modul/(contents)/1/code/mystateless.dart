@@ -1,7 +1,6 @@
-
 class MyStatelessWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Text('This is a StatelessWidget');
+    return Text('Hello, I am Stateless!');
   }
 }

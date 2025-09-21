@@ -1,24 +1,21 @@
-
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(MyApp());
-}
+void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        appBar: AppBar(
-          title: Text('Widget Tree Example'),
-        ),
+        appBar: AppBar(title: Text('Widget Tree Example')),
         body: Column(
           children: [
             Text('Parent Widget'),
             Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text('Child Widget 1'),
+                SizedBox(width: 20),
                 Text('Child Widget 2'),
               ],
             ),

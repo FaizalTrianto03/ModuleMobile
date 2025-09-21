@@ -1,13 +1,52 @@
 ---
 title: "Modul 1: StatelessWidget vs StatefulWidget & Navigasi"
-description: "Belajar perbedaan fundamental antara StatelessWidget dan StatefulWidget di Flutter, serta implementasi state management menggunakan GetX."
+description: "Membedakan konsep, siklus hidup, dan kegunaan antara StatelessWidget dan StatefulWidget serta memahami paradigma navigasi di Flutter."
 ---
 
+import { CodeBlock } from "/src/components/CodeBlock";
+import { MockupWindowCode } from "/src/components/MockupWindowCode";
+import { Information } from "~/components/modul-list";
+
+// Import code files
+import widgetTreeCode from "./code/widget-tree.dart?raw";
+import myStatelessCode from "./code/mystateless.dart?raw";
+import counterAppCode from "./code/counterapp.dart?raw";
+import columnCode from "./code/column.dart?raw";
+import rowCode from "./code/row.dart?raw";
+import stackCode from "./code/stack.dart?raw";
+import containerCode from "./code/container.dart?raw";
+import myAppCode from "./code/myapp.dart?raw";
+import myApp2Code from "./code/myapp2.dart?raw";
+import navigator1Code from "./code/navigator1.dart?raw";
+import goRouterCode from "./code/gorouter.dart?raw";
+import getxCode from "./code/getx.dart?raw";
+import implementasiNavigatorPushCode from "./code/implementasi-navigatorpush.dart?raw";
+import implementasiGoRouterCode from "./code/implementasi-gorouter.dart?raw";
+import implementasiGetxCode from "./code/implementasi-getx.dart?raw";
+import randomCode from "./code/random (1).dart?raw";
+
+<Information 
+  title="Informasi Penting" 
+  content="<strong>Modul Mobile dalam versi website ini dibuat khusus untuk memudahkan copy-paste code dan command yang ada.</strong><br/>Untuk materi lengkap dan penjelasan detail, silakan unduh dan baca <strong>file PDF modul</strong> yang tersedia."
+  footer="Terima kasih atas perhatiannya! 🙏"
+/>
+
+<Information 
+  title="Download PDF Modul"
+  content="Silakan download file PDF modul lengkap untuk penjelasan detail."
+  type="info"
+  link={{
+    text: "Download PDF Modul",
+    url: "https://drive.google.com/drive/folders/1gN3M1QrANcIi7qtuiCTI_Ge_UPAV67Xc?usp=sharing",
+    external: true
+  }}
+/>
+
 ---
 
-**VERSI** 1.0
+**VERSI** 2.0
 
-AGUSTUS 2025
+SEPTEMBER 2025
 
 ---
 
@@ -19,4 +58,658 @@ AGUSTUS 2025
 
 ---
 
-# COMING SOON
+# PENDAHULUAN
+
+## _TUJUAN_
+
+1. Membedakan konsep, siklus hidup (lifecycle), dan kegunaan antara StatelessWidget dan StatefulWidget.
+2. Menganalisis dampak dari kedua jenis widget tersebut terhadap proses rendering atau penggambaran ulang antarmuka (UI).
+3. Memahami perbedaan paradigma navigasi di Flutter, mulai dari Navigator (imperatif) hingga pendekatan deklaratif dengan GoRouter dan GetX.
+
+## _TARGET MODUL_
+
+1. Mahasiswa berhasil membangun dua aplikasi sederhana dengan pendekatan StatelessWidget dan StatefulWidget.
+2. Mahasiswa mampu membandingkan struktur kode, performa, serta memilih jenis widget yang paling tepat untuk sebuah kasus pengembangan.
+3. Mahasiswa mampu mengimplementasikan aplikasi multi-halaman dengan metode navigasi berbeda (Navigator.push dan GetX).
+
+## _PERSIAPAN_
+
+1. Emulator Android atau perangkat fisik yang terhubung dan aktif.
+2. Flutter SDK dengan editor (VSCode/Android Studio).
+3. Tools sederhana seperti Stopwatch atau pemahaman dasar tentang Flutter DevTools untuk melakukan analisis performa.
+4. **Catatan Penting:** Sebelum memulai modul ini, pastikan Anda telah menyelesaikan Modul 0 (Instalasi & Persiapan).
+
+<Information 
+  title="Prasyarat Modul" 
+  content="Pastikan Anda telah menyelesaikan Modul 0 (Instalasi & Persiapan) sebelum memulai modul ini."
+  type="warning"
+  link={{
+    text: "Akses Modul 0",
+    url: "https://mobile.faizaltrianto.com/modul/0/",
+    external: true
+  }}
+/>
+
+## _KEYWORDS_
+
+Widget, Render Tree, Rebuild, UI Statik, UI Dinamis, State, Navigasi, GetX
+
+## _TABLE OF CONTENTS_
+
+1. [**PENDAHULUAN**](#pendahuluan)
+   - [TUJUAN](#tujuan)
+   - [TARGET MODUL](#target-modul)
+   - [PERSIAPAN](#persiapan)
+   - [KEYWORDS](#keywords)
+   - [TABLE OF CONTENTS](#table-of-contents)
+2. [**KONSEP DASAR FLUTTER WIDGET TREE**](#konsep-dasar-flutter-widget-tree)
+   - [Arsitektur UI Flutter Berbasis Widget](#arsitektur-ui-flutter-berbasis-widget)
+   - [Widget Tree: Struktur Hierarkis dalam Flutter](#widget-tree-struktur-hierarkis-dalam-flutter)
+   - [Mengapa Flutter Menggunakan Widget Tree?](#mengapa-flutter-menggunakan-widget-tree)
+   - [StatelessWidget dan StatefulWidget](#statelesswidget-dan-statefulwidget)
+   - [Perbedaan Antara StatelessWidget dan StatefulWidget](#perbedaan-antara-statelesswidget-dan-statefulwidget)
+   - [Peran Layouting dalam Flutter](#peran-layouting-dalam-flutter)
+   - [Pentingnya Layout Widget](#pentingnya-layout-widget)
+   - [Rekap Materi](#rekap-materi)
+3. [**IMPLEMENTASI COUNTER APP**](#implementasi-counter-app)
+   - [Versi StatelessWidget: Memahami Keterbatasan](#versi-statelesswidget-memahami-keterbatasan)
+   - [Versi StatefulWidget: Menghidupkan Interaksi](#versi-statefulwidget-menghidupkan-interaksi)
+   - [Perbandingan Stateless vs Stateful](#perbandingan-stateless-vs-stateful)
+   - [Lifecycle pada StatefulWidget](#lifecycle-pada-statefulwidget)
+   - [Rekap Materi](#rekap-materi-1)
+4. [**NAVIGASI DI FLUTTER**](#navigasi-di-flutter)
+   - [Konsep Dasar Navigasi](#konsep-dasar-navigasi)
+   - [Navigasi dengan Navigator 1.0 (Imperatif)](#navigasi-dengan-navigator-10-imperatif)
+   - [Navigasi dengan GoRouter (Deklaratif)](#navigasi-dengan-gorouter-deklaratif)
+   - [Navigasi dengan GetX (Deklaratif + State Management)](#navigasi-dengan-getx-deklaratif--state-management)
+   - [Perbandingan Metode Navigasi](#perbandingan-metode-navigasi)
+   - [Rekap Materi](#rekap-materi-2)
+5. [**IMPLEMENTASI MULTI-HALAMAN**](#implementasi-multi-halaman)
+   - [Implementasi dengan Navigator.push()](#implementasi-dengan-navigatorpush)
+   - [Implementasi dengan GoRouter](#implementasi-dengan-gorouter)
+   - [Implementasi dengan GetX](#implementasi-dengan-getx)
+   - [Rekap Materi](#rekap-materi-3)
+6. [**PROFILING SEDERHANA**](#profiling-sederhana)
+   - [Mengapa Profiling Penting?](#mengapa-profiling-penting)
+   - [Memanfaatkan debugPrint()](#memanfaatkan-debugprint)
+   - [Hot Reload vs Hot Restart](#hot-reload-vs-hot-restart)
+   - [Pengenalan Flutter DevTools](#pengenalan-flutter-devtools)
+   - [Rekap Materi](#rekap-materi-4)
+7. [**CODELAB**](#codelab)
+
+---
+
+# KONSEP DASAR FLUTTER WIDGET TREE
+
+## _Arsitektur UI Flutter Berbasis Widget_
+
+Flutter adalah framework modern yang dirancang untuk membangun aplikasi dengan antarmuka pengguna (UI) yang interaktif dan responsif. Keunikan utama dari Flutter terletak pada pendekatannya yang berbasis widget. Dalam Flutter, setiap elemen yang muncul di layar, baik teks, tombol, gambar, maupun elemen tata letak, semuanya dianggap sebagai widget.
+
+Widget merupakan blok bangunan utama dalam Flutter. Konsep ini memungkinkan pengembang untuk menyusun elemen UI secara konsisten, mulai dari desain sederhana hingga kompleks, tanpa harus membedakan antara komponen visual dan komponen tata letak. Dengan kata lain, Flutter menyatukan tampilan dan struktur ke dalam satu konsep tunggal: widget.
+
+Sebagai contoh, sebuah aplikasi sederhana dapat terdiri dari widget root berupa MaterialApp. Di dalamnya terdapat Scaffold sebagai kerangka layar, yang menyediakan struktur dasar seperti AppBar dan body. Pada bagian body, pengembang dapat menambahkan widget Column yang menyusun elemen-elemen lain secara vertikal, misalnya Text, Row, atau Image. Semua elemen ini tidak berdiri sendiri, melainkan terhubung dalam sebuah struktur yang disebut Widget Tree.
+
+## _Widget Tree: Struktur Hierarkis dalam Flutter_
+
+Widget Tree adalah struktur hierarkis yang menggambarkan hubungan antarwidget dalam aplikasi. Setiap widget dapat bertindak sebagai induk (parent) yang memiliki anak (child), dan setiap child pada gilirannya dapat menjadi parent untuk widget lain. Hubungan ini membentuk pola seperti pohon keluarga yang kompleks namun teratur.
+
+Sebagai ilustrasi, perhatikan contoh kode berikut:
+
+<CodeBlock desc="Widget Tree Example" language="dart" code={widgetTreeCode} />
+
+Pada kode ini, aplikasi dimulai dengan root widget MaterialApp, yang membungkus seluruh aplikasi. Di dalamnya, terdapat widget Scaffold yang menyediakan struktur dasar layar, termasuk AppBar untuk menampilkan judul aplikasi, dan body untuk menampilkan konten utama. Konten utama terdiri dari widget Column sebagai induk, yang menyusun elemen secara vertikal. Di dalam Column, terdapat widget Text untuk menampilkan teks "Parent Widget", serta widget Row yang menyusun dua teks anak secara horizontal.
+
+Struktur ini menunjukkan bagaimana elemen UI disusun secara hierarkis. AppBar menjadi bagian dari Scaffold, sedangkan di dalam body terdapat Column yang menyusun beberapa widget lain.
+
+## _Mengapa Flutter Menggunakan Widget Tree?_
+
+Pendekatan berbasis Widget Tree memberikan fleksibilitas dan efisiensi tinggi. Flutter tidak menggambar ulang seluruh antarmuka setiap kali terjadi perubahan, melainkan hanya bagian dari tree yang terpengaruh. Proses ini disebut rebuild.
+
+Sebagai contoh, jika teks pada Child Widget 1 berubah, Flutter hanya akan menggambar ulang widget tersebut. Bagian lain seperti AppBar atau Parent Widget tidak ikut terpengaruh. Hal ini membuat aplikasi lebih hemat sumber daya dan tetap responsif, meskipun memiliki banyak elemen UI.
+
+Dengan struktur seperti ini, Flutter mampu menangani desain antarmuka sederhana hingga kompleks secara konsisten. Tidak ada perbedaan perlakuan antara teks, tombol, maupun layout: semuanya adalah widget yang dapat disusun dalam Widget Tree.
+
+## _StatelessWidget dan StatefulWidget_
+
+Widget dalam Flutter dibagi menjadi dua kategori utama: StatelessWidget dan StatefulWidget.
+
+### 1. StatelessWidget
+
+StatelessWidget adalah widget yang tidak memiliki state internal. Artinya, data atau properti yang dimilikinya bersifat tetap (immutable) setelah widget dibuat. StatelessWidget hanya membangun UI satu kali, dan tidak akan berubah kecuali parent widget-nya digambar ulang.
+
+Sebagai contoh, berikut adalah implementasi sederhana dari StatelessWidget:
+
+<CodeBlock desc="StatelessWidget Example" language="dart" code={myStatelessCode} />
+
+Pada contoh di atas, teks yang ditampilkan oleh widget bersifat tetap. Tidak peduli berapa kali aplikasi dijalankan, teks tersebut tidak akan berubah. StatelessWidget sangat ringan dan efisien karena tidak memiliki mekanisme untuk memperbarui UI berdasarkan perubahan data.
+
+### 2. StatefulWidget
+
+Berbeda dengan StatelessWidget, StatefulWidget adalah widget yang memiliki state atau data internal yang dapat berubah selama aplikasi berjalan. State adalah informasi yang dapat memengaruhi bagaimana widget dirender di layar. StatefulWidget terdiri dari dua bagian utama: StatefulWidget itu sendiri, yang bersifat tetap, dan State, yang bersifat dinamis.
+
+StatefulWidget cocok untuk elemen UI yang dinamis atau interaktif, seperti tombol yang dapat ditekan, slider, atau data yang diambil dari API. Berikut adalah contoh sederhana dari StatefulWidget:
+
+<CodeBlock desc="StatefulWidget Example" language="dart" code={counterAppCode} />
+
+Pada contoh ini, variabel **counter** adalah state yang menyimpan data angka. Fungsi **incrementCounter()** memanggil **setState()** untuk memberi tahu Flutter bahwa ada perubahan pada state, sehingga UI perlu digambar ulang. Ketika tombol ditekan, angka pada layar akan bertambah, mencerminkan perubahan pada state.
+
+## _Perbedaan Antara StatelessWidget dan StatefulWidget_
+
+StatelessWidget lebih sederhana dan efisien karena tidak melibatkan logika pembaruan UI. Namun, widget ini tidak cocok untuk elemen UI yang memerlukan interaksi pengguna atau perubahan data. Sebaliknya, StatefulWidget lebih fleksibel karena dapat menangani perubahan data dan interaksi pengguna, tetapi lebih kompleks dan membutuhkan lebih banyak sumber daya.
+
+| Aspek | StatelessWidget | StatefulWidget |
+| ----- | ----- | ----- |
+| **Kemampuan State** | Tidak memiliki state | Memiliki state |
+| **Perubahan UI** | Tidak dapat berubah setelah dibuat | Dapat berubah sesuai dengan state |
+| **Kinerja** | Lebih ringan dan cepat | Lebih berat karena sering digambar ulang |
+| **Kegunaan** | Elemen UI statis | Elemen UI dinamis dan interaktif |
+
+Dengan memahami perbedaan antara StatelessWidget dan StatefulWidget, Anda dapat memilih jenis widget yang paling sesuai dengan kebutuhan aplikasi Anda. Struktur hierarkis Widget Tree dan kemampuan untuk menangani state inilah yang membuat Flutter menjadi framework yang sangat fleksibel dan efisien untuk membangun antarmuka pengguna modern.
+
+## _Peran Layouting dalam Flutter_
+
+Setelah memahami dasar Widget Tree dan jenis widget utama, langkah berikutnya adalah mengenal layout widget. Layout widget adalah jenis widget yang digunakan untuk mengatur posisi, ukuran, dan tata letak widget lain di dalamnya.
+
+Tanpa layout widget, elemen UI akan tampil berantakan. Flutter menyediakan berbagai macam layout widget untuk membantu pengembang menyusun antarmuka dengan rapi, fleksibel, dan adaptif.
+
+### 1. Column
+
+Column digunakan untuk menyusun widget secara vertikal, dari atas ke bawah. Properti penting:
+
+- mainAxisAlignment → mengatur posisi widget di sumbu utama (vertikal).
+- crossAxisAlignment → mengatur posisi widget di sumbu sekunder (horizontal).
+
+Contoh:
+
+<CodeBlock desc="Column Layout Example" language="dart" code={columnCode} />
+
+### 2. Row
+
+Row digunakan untuk menyusun widget secara horizontal, dari kiri ke kanan. Properti penting:
+
+- mainAxisAlignment → posisi di sepanjang sumbu horizontal.
+- crossAxisAlignment → posisi di sumbu vertikal.
+
+Contoh:
+
+<CodeBlock desc="Row Layout Example" language="dart" code={rowCode} />
+
+### 3. Stack
+
+Stack memungkinkan penumpukan widget di atas widget lain, seperti lapisan. Digunakan untuk kasus ketika beberapa elemen harus ditampilkan di posisi yang sama. Properti penting:
+
+- alignment → mengatur posisi default child di dalam stack.
+- Positioned → untuk menentukan letak child secara eksplisit.
+
+Contoh:
+
+<CodeBlock desc="Stack Layout Example" language="dart" code={stackCode} />
+
+### 4. Container
+
+Container adalah widget serbaguna untuk membungkus widget lain dengan properti tambahan seperti warna, margin, padding, ukuran, atau dekorasi.
+
+Contoh:
+
+<CodeBlock desc="Container Layout Example" language="dart" code={containerCode} />
+
+## _Pentingnya Layout Widget_
+
+- Mengatur tata letak → memastikan UI tidak berantakan.
+- Mendukung responsivitas → dapat menyesuaikan dengan ukuran layar berbeda.
+- Meningkatkan keterbacaan UI → elemen tersusun rapi sehingga lebih mudah dipahami pengguna.
+
+Dengan layout widget ini, Flutter memungkinkan penyusunan UI yang fleksibel, mulai dari aplikasi sederhana hingga kompleks.
+
+## _Rekap Materi_
+
+Pada bab ini telah dipelajari:
+
+- Flutter menyusun UI dengan konsep Widget Tree.
+- Ada dua jenis widget utama: StatelessWidget (statis) dan StatefulWidget (dinamis).
+- Layout widget seperti Column, Row, Stack, dan Container berperan penting untuk mengatur tata letak UI agar rapi dan responsif.
+
+Dengan pemahaman ini, mahasiswa memiliki bekal untuk mulai membangun aplikasi sederhana. Pada bab berikutnya, konsep ini akan dipraktikkan melalui implementasi Counter App menggunakan kedua jenis widget utama.
+
+---
+
+# IMPLEMENTASI COUNTER APP
+
+Setelah memahami konsep dasar Flutter yang berbasis Widget Tree, serta perbedaan mendasar antara StatelessWidget dan StatefulWidget, langkah berikutnya adalah melihat bagaimana kedua jenis widget ini bekerja dalam implementasi nyata. Untuk itu, kita akan membangun sebuah aplikasi sederhana berupa Counter App.
+
+Counter App dipilih karena kesederhanaannya namun efektif dalam menunjukkan perbedaan pengelolaan state antara StatelessWidget dan StatefulWidget. Aplikasi ini menampilkan sebuah angka yang akan bertambah setiap kali pengguna menekan tombol.
+
+Melalui studi kasus ini, mahasiswa dapat menganalisis:
+
+1. Bagaimana StatelessWidget menampilkan data yang bersifat statis.
+2. Bagaimana StatefulWidget merespons interaksi pengguna dengan memperbarui tampilan.
+3. Dampak penggunaan setState() terhadap proses rendering (rebuild).
+
+## _Versi StatelessWidget: Memahami Keterbatasan_
+
+Kita mulai dengan pendekatan menggunakan StatelessWidget. Karena sifatnya yang tidak memiliki state internal, perubahan data tidak akan tercermin pada antarmuka meskipun nilai variabel berubah di dalam logika program.
+
+Contoh implementasi:
+
+<CodeBlock desc="Counter App - StatelessWidget Version" language="dart" code={myAppCode} />
+
+### Observasi
+
+- Variabel counter memang bertambah setiap kali tombol ditekan (terlihat di log dengan print).
+- Namun, angka yang ditampilkan di layar tidak berubah.
+- Hal ini terjadi karena StatelessWidget tidak memiliki mekanisme untuk merender ulang UI ketika ada perubahan data.
+
+**Kesimpulan:** StatelessWidget cocok untuk menampilkan data statis yang tidak bergantung pada interaksi pengguna.
+
+## _Versi StatefulWidget: Menghidupkan Interaksi_
+
+Sekarang kita ubah pendekatan dengan menggunakan StatefulWidget. Pada versi ini, nilai counter disimpan sebagai bagian dari state. Fungsi setState() digunakan untuk memberi tahu Flutter bahwa ada perubahan data sehingga UI perlu digambar ulang.
+
+Contoh implementasi:
+
+<CodeBlock desc="Counter App - StatefulWidget Version" language="dart" code={myApp2Code} />
+
+### Observasi
+
+- Setiap kali tombol ditekan, fungsi _increment() memanggil setState().
+- Flutter mendeteksi perubahan state dan menjalankan kembali metode build().
+- Angka pada teks Counter: $counter langsung diperbarui di layar.
+
+**Kesimpulan:** StatefulWidget cocok untuk UI dinamis yang membutuhkan perubahan tampilan berdasarkan interaksi pengguna.
+
+## _Perbandingan Stateless vs Stateful_
+
+| Aspek | StatelessWidget | StatefulWidget |
+| ----- | ----- | ----- |
+| **Pengelolaan Data** | Data bersifat tetap, tidak dapat berubah | Data disimpan dalam state, bisa berubah |
+| **Perubahan Tampilan** | UI tidak berubah meskipun data di memori berubah | UI diperbarui otomatis saat state berubah |
+| **Kompleksitas Kode** | Sederhana, mudah ditulis | Lebih kompleks, terdiri dari widget + state |
+| **Contoh Penggunaan** | Label statis, ikon, judul halaman | Counter, form input, slider, data API |
+
+## _Lifecycle pada StatefulWidget_
+
+Selain mendukung perubahan state, StatefulWidget juga memiliki siklus hidup (lifecycle) yang lebih lengkap. Beberapa metode penting:
+
+1. **initState()** → dipanggil sekali ketika widget pertama kali dibuat. Cocok untuk inisialisasi data.
+2. **build()** → dipanggil setiap kali UI harus digambar ulang.
+3. **setState()** → memberi tahu Flutter bahwa ada perubahan state yang memengaruhi tampilan.
+4. **dispose()** → dipanggil ketika widget dihapus dari tree, biasanya digunakan untuk membersihkan resource.
+
+Dengan memahami lifecycle ini, pengembang dapat mengontrol bagaimana data dikelola sepanjang keberadaan widget di aplikasi.
+
+## _Rekap Materi_
+
+Pada bab ini, kita mempraktikkan implementasi Counter App dengan dua pendekatan:
+
+- **StatelessWidget** → menampilkan data statis, tidak mendukung pembaruan tampilan.
+- **StatefulWidget** → mendukung interaksi pengguna dengan setState(), sehingga UI dapat berubah sesuai dengan perubahan data.
+
+Pemahaman ini menjadi dasar penting untuk memilih jenis widget yang tepat dalam pengembangan aplikasi Flutter yang lebih kompleks.
+
+---
+
+# NAVIGASI DI FLUTTER
+
+## _Konsep Dasar Navigasi_
+
+Navigasi adalah mekanisme untuk berpindah antar halaman dalam aplikasi. Di Flutter, navigasi dikelola melalui konsep "stack" atau tumpukan halaman. Setiap kali pengguna membuka halaman baru, halaman tersebut ditambahkan ke atas stack. Ketika pengguna menekan tombol kembali, halaman teratas dihapus dari stack.
+
+Flutter menyediakan beberapa pendekatan navigasi:
+
+1. **Navigator 1.0 (Imperatif)** - Pendekatan tradisional dengan push/pop
+2. **GoRouter (Deklaratif)** - Pendekatan modern dengan routing berbasis URL
+3. **GetX (Deklaratif + State Management)** - Solusi lengkap dengan state management
+
+## _Navigasi dengan Navigator 1.0 (Imperatif)_
+
+Navigator 1.0 adalah sistem navigasi bawaan Flutter yang menggunakan pendekatan imperatif. Pengembang secara eksplisit memanggil fungsi untuk berpindah halaman.
+
+Contoh implementasi:
+
+<CodeBlock desc="Navigator 1.0 Implementation" language="dart" code={navigator1Code} />
+
+### Observasi
+
+- `Navigator.push()` menambahkan halaman baru ke stack
+- `Navigator.pop()` menghapus halaman teratas dari stack
+- Sederhana untuk aplikasi kecil, tapi bisa rumit untuk aplikasi besar
+
+## _Navigasi dengan GoRouter (Deklaratif)_
+
+GoRouter adalah package resmi dari Flutter team yang menyediakan pendekatan deklaratif untuk navigasi. Semua rute didefinisikan di awal aplikasi.
+
+Pertama, tambahkan dependency:
+
+<CodeBlock desc="Add GoRouter Dependency" language="yaml" code={`
+dependencies:
+  go_router: ^14.2.7
+`} />
+
+Contoh implementasi:
+
+<CodeBlock desc="GoRouter Implementation" language="dart" code={goRouterCode} />
+
+### Observasi
+
+- Rute didefinisikan secara deklaratif di awal
+- Mendukung deep linking dan URL-based navigation
+- Lebih terstruktur untuk aplikasi besar
+
+## _Navigasi dengan GetX (Deklaratif + State Management)_
+
+GetX menyediakan solusi lengkap yang menggabungkan navigasi, state management, dan dependency injection dalam satu package.
+
+Pertama, tambahkan dependency:
+
+<CodeBlock desc="Add GetX Dependency" language="yaml" code={`
+dependencies:
+  get: ^4.6.6
+`} />
+
+Contoh implementasi:
+
+<CodeBlock desc="GetX Implementation" language="dart" code={getxCode} />
+
+### Observasi
+
+- Sintaks yang sangat ringkas
+- Tidak memerlukan context untuk navigasi
+- Menyediakan state management terintegrasi
+
+## _Perbandingan Metode Navigasi_
+
+| Aspek | Navigator 1.0 | GoRouter | GetX |
+| ----- | ----- | ----- | ----- |
+| **Kompleksitas** | Sederhana | Menengah | Sederhana |
+| **Deep Linking** | Terbatas | Excellent | Good |
+| **State Management** | Terpisah | Terpisah | Terintegrasi |
+| **Ukuran Bundle** | Kecil | Menengah | Besar |
+| **Learning Curve** | Mudah | Menengah | Mudah |
+
+## _Rekap Materi_
+
+Pada bab ini telah dipelajari tiga pendekatan navigasi di Flutter:
+
+- **Navigator 1.0** → Pendekatan imperatif, cocok untuk aplikasi sederhana
+- **GoRouter** → Pendekatan deklaratif dengan dukungan URL, cocok untuk aplikasi kompleks
+- **GetX** → Solusi all-in-one dengan state management terintegrasi
+
+Pemilihan metode navigasi tergantung pada kompleksitas aplikasi dan kebutuhan tim pengembang.
+
+---
+
+# IMPLEMENTASI MULTI-HALAMAN
+
+Setelah memahami berbagai pendekatan navigasi, saatnya mempraktikkan implementasi aplikasi multi-halaman menggunakan ketiga metode yang telah dipelajari. Pada bagian ini, kita akan membangun aplikasi sederhana dengan beberapa halaman untuk melihat perbedaan implementasi dari masing-masing pendekatan.
+
+## _Implementasi dengan Navigator.push()_
+
+Pendekatan pertama menggunakan Navigator 1.0 dengan metode push() dan pop() tradisional.
+
+<CodeBlock desc="Multi-Page App - Navigator.push()" language="dart" code={implementasiNavigatorPushCode} />
+
+### Observasi
+
+- Navigasi dilakukan secara imperatif dengan `Navigator.push()`
+- Setiap halaman didefinisikan sebagai widget terpisah
+- Memerlukan context untuk navigasi
+- Cocok untuk aplikasi sederhana dengan struktur navigasi yang tidak kompleks
+
+## _Implementasi dengan GoRouter_
+
+Pendekatan kedua menggunakan GoRouter, yang mendefinisikan rute di awal aplikasi.
+
+<CodeBlock desc="Multi-Page App - GoRouter" language="dart" code={implementasiGoRouterCode} />
+
+### Observasi
+
+- Semua rute didefinisikan secara deklaratif di `GoRouter`
+- Navigasi menggunakan `context.go()` atau `context.push()`
+- Mendukung parameter dan query string
+- Lebih terstruktur untuk aplikasi besar
+
+## _Implementasi dengan GetX_
+
+Pendekatan ketiga menggunakan GetX. Paket ini menyediakan navigasi sederhana dengan sintaks yang ringkas.
+
+<CodeBlock desc="Multi-Page App - GetX" language="dart" code={implementasiGetxCode} />
+
+### Observasi
+
+- Sintaks navigasi yang sangat ringkas dengan `Get.to()` dan `Get.back()`
+- Tidak memerlukan context untuk navigasi
+- Menyediakan berbagai opsi navigasi seperti `Get.off()`, `Get.offAll()`
+- Terintegrasi dengan state management GetX
+
+## _Rekap Materi_
+
+Pada bab ini telah dipraktikkan implementasi aplikasi multi-halaman dengan tiga pendekatan berbeda:
+
+- **Navigator.push()** → Pendekatan tradisional, sederhana tapi terbatas
+- **GoRouter** → Pendekatan modern dengan routing deklaratif
+- **GetX** → Pendekatan all-in-one dengan sintaks ringkas
+
+Setiap pendekatan memiliki kelebihan dan kekurangan masing-masing. Pemilihan metode tergantung pada kebutuhan proyek dan preferensi tim pengembang.
+
+---
+
+# PROFILING SEDERHANA
+
+## _Mengapa Profiling Penting?_
+
+Profiling adalah proses menganalisis performa aplikasi untuk mengidentifikasi bottleneck, memory leak, atau masalah performa lainnya. Dalam pengembangan Flutter, profiling membantu memastikan aplikasi berjalan smooth dengan frame rate yang stabil.
+
+Beberapa alasan mengapa profiling penting:
+
+1. **Mengidentifikasi Performance Issues** - Menemukan bagian kode yang menyebabkan lag atau stuttering
+2. **Optimasi Memory Usage** - Memastikan aplikasi tidak menggunakan memori berlebihan
+3. **Debugging Widget Rebuild** - Memahami kapan dan mengapa widget di-rebuild
+4. **Monitoring Frame Rate** - Memastikan aplikasi berjalan pada 60fps yang smooth
+
+## _Memanfaatkan debugPrint()_
+
+Salah satu cara sederhana untuk melakukan profiling adalah menggunakan `debugPrint()`. Fungsi ini hanya berjalan dalam mode debug dan tidak akan muncul di production build.
+
+<CodeBlock desc="Using debugPrint() for Profiling" language="dart" code={`
+class CounterApp extends StatefulWidget {
+  @override
+  _CounterAppState createState() {
+    debugPrint('CounterApp: createState() called');
+    return _CounterAppState();
+  }
+}
+
+class _CounterAppState extends State<CounterApp> {
+  int counter = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    debugPrint('CounterApp: initState() called');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    debugPrint('CounterApp: build() called - counter: $counter');
+    return Scaffold(
+      appBar: AppBar(title: Text('Counter App')),
+      body: Center(
+        child: Text('Counter: $counter'),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          debugPrint('Button pressed - incrementing counter');
+          setState(() {
+            counter++;
+          });
+        },
+        child: Icon(Icons.add),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    debugPrint('CounterApp: dispose() called');
+    super.dispose();
+  }
+}
+`} />
+
+Dengan menggunakan `debugPrint()`, Anda dapat melacak:
+- Kapan widget lifecycle methods dipanggil
+- Berapa kali `build()` method dijalankan
+- Perubahan nilai state
+- Interaksi pengguna
+
+## _Hot Reload vs Hot Restart_
+
+Flutter menyediakan dua fitur penting untuk development:
+
+### Hot Reload (Ctrl+S atau r)
+- Mempertahankan state aplikasi
+- Hanya memuat ulang kode yang berubah
+- Sangat cepat (biasanya <1 detik)
+- Cocok untuk perubahan UI dan logic sederhana
+
+### Hot Restart (Ctrl+Shift+S atau R)
+- Mereset seluruh state aplikasi
+- Memuat ulang aplikasi dari awal
+- Lebih lambat dari hot reload
+- Diperlukan untuk perubahan pada `main()`, `initState()`, atau global variables
+
+<Information 
+  title="Tips Profiling" 
+  content="Gunakan Hot Reload untuk iterasi cepat saat development, dan Hot Restart ketika perlu mereset state atau setelah perubahan besar pada kode."
+  type="info"
+/>
+
+## _Pengenalan Flutter DevTools_
+
+Flutter DevTools adalah suite tools resmi untuk debugging dan profiling aplikasi Flutter. Untuk mengaksesnya:
+
+1. Jalankan aplikasi dalam mode debug
+2. Buka terminal dan jalankan:
+
+<CodeBlock desc="Open Flutter DevTools" language="bash" code={`
+flutter pub global activate devtools
+flutter pub global run devtools
+`} />
+
+3. Atau gunakan command:
+
+<CodeBlock desc="Launch DevTools" language="bash" code={`
+dart devtools
+`} />
+
+### Fitur Utama DevTools:
+
+1. **Widget Inspector** - Melihat widget tree secara visual
+2. **Performance View** - Menganalisis frame rate dan rebuild
+3. **Memory View** - Monitoring penggunaan memory
+4. **Network View** - Melihat network requests
+5. **Logging View** - Melihat semua log aplikasi
+
+<Information 
+  title="DevTools Tips" 
+  content="DevTools sangat powerful untuk debugging. Gunakan Widget Inspector untuk memahami struktur UI dan Performance View untuk mengoptimalkan performa aplikasi."
+  type="info"
+/>
+
+## _Rekap Materi_
+
+Pada bab ini telah dipelajari:
+
+- **Pentingnya profiling** untuk mengidentifikasi masalah performa
+- **Penggunaan debugPrint()** untuk tracking lifecycle dan state changes
+- **Perbedaan Hot Reload vs Hot Restart** untuk development yang efisien
+- **Pengenalan Flutter DevTools** sebagai tool profiling yang comprehensive
+
+Dengan pemahaman profiling ini, mahasiswa dapat mengembangkan aplikasi Flutter yang tidak hanya fungsional, tetapi juga performant dan user-friendly.
+
+---
+
+# CODELAB
+
+## _Tugas_
+
+Buatlah aplikasi Flutter sederhana dengan spesifikasi berikut:
+
+1. **Aplikasi Profile Card**
+   - Halaman utama menampilkan profile card dengan foto, nama, dan deskripsi singkat
+   - Terdapat tombol "Edit Profile" yang mengarah ke halaman edit
+   - Halaman edit memiliki form untuk mengubah nama dan deskripsi
+   - Implementasikan dengan salah satu metode navigasi (Navigator.push, GoRouter, atau GetX)
+
+2. **Aplikasi Counter dengan Multiple Features**
+   - Counter utama yang bisa increment dan decrement
+   - Tombol reset untuk mengembalikan counter ke 0
+   - Tampilkan riwayat 5 nilai terakhir
+   - Implementasikan menggunakan StatefulWidget
+
+3. **Random Quote Generator**
+   - Aplikasi yang menampilkan quote random
+   - Tombol "New Quote" untuk generate quote baru
+   - Simpan quote favorit dalam list
+   - Halaman terpisah untuk melihat daftar quote favorit
+
+<CodeBlock desc="Random Quote Helper" language="dart" code={randomCode} />
+
+## _Instruksi_
+
+1. **Setup Project**
+   - Buat project Flutter baru dengan nama `modul1_praktikum`
+   - Pastikan menggunakan Flutter SDK stable terbaru
+
+2. **Implementasi**
+   - Pilih salah satu dari tiga tugas di atas
+   - Implementasikan dengan menggunakan konsep yang telah dipelajari
+   - Gunakan StatelessWidget untuk komponen statis
+   - Gunakan StatefulWidget untuk komponen yang memerlukan state management
+
+3. **Profiling**
+   - Tambahkan `debugPrint()` pada lifecycle methods
+   - Test aplikasi dengan Hot Reload dan Hot Restart
+   - Dokumentasikan perbedaan performa yang Anda amati
+
+4. **Documentation**
+   - Buat README.md yang menjelaskan:
+     - Fitur aplikasi yang dibuat
+     - Metode navigasi yang dipilih dan alasannya
+     - Screenshot aplikasi
+     - Hasil observasi profiling
+
+## _Catatan_
+
+- Fokus pada implementasi konsep yang benar daripada desain UI yang kompleks
+- Pastikan aplikasi dapat berjalan tanpa error
+- Gunakan naming convention yang konsisten
+- Tambahkan komentar pada bagian kode yang penting
+
+<Information 
+  title="Submission Guidelines" 
+  content="Submit project dalam bentuk ZIP file atau link GitHub repository. Pastikan README.md sudah lengkap dengan penjelasan dan screenshot."
+  type="warning"
+/>
+
+---
+
+# KRITERIA & DETAIL PENILAIAN
+
+| Aspek Penilaian | Bobot | Kriteria Excellent (A) | Kriteria Good (B) | Kriteria Satisfactory (C) | Kriteria Needs Improvement (D) |
+| :--- | :---: | :--- | :--- | :--- | :--- |
+| **Implementasi Widget** | 25% | Menggunakan StatelessWidget dan StatefulWidget dengan tepat, kode bersih dan terstruktur | Implementasi widget benar, struktur kode cukup baik | Implementasi widget dasar benar, ada beberapa kesalahan minor | Implementasi widget tidak konsisten atau banyak error |
+| **State Management** | 25% | Pengelolaan state sangat baik, menggunakan setState() dengan tepat, lifecycle methods dipahami | State management benar, ada pemahaman lifecycle yang baik | State management dasar benar, pemahaman lifecycle cukup | State management bermasalah, tidak memahami lifecycle |
+| **Navigasi** | 20% | Implementasi navigasi sempurna, memilih metode yang tepat sesuai kebutuhan | Navigasi berfungsi dengan baik, pemilihan metode cukup tepat | Navigasi dasar berfungsi, ada beberapa kekurangan | Navigasi bermasalah atau tidak berfungsi |
+| **Profiling & Debugging** | 15% | Menggunakan debugPrint() dengan baik, memahami Hot Reload vs Hot Restart, ada analisis performa | Menggunakan debugging tools dengan cukup baik | Debugging dasar dilakukan, pemahaman terbatas | Tidak ada upaya debugging atau profiling |
+| **Dokumentasi** | 15% | README lengkap dengan penjelasan detail, screenshot, dan analisis | README cukup lengkap dengan penjelasan yang jelas | README ada tapi kurang detail | README minimal atau tidak ada |
+
+
+---
+
+**Referensi Lengkap:**
+- [Flutter Documentation](https://docs.flutter.dev)
+- [Dart Language Tour](https://dart.dev/language)
+- [Flutter Widget Catalog](https://docs.flutter.dev/ui/widgets)
+- [GoRouter Documentation](https://pub.dev/packages/go_router)
+- [GetX Documentation](https://pub.dev/packages/get)
