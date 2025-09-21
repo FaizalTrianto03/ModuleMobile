@@ -32,7 +32,9 @@ export const CodeBlock = component$<CodeBlockProps>(
         if (language === "dart") await import("prismjs/components/prism-dart");
         // @ts-expect-error: No types for dynamic PrismJS language import
         if (language === "yaml") await import("prismjs/components/prism-yaml");
-
+        // @ts-expect-error: No types for dynamic PrismJS language import
+        if (language === "powershell") await import("prismjs/components/prism-powershell");
+        
         const lang = Prism.languages[language] || Prism.languages.bash;
         html.value = Prism.highlight(code, lang, language);
       } catch {

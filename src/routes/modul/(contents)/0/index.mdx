@@ -1,167 +1,529 @@
 ---
-title: "Modul 0: Setup Flutter Environment & Pengenalan Flutter"
-description: "Panduan lengkap setup Flutter, FVM, dan pengenalan dasar Flutter serta GetX."
+title: "Modul 0: Introducing Flutter, Configure Flutter Environment, Architecture, dan State Management"
+description: "Setup Flutter environment, membuat Android Emulator, dan memahami dasar Flutter."
 ---
 
-## 1. Pendahuluan
-
-Flutter adalah framework open-source dari Google untuk membangun aplikasi mobile, web, dan desktop dengan satu basis kode. Dengan Flutter, Anda dapat membuat aplikasi yang indah, cepat, dan multiplatform. Pada modul ini, Anda akan belajar cara menyiapkan lingkungan pengembangan Flutter menggunakan FVM (Flutter Version Manager) dan mengenal dasar-dasar Flutter serta GetX sebagai state management.
+import { CodeBlock } from "/src/components/CodeBlock";
+import { MockupWindowCode } from "/src/components/MockupWindowCode";
 
 ---
 
-## 2. Persiapan Lingkungan Pengembangan
+**VERSI** 2.0
 
-### 2.1. Instalasi FVM (Flutter Version Manager)
+SEPTEMBER 2025
 
-FVM memudahkan pengelolaan berbagai versi Flutter dalam satu mesin.
+---
 
-**Langkah-langkah:**
+# _MODUL 0 - Materi_
 
-1. Pastikan sudah terinstal [Git](https://git-scm.com/) dan [Dart SDK](https://dart.dev/get-dart).
-2. Instal FVM menggunakan pub:
-   ```bash
-   dart pub global activate fvm
-   ```
-3. Tambahkan FVM ke PATH:
-   - Cek lokasi pub global:
-     ```bash
-     dart pub global list
-     ```
-   - Tambahkan ke PATH (contoh):
-     ```bash
-     export PATH="$PATH":"$HOME/.pub-cache/bin"
-     ```
+# _Introducing Flutter, Configure Flutter Environment, Architecture, dan State Management_
 
-### 2.2. Instalasi Flutter via FVM
+**DISUSUN OLEH**:
 
-1. Instal Flutter stable:
-   ```bash
+- Ali Sofyan, S.kom, M.Kom
+- Faizal Qadri Trianto
+- Muhammad Hisyam Kamil
+
+---
+
+# PENDAHULUAN
+
+## _TUJUAN_
+
+1. Melakukan setup Flutter Environment (tanpa Android Studio).
+2. Membuat Android Emulator menggunakan SDK Manager.
+3. Membuat project awal Flutter.
+4. Mengetahui struktur dasar project Flutter.
+5. Memahami dasar framework Flutter dan bahasa Dart.
+
+## _TARGET MODUL_
+
+1. Menginstal Flutter (Stable Channel) dengan FVM.
+2. Mengonfigurasi Android SDK Command Line Tools (platform-tools, emulator, platforms).
+3. Memahami konsep framework Flutter dan single codebase.
+4. Menjelaskan dasar bahasa pemrograman Dart (syntax, variabel, fungsi).
+
+## _PERSIAPAN_
+
+1. Laptop/PC dengan Windows, macOS, atau Linux.
+2. VS Code / Firebase Studio (Cloud IDE).
+3. Niat
+
+## _KEYWORDS_
+
+Flutter, FVM, Android SDK, PATH, Chocolatey, Homebrew, GetX, GetX CLI
+
+## _TABLE OF CONTENTS_
+
+1. [**PENDAHULUAN**](#pendahuluan)
+   - [TUJUAN](#tujuan)
+   - [TARGET MODUL](#target-modul)
+   - [PERSIAPAN](#persiapan)
+   - [KEYWORDS](#keywords)
+   - [TABLE OF CONTENTS](#table-of-contents)
+2. [**MATERI PENGANTAR**](#materi-pengantar)
+   - [Apa Itu Flutter?](#apa-itu-flutter)
+   - [Apa Itu Dart?](#apa-itu-dart)
+   - [Apa Itu FVM?](#apa-itu-fvm)
+3. [**INSTALASI**](#instalasi)
+   - [Requirements](#requirements)
+   - [Panduan Instalasi](#panduan-instalasi)
+4. [**DART SYNTAX**](#dart-syntax)
+   - [Variabel](#variabel)
+   - [Data Type](#data-type)
+   - [Operators](#operators)
+   - [Functions](#functions)
+   - [Ternary](#ternary)
+5. [**MEMBUAT PROYEK FLUTTER BARU**](#membuat-proyek-flutter-baru)
+
+---
+
+# MATERI PENGANTAR
+
+Dalam era perkembangan teknologi saat ini, kebutuhan terhadap aplikasi lintas platform semakin meningkat. Pengguna tidak lagi hanya memakai perangkat Android atau iOS secara terpisah, melainkan menuntut aplikasi yang dapat berjalan seragam di berbagai perangkat. Untuk menjawab tantangan tersebut, Google mengembangkan sebuah framework bernama Flutter, yang memanfaatkan bahasa pemrograman Dart sebagai pondasi utama.
+
+Modul ini menjadi langkah pertama praktikan dalam mengenal Flutter, memahami dasar bahasa Dart, serta mempelajari pengelolaan versi Flutter dengan FVM (Flutter Version Management). Tidak hanya teori, modul ini juga membimbing mahasiswa menyiapkan lingkungan pengembangan (environment) yang benar agar proses belajar dan praktik bisa berjalan lancar.
+
+## _Apa Itu Flutter?_
+
+Flutter adalah framework UI open-source yang dirilis oleh Google pada Mei 2017. Flutter memungkinkan pengembang membuat aplikasi untuk Android, iOS, Web, Desktop, dan Embedded hanya dengan satu basis kode (single codebase). Dengan demikian, sebuah tim pengembang cukup menulis kode sekali, dan hasilnya dapat dijalankan di berbagai platform tanpa harus membangun aplikasi secara terpisah untuk setiap sistem operasi.
+
+Ada beberapa poin penting yang menjadikan Flutter populer:
+
+1. **Single Codebase**
+   Flutter mendukung penulisan kode sekali untuk dijalankan di berbagai platform. Ini berbeda dengan pengembangan native yang membutuhkan bahasa dan SDK berbeda untuk Android (Java/Kotlin) dan iOS (Swift/Objective-C).
+
+2. **Widget sebagai Pondasi UI**
+   Semua elemen UI di Flutter dibangun menggunakan widget. Baik teks, tombol, gambar, hingga layout, semuanya adalah widget yang dapat dikombinasikan. Konsep ini memudahkan pengembang membuat antarmuka yang konsisten, elegan, dan responsif.
+
+3. **Kinerja Tinggi**
+   Flutter menggunakan Skia Graphics Engine yang mampu merender UI dengan sangat cepat dan efisien. Selain itu, kode Flutter dikompilasi menjadi kode native sehingga performanya setara dengan aplikasi yang dikembangkan secara native.
+
+4. **Hot Reload**
+   Fitur ini sangat membantu saat proses pengembangan. Perubahan pada kode bisa langsung terlihat pada aplikasi yang sedang berjalan, tanpa harus menunggu proses kompilasi penuh.
+
+5. **Komunitas Aktif & Ekosistem Kaya**
+   Flutter memiliki ekosistem yang terus berkembang. Ribuan package dan plugin sudah tersedia untuk mempercepat pengembangan, mulai dari integrasi Firebase, sistem pembayaran, hingga komponen UI siap pakai.
+
+Dengan berbagai keunggulan ini, Flutter kini digunakan oleh banyak perusahaan besar dan startup untuk membangun aplikasi modern.
+
+## _Apa Itu Dart?_
+
+Dart adalah bahasa pemrograman yang dikembangkan oleh Google, dirancang untuk produktivitas tinggi, performa cepat, serta fleksibilitas multi-platform. Bahasa ini menjadi inti dari Flutter, meskipun juga dapat digunakan secara mandiri untuk pengembangan web, server, maupun desktop.
+
+Beberapa karakteristik utama Dart:
+
+1. **Sintaks Familiar**
+   Dart memiliki sintaks yang mirip dengan bahasa populer seperti Java, C#, atau JavaScript. Hal ini membuat Dart mudah dipelajari oleh mahasiswa yang sudah mengenal bahasa pemrograman berorientasi objek.
+
+2. **Null Safety**
+   Dart mendukung null safety, yaitu mekanisme untuk mencegah error akibat variabel bernilai null secara tak terduga. Fitur ini meningkatkan stabilitas kode dan mengurangi bug runtime.
+
+3. **Static & Dynamic Typing**
+   Dart bisa digunakan dengan pendekatan static typing (menentukan tipe data secara eksplisit) atau dynamic typing (tipe data ditentukan secara otomatis oleh kompiler). Fleksibilitas ini memudahkan pengembang dalam berbagai skenario.
+
+4. **Dukungan Asynchronous**
+   Dart menyediakan kata kunci async dan await untuk menangani operasi asynchronous, misalnya pemanggilan API atau akses file. Hal ini membuat kode lebih rapi dibanding callback tradisional.
+
+5. **Kompilasi Ganda (Dual Compilation)**
+   - JIT (Just-In-Time): digunakan saat pengembangan, mendukung hot reload.
+   - AOT (Ahead-Of-Time): digunakan saat produksi, menghasilkan kode native dengan performa tinggi.
+
+Dengan kombinasi fitur ini, Dart menjadi bahasa modern yang dirancang khusus untuk mendukung produktivitas dan kinerja tinggi, terutama dalam pengembangan Flutter.
+
+## _Apa Itu FVM?_
+
+Dalam dunia nyata, proyek Flutter sering kali menggunakan versi yang berbeda-beda. Misalnya, proyek lama mungkin masih berjalan di Flutter 3.7, sementara proyek baru sudah memakai Flutter 3.35.4. Jika hanya mengandalkan satu instalasi Flutter, maka pengembang harus terus-menerus mengganti versi secara manual — yang jelas tidak efisien.
+
+Di sinilah FVM (Flutter Version Management) hadir sebagai solusi. FVM adalah alat untuk mengelola berbagai versi Flutter di satu komputer. Dengan FVM, mahasiswa bisa:
+
+1. **Menggunakan Versi Flutter Berbeda untuk Proyek Berbeda**
+   Setiap proyek bisa mengunci versinya masing-masing tanpa saling mengganggu.
+
+2. **Global & Local Versioning**
+   - Global: menentukan versi Flutter default untuk seluruh sistem.
+   - Local: menentukan versi Flutter khusus untuk satu proyek.
+
+3. **Stabilitas Lingkungan**
+   Dengan FVM, proyek tetap berjalan meskipun versi Flutter terbaru dirilis, karena dependensi dikunci sesuai versi yang dipilih.
+
+4. **Kemudahan Upgrade/Downgrade**
+   Mengganti versi Flutter cukup dengan satu perintah, tanpa harus menghapus dan menginstal ulang manual.
+
+Dengan adanya FVM, manajemen versi Flutter menjadi lebih profesional, terstruktur, dan sesuai standar industri perangkat lunak.
+
+---
+
+# INSTALASI
+
+Setelah memahami teori mengenai Flutter, Dart, dan FVM, langkah berikutnya adalah setup environment. Proses instalasi dibedakan berdasarkan sistem operasi: Windows, macOS, dan Linux.
+
+Pada bagian instalasi, praktikan akan dibimbing mulai dari menginstal Java (sebagai dependensi penting), package manager (Chocolatey atau Homebrew), Flutter SDK melalui FVM, hingga Android SDK Command Line Tools yang memungkinkan pengembangan aplikasi Android tanpa perlu menginstal Android Studio.
+
+## _Requirements_
+
+| Requirement | Minimum | Recommended |
+| :--- | :---: | :---: |
+| **x86_64 CPU Cores** | 4 | 8 |
+| **Memory in GB** | 8 | 16 |
+| **Display resolution in pixels** | WXGA (1366 x 768) | FHD (1920 x 1080) |
+| **Free disk space in GB** | 11.0 | 60.0 |
+
+Jika kalian memiliki spek laptop/PC yang tidak mencukupi, teman-teman tidak perlu khawatir karena kalian bisa menggunakan text editor online bernama [Firebase Studio](https://firebase.studio). Platform yang dibuat oleh google berbasis cloud yang menyediakan template mulai dari Web App, Backend, Mobile, AI & ML, Database, hingga Misc.
+
+## _Panduan Instalasi_
+
+Sebelum memulai proses instalasi, pastikan terlebih dahulu bahwa Anda telah terhubung dengan koneksi internet yang stabil dan kuat. Hal ini sangat penting untuk memastikan tidak ada unduhan yang terputus atau file yang rusak, yang dapat menyebabkan masalah selama proses instalasi.
+
+### Firebase Studio
+
+Jika kalian menggunakan Firebase Studio, kalian tidak perlu melakukan instalasi apapun dan cukup mengunjungi Firebase Studio dan melakukan registrasi akun. Untuk membuat project awal Flutter menggunakan Firebase Studio bisa kalian lihat pada video tutorial: [FLUTTER-SETUP-FIREBASE-STUDIO](https://youtu.be/mMMDOYosbh8)
+
+**Catatan:** Sangat disarankan untuk menginstal Flutter (SDK, tools, dll.) secara langsung di perangkat lokal Anda jika laptop/PC Anda memiliki spesifikasi yang memadai.
+
+### Windows
+
+**WAJIB MENGGUNAKAN POWERSHELL, JANGAN GUNAKAN CMD/COMMAND PROMPT**
+
+1. **Install Java (Temurin v17)**
+
+   Untuk memastikan kompatibilitas, wajib gunakan Java JDK versi 17.x. Kami merekomendasikan Java JDK dari Eclipse Adoptium Temurin. Anda bisa mengunduhnya melalui tautan: [LINK-JAVA-TEMURIN-17-WINDOWS](https://mil.kamil.my.id/temurin17).
+
+2. **Install Chocolatey**
+
+   Pada PowerShell **Run as Administrator**, salin dan jalankan perintah:
+
+   <CodeBlock desc="Install Chocolatey" language="powershell" code={`
+   Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+   `} />
+   
+   Verifikasi instalasi dengan `choco -v`
+
+3. **Install GIT via Chocolatey (lewati jika GIT sudah terinstall)**
+
+   <CodeBlock desc="Install GIT via Chocolatey" language="powershell" code={`
+   choco install git -y
+   `} />
+
+4. **Install FVM via Chocolatey**
+
+   <CodeBlock desc="Install FVM via Chocolatey" language="powershell" code={`
+   choco install fvm -y
+   `} />
+
+5. **Install Flutter via FVM**
+
+   <CodeBlock desc="Install Flutter via FVM" language="powershell" code={`
    fvm install stable
-   ```
-2. Atur default Flutter:
-   ```bash
    fvm global stable
-   ```
-3. Cek versi Flutter:
-   ```bash
-   fvm flutter --version
-   ```
+   [Environment]::SetEnvironmentVariable("PATH", "$env:USERPROFILE\fvm\default\bin;$([Environment]::GetEnvironmentVariable('PATH','User'))", "User")
+   `} />
 
-### 2.3. Instalasi IDE
+6. **Install Android SDK (tanpa Android Studio)**
 
-- **Rekomendasi:** [Visual Studio Code](https://code.visualstudio.com/) atau [Android Studio](https://developer.android.com/studio)
-- Instal plugin Flutter & Dart di IDE.
+   <CodeBlock desc="Install Android SDK (tanpa Android Studio)" language="powershell" code={`
+   irm https://mil.kamil.my.id/android-sdk | iex
+   `} />
+
+7. **Verifikasi Instalasi**
+
+   <CodeBlock desc="Verifikasi Instalasi" language="powershell" code={`
+   flutter doctor
+   `} />
+
+### MacOS
+
+1. **Install Homebrew**
+
+   <CodeBlock desc="Install Homebrew" language="bash" code={`
+   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+   `} />
+
+2. **Install Java via Homebrew (Temurin v17)**
+
+   <CodeBlock desc="Install Java via Homebrew (Temurin v17)" language="bash" code={`
+   brew install --cask temurin@17
+   `} />
+
+3. **Install FVM via Homebrew**
+
+   <CodeBlock desc="Install FVM via Homebrew" language="bash" code={`
+   brew tap leoafarias/fvm
+   brew install fvm
+   `} />
+
+4. **Install Flutter via FVM**
+
+   <CodeBlock desc="Install Flutter via FVM" language="bash" code={`
+   fvm install stable
+   `} />
+
+   <CodeBlock desc="Set FVM Global Stable" language="bash" code={`
+   fvm global stable
+   `} />
+
+5. **Install Android SDK**
+
+   <CodeBlock desc="Install Android SDK" language="bash" code={`
+   brew install --cask android-commandlinetools android-platform-tools
+   `} />
+
+   <CodeBlock desc="Set PATH Android SDK" language="bash" code={`
+   echo 'export PATH="/opt/homebrew/share/android-commandlinetools/cmdline-tools/latest/bin:$PATH"' >> ~/.zshrc
+   `} />
+
+   <CodeBlock desc="Install Android SDK" language="bash" code={`
+   sdkmanager --install emulator tools "platforms;android-34" "build-tools;34.0.0"
+   `} />
+
+6. **Verifikasi Instalasi**
+
+   <CodeBlock desc="Verifikasi Instalasi" language="bash" code={`
+   fvm flutter doctor
+   `} />
+
+### GNU/Linux
+
+1. **Install Java (Temurin v17)**
+
+   Untuk distro seperti Ubuntu, RHEL/Fedora, openSUSE, dll., lihat panduan di: [LINK-JAVA-TEMURIN-17-LINUX](https://adoptium.net/installation/linux#eclipse-temurin-package-names)
+
+2. **Install Homebrew (Linuxbrew)**
+
+   <CodeBlock desc="Install Homebrew (Linuxbrew)" language="bash" code={`
+   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+   `} />
+
+3. **Install GIT via Homebrew (jika belum ada)**
+
+   <CodeBlock desc="Install GIT via Homebrew (jika belum ada)" language="bash" code={`
+   brew install git
+   `} />
+
+4. **Install FVM via Homebrew**
+
+   <CodeBlock desc="Install FVM via Homebrew" language="bash" code={`
+   brew tap leoafarias/fvm
+   brew install fvm
+   `} />
+
+5. **Install Flutter via FVM**
+
+   <CodeBlock desc="Install Flutter via FVM" language="bash" code={`
+   fvm install stable
+   fvm global stable
+   `} />
+
+   Tambahkan ke PATH sesuai shell:
+
+   <CodeBlock desc="Set PATH Bash" language="bash" code={`
+   echo 'export PATH="$HOME/fvm/default/bin:$PATH"' >> ~/.bashrc
+   `} />
+
+   <CodeBlock desc="Set PATH Zsh" language="bash" code={`
+   echo 'export PATH="$HOME/fvm/default/bin:$PATH"' >> ~/.zshrc
+   `} />
+
+   <CodeBlock desc="Set PATH Fish" language="bash" code={`
+   echo 'set -Ua fish_user_paths $HOME/fvm/default/bin' >> ~/.config/fish/config.fish
+   `} />
+
+6. **Install Android SDK**
+
+   - **Arch Linux**: Lihat [Arch Wiki: Android SDK packages](https://wiki.archlinux.org/title/Android#SDK_packages)
+   - **Distro lain**: Unduh [Android Command-line tools](https://developer.android.com/tools/releases/cmdline-tools) secara manual
+
+7. **Verifikasi Instalasi**
+
+   <CodeBlock desc="Verifikasi Instalasi" language="bash" code={`
+   flutter doctor
+   `} />
 
 ---
 
-## 3. Pengenalan Flutter
+# KONFIGURASI DAN EKSTENSI WAJIB UNTUK VSCODE
 
-- **Flutter** menggunakan bahasa pemrograman Dart.
-- **Widget** adalah elemen dasar UI di Flutter.
-- **Hot Reload** memudahkan pengembangan aplikasi secara cepat.
+## _Flutter Extension_
 
----
+Ekstensi Visual Studio Code ini mempermudah Anda dalam mengedit, melakukan refactoring, menjalankan, dan melakukan hot reload pada aplikasi mobile Flutter. Ekstensi ini memerlukan (dan akan otomatis menginstal) ekstensi Dart untuk mendukung bahasa pemrograman Dart.
 
-## 4. Pengenalan GetX
+**Catatan:** Untuk mendapatkan seluruh fitur debugging, jalankan proyek menggunakan tombol F5 atau dari menu Debug.
 
-GetX adalah package Flutter untuk state management, dependency injection, dan route management yang sederhana dan efisien.
+## _AVD Manager Extension_
 
-**Instalasi GetX:**
-Tambahkan pada `pubspec.yaml`:
+Ekstensi AVD Manager untuk Visual Studio Code ini mempermudah Anda dalam mengelola Android Virtual Device (AVD) dan paket SDK langsung dari VS Code.
 
-```yaml
-dependencies:
-  get: ^4.6.5
-```
+**Fitur:**
+1. Manajemen AVD: Anda dapat dengan mudah membuat, mengubah nama, atau menghapus AVD.
+2. Manajemen Paket SDK: Ekstensi ini memungkinkan Anda menginstal, memperbarui, dan menghapus berbagai paket SDK.
+3. Emulator: Anda bisa langsung menjalankan AVD dari dalam Visual Studio Code.
 
----
+**Cara Penggunaan:**
+- Buka Command Palette dengan `Ctrl+Shift+P` (Windows/Linux) atau `Cmd+Shift+P` (macOS)
+- Ketik "View: Show AVDManager"
 
-## 5. Membuat Proyek Flutter Pertama
+Untuk detail lengkap: [toroxx/vscode-avdmanager](https://github.com/toroxx/vscode-avdmanager)
 
-1. Buat proyek baru:
-   ```bash
-   fvm flutter create hello_flutter
-   cd hello_flutter
-   ```
-2. Jalankan aplikasi:
-   ```bash
-   fvm flutter run
-   ```
+## _Instalasi GetX CLI_
 
----
+GetX adalah state management yang ringkas dan powerful untuk Flutter. Get CLI adalah command line interface untuk membuat infrastruktur GetX dengan template.
 
-## 6. Struktur Proyek Flutter
+<CodeBlock desc="Install GetX CLI" language="bash" code={`
+fvm flutter pub global activate get_cli
+`} />
 
-```
-hello_flutter/
-├── android/
-├── ios/
-├── lib/
-│   └── main.dart
-├── pubspec.yaml
-└── ...
-```
-
-- **lib/main.dart**: Titik masuk aplikasi.
-- **pubspec.yaml**: Konfigurasi dependencies.
+Verifikasi instalasi:
+<CodeBlock desc="Verifikasi Instalasi GetX CLI" language="bash" code={`
+get -v
+`} />
 
 ---
 
-## 7. Contoh Kode Flutter Sederhana
+# DART SYNTAX
 
-```dart
-import 'package:flutter/material.dart';
+Sisi positif dari bahasa pemrograman Dart salah satunya adalah sintaksis seperti variable dan operator yang digunakan tidak jauh berbeda dengan bahasa pemrograman lainnya.
+
+## _Variabel_
+
+Variabel bisa dibayangkan sebagai sebuah kotak atau wadah yang menyimpan nilai. Di dalam komputer variable ini disimpan di dalam memori komputer. Pada Dart kita mendefinisikan sebuah variable dengan keyword var.
+
+<CodeBlock desc="Variabel" language="dart" code={`
+var name = 'Flutter';
+var count = 10;
+`} />
+
+Dart juga memiliki 4 jenis variables:
+
+### 1. Null Safety
+
+Null safety memastikan bahwa variabel tidak boleh null kecuali secara eksplisit dinyatakan bisa null.
+
+<CodeBlock desc="Null Safety" language="dart" code={`
+String? nullableName;  // Bisa null
+String nonNullableName = 'Flutter';  // Tidak boleh null
+`} />
+
+### 2. Default Value
+
+Variabel yang tidak diinisialisasi secara otomatis memiliki nilai default null. Untuk variabel non-nullable, harus diinisialisasi sebelum digunakan.
+
+<CodeBlock desc="Default Value" language="dart" code={`
+int? nullableNumber;  // Default: null
+int nonNullableNumber = 0;  // Harus diinisialisasi
+`} />
+
+### 3. Late Variables
+
+Variabel late memungkinkan deklarasi variabel non-nullable tanpa harus langsung diinisialisasi.
+
+<CodeBlock desc="Late Variables" language="dart" code={`
+late String description;
 
 void main() {
-  runApp(const MyApp());
+  description = 'Flutter Framework';
+  print(description);
 }
+`} />
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+### 4. Final and Const
 
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Hello Flutter',
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Hello Flutter'),
-        ),
-        body: const Center(
-          child: Text('Selamat datang di Flutter!'),
-        ),
-      ),
-    );
-  }
+- `final`: variabel hanya dapat diinisialisasi sekali, nilainya bisa ditentukan saat runtime
+- `const`: variabel bersifat compile-time constant
+
+<CodeBlock desc="Final and Const" language="dart" code={`
+final String version = 'Flutter 3.0';
+const double pi = 3.14159;
+`} />
+
+## _Data Type_
+
+Dart memiliki beberapa tipe bawaan (built-in types):
+
+| Tipe | Deskripsi |
+| :--- | :--- |
+| **Number** | `int`: bilangan bulat, `double`: bilangan desimal |
+| **String** | Teks atau urutan karakter |
+| **Boolean** | Nilai `true` atau `false` |
+| **List** | Koleksi terurut yang dapat diakses dengan indeks |
+| **Sets** | Koleksi tidak terurut dari elemen unik |
+| **Map** | Koleksi pasangan kunci-nilai |
+| **Runes** | Representasi karakter Unicode |
+| **Symbols** | Nama program yang tidak ambigu |
+
+
+## _Functions_
+
+Penggunaan function pada Dart Flutter dapat dilakukan dengan beberapa cara:
+
+### 1. Main Function
+Titik awal dari sebuah aplikasi Dart atau Flutter.
+
+<CodeBlock desc="Main Function" language="dart" code={`
+void main() {
+  runApp(MyApp());
 }
+`} />
+
+### 2. Type Function & Type Parameters
+Fungsi dengan tipe data generik untuk fleksibilitas.
+
+<CodeBlock desc="Type Function & Type Parameters" language="dart" code={`
+T getValue<T>(T value) {
+  return value;
+}
+`} />
+
+### 3. Output Function
+Fungsi yang mengembalikan nilai.
+
+<CodeBlock desc="Output Function" language="dart" code={`
+int add(int a, int b) {
+  return a + b;
+}
+`} />
+
+### 4. Async Await Function
+Fungsi untuk menangani operasi asynchronous.
+
+<CodeBlock desc="Async Await Function" language="dart" code={`
+Future<String> fetchData() async {
+  await Future.delayed(Duration(seconds: 2));
+  return 'Data loaded';
+}
+`} />
+
+## _Ternary_
+
+Fitur untuk menulis singkat ekspresi kondisional dalam Flutter.
+
+<CodeBlock desc="Ternary" language="dart" code={`
+String status = isLoggedIn ? 'Welcome' : 'Please login';
+`} />
+
+---
+
+# MEMBUAT PROYEK FLUTTER BARU
+
+Berikut adalah langkah-langkah untuk membuat proyek Flutter baru:
+
+<CodeBlock desc="Membuat Proyek Flutter Baru" language="bash" code={`
+flutter create nama_proyek_anda
+cd nama_proyek_anda
+`} />
+
+Untuk membuka proyek di Visual Studio Code:
+
+```bash
+code .
 ```
 
----
+Struktur proyek Flutter yang akan terbuat:
+- `lib/`: Folder utama untuk kode aplikasi
+- `pubspec.yaml`: File konfigurasi proyek dan dependensi
+- `android/` & `ios/`: Folder platform-specific
+- `test/`: Folder untuk unit testing
 
-## 8. Menjalankan di Emulator/Device
-
-- Buka Android Studio/VSCode, jalankan emulator atau hubungkan device.
-- Jalankan:
-  ```bash
-  fvm flutter run
-  ```
-
----
-
-## 9. Tips & Best Practice
-
-- Gunakan FVM untuk mengelola versi Flutter.
-- Selalu gunakan `pubspec.yaml` untuk mengelola dependencies.
-- Manfaatkan Hot Reload untuk mempercepat pengembangan.
-
----
-
-## 10. Referensi
-
-- [flutter.dev](https://flutter.dev/)
-- [FVM Documentation](https://fvm.app/)
-- [GetX Documentation](https://pub.dev/packages/get)
-
----
-
-**Selamat! Anda telah berhasil menyiapkan lingkungan Flutter dan siap untuk memulai pengembangan aplikasi mobile. Lanjutkan ke Modul 1 untuk mempelajari User Interface, Arsitektur, dan State Management.**
+**Referensi Lengkap:**
+- [Flutter Documentation](https://docs.flutter.dev)
+- [Dart Language Tour](https://dart.dev/language)
+- [Flutter Codelabs](https://docs.flutter.dev/codelabs)
