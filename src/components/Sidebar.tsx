@@ -4,10 +4,10 @@ import { BrandLogo } from "./BrandLogo";
 import {
   LuHome,
   LuBookOpen,
-  LuUser,
+  // LuUser,
   LuFileText,
-  LuFileArchive,
-  LuImage,
+  // LuFileArchive,
+  // LuImage,
 } from "@qwikest/icons/lucide";
 import { getAllModulMeta } from "~/utils/modul-utils";
 
@@ -67,7 +67,7 @@ export const Sidebar = component$<SidebarProps>(({ open, onClose$ }) => {
                   </ul>
                 </details>
               </li>
-              <li>
+              {/* <li>
                 <details>
                   <summary>
                     <LuFileArchive class="h-4 w-4" /> Resources
@@ -99,7 +99,7 @@ export const Sidebar = component$<SidebarProps>(({ open, onClose$ }) => {
                     </li>
                   </ul>
                 </details>
-              </li>
+              </li> */}
             </ul>
           </nav>
         </div>

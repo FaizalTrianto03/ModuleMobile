@@ -1,14 +1,14 @@
 import { component$ } from "@builder.io/qwik";
 import { generateSectionId, shareSection } from "~/utils/component-utils";
-import { 
-  LuInfo, 
-  LuCheckCircle, 
-  LuAlertTriangle, 
-  LuXCircle, 
+import {
+  LuInfo,
+  LuCheckCircle,
+  LuAlertTriangle,
+  LuXCircle,
   LuBell,
   LuShare2,
   LuX,
-  LuExternalLink
+  LuExternalLink,
 } from "@qwikest/icons/lucide";
 
 interface InformationProps {
@@ -27,34 +27,34 @@ interface InformationProps {
 }
 
 export const Information = component$<InformationProps>(
-  ({ 
-    title, 
-    content, 
-    type = "info", 
-    icon, 
+  ({
+    title,
+    content,
+    type = "info",
+    icon,
     link,
     footer,
-    shared = false, 
-    dismissible = false 
+    shared = false,
+    dismissible = false,
   }) => {
     const id = generateSectionId(title, "information");
-    
+
     // Map alert types to DaisyUI classes
     const alertTypeClasses = {
       info: "alert",
-      success: "alert alert-success", 
+      success: "alert alert-success",
       warning: "alert alert-warning",
       error: "alert alert-error",
-      neutral: "alert"
+      neutral: "alert",
     };
 
     // Default icons for each type
     const defaultIcons = {
       info: LuInfo,
       success: LuCheckCircle,
-      warning: LuAlertTriangle, 
+      warning: LuAlertTriangle,
       error: LuXCircle,
-      neutral: LuBell
+      neutral: LuBell,
     };
 
     const alertClass = `${alertTypeClasses[type]} mb-6`;
@@ -64,22 +64,19 @@ export const Information = component$<InformationProps>(
       <div id={id} role="alert" class={alertClass}>
         {/* Icon */}
         <IconComponent class="h-6 w-6 shrink-0 stroke-current" />
-        
+
         {/* Content */}
         <div class="flex-1">
           <h3 class="text-lg font-bold">{title}</h3>
-          
+
           <div class="mt-2">
-            <div
-              class="max-w-none"
-              dangerouslySetInnerHTML={content}
-            />
+            <div class="max-w-none" dangerouslySetInnerHTML={content} />
           </div>
 
           {/* Link */}
           {link && (
             <div class="mt-2">
-              <a 
+              <a
                 href={link.url}
                 class="link link-primary inline-flex items-center gap-1 font-medium"
                 target={link.external ? "_blank" : undefined}
@@ -92,11 +89,7 @@ export const Information = component$<InformationProps>(
           )}
 
           {/* Footer */}
-          {footer && (
-            <div class="mt-2 text-sm opacity-75">
-              {footer}
-            </div>
-          )}
+          {footer && <div class="mt-2 text-sm opacity-75">{footer}</div>}
         </div>
 
         {/* Action buttons */}
@@ -112,12 +105,14 @@ export const Information = component$<InformationProps>(
                 <LuShare2 class="h-4 w-4" />
               </button>
             )}
-            
+
             {dismissible && (
               <button
                 class="btn btn-ghost btn-sm btn-square"
                 onClick$={(event) => {
-                  const alertElement = (event.target as HTMLElement).closest('.alert');
+                  const alertElement = (event.target as HTMLElement).closest(
+                    ".alert",
+                  );
                   if (alertElement) {
                     alertElement.remove();
                   }
@@ -133,4 +128,4 @@ export const Information = component$<InformationProps>(
       </div>
     );
   },
-); 
+);
