@@ -293,18 +293,53 @@ Jika kalian menggunakan Firebase Studio, kalian tidak perlu melakukan instalasi 
    fvm global stable
    `} />
 
-5. **Install Android SDK**
+5. **Install Android SDK (tanpa Android Studio)**
+
+   Jalankan script instalasi:
 
    <CodeBlock desc="Install Android SDK" language="bash" code={`
    brew install --cask android-commandlinetools android-platform-tools
    `} />
 
-   <CodeBlock desc="Set PATH Android SDK" language="bash" code={`
-   echo 'export PATH="/opt/homebrew/share/android-commandlinetools/cmdline-tools/latest/bin:$PATH"' >> ~/.zshrc
+   Selanjutnya, untuk memastikan apakah MacBook kamu menggunakan chip Apple Silicon (M1, M2, dll.) atau Intel, buka Terminal dan jalankan perintah ini:
+
+   <CodeBlock desc="Check Architecture" language="bash" code={`
+   arch
    `} />
 
-   <CodeBlock desc="Install Android SDK" language="bash" code={`
-   sdkmanager --install emulator tools "platforms;android-34" "build-tools;34.0.0"
+   Jika hasilnya `arm64`, MacBook kamu menggunakan chip Apple Silicon (M1 ke atas).
+   Jika hasilnya `i386` atau `x86_64`, MacBook kamu menggunakan chip Intel.
+
+   **MacBook dengan Chip M1, M2, M3 (Apple Silicon)**
+
+   Untuk MacBook seri terbaru yang menggunakan chip Apple Silicon (M1, M2, M3, dll.), gunakan perintah berikut.
+
+   <CodeBlock desc="Set PATH Android SDK (Apple Silicon)" language="bash" code={`
+   echo 'export ANDROID_HOME="/opt/homebrew/share/android-commandlinetools"
+   export PATH="$ANDROID_HOME/cmdline-tools/latest/bin:$PATH"
+   export PATH="$ANDROID_HOME/platform-tools:$PATH"' >> ~/.zshrc
+   `} />
+
+   **MacBook dengan Chip Intel**
+
+   Untuk MacBook seri lama yang menggunakan chip Intel, gunakan perintah ini.
+
+   <CodeBlock desc="Set PATH Android SDK (Intel)" language="bash" code={`
+   echo 'export ANDROID_HOME="/usr/local/share/android-commandlinetools"
+   export PATH="$ANDROID_HOME/cmdline-tools/latest/bin:$PATH"
+   export PATH="$ANDROID_HOME/platform-tools:$PATH"' >> ~/.zshrc
+   `} />
+
+   Setelah menjalankan salah satu perintah di atas, kamu harus me-restart terminal atau menjalankan perintah berikut agar perubahan segera berlaku:
+
+   <CodeBlock desc="Reload ZSH Config" language="bash" code={`
+   source ~/.zshrc
+   `} />
+
+   Setelah itu, jalankan script berikut ini:
+
+   <CodeBlock desc="Install Android SDK Components" language="bash" code={`
+   sdkmanager --install platform-tools emulator tools "platforms;android-34" "build-tools;34.0.0"
    `} />
 
 6. **Verifikasi Instalasi**
