@@ -1,3 +1,24 @@
+---
+title: "Modul 2: Responsivitas UI dan Konsumsi Daya Animasi"
+description: "MediaQuery vs LayoutBuilder, Theming, AnimatedContainer vs AnimationController, serta pengelolaan aset responsif di Flutter."
+---
+
+import { CodeBlock } from "/src/components/CodeBlock";
+import contoh1Code from "./code/contoh1.dart?raw";
+import contoh2Code from "./code/contoh2.dart?raw";
+import contoh3Code from "./code/contoh3.dart?raw";
+import contoh4Code from "./code/contoh4.dart?raw";
+import contoh5Code from "./code/contoh5.dart?raw";
+import contoh6Code from "./code/contoh6.dart?raw";
+import contoh7Code from "./code/contoh7.dart?raw";
+import contoh8Code from "./code/contoh8.dart?raw";
+import contoh9Code from "./code/contoh9.dart?raw";
+import struktur10Txt from "./code/struktur10.txt?raw";
+import struktur11Yaml from "./code/struktur11.txt?raw";
+import contoh10Code from "./code/contoh10.dart?raw";
+import contoh11Code from "./code/contoh11.dart?raw";
+import contoh12Code from "./code/contoh12.dart?raw";
+
 **VERSI** 1.0  
 OKTOBER 2025
 
@@ -118,7 +139,7 @@ Pendekatan statis dengan ukuran yang di-hardcode (width: 300, height: 600) akan 
 
 Sebagai ilustrasi perbandingan sederhana:
 
-<CodeImport src="contoh1.dart" />
+<CodeBlock desc="Perbandingan ukuran responsif" language="dart" code={contoh1Code} />
 
 Pada contoh pertama, ukuran Container akan tampak terlalu besar di layar kecil atau terlalu kecil di tablet. Sedangkan pada contoh kedua, ukuran Container akan otomatis menyesuaikan proporsinya dengan dimensi layar aktif.
 
@@ -139,7 +160,7 @@ Informasi ini mencakup:
 
 Contoh penggunaan:
 
-<CodeImport src="contoh2.dart" />
+<CodeBlock desc="MediaQuery contoh" language="dart" code={contoh2Code} />
 
 **Observasi**
 - MediaQuery bergantung pada konteks global aplikasi.
@@ -154,7 +175,7 @@ LayoutBuilder menerima parameter BoxConstraints yang berisi batas minimal dan ma
 
 Contoh penggunaan:
 
-<CodeImport src="contoh3.dart" />
+<CodeBlock desc="LayoutBuilder contoh" language="dart" code={contoh3Code} />
 
 **Observasi**
 - LayoutBuilder memungkinkan widget menyesuaikan diri terhadap ruang yang diberikan parent.
@@ -177,7 +198,7 @@ Selain menyesuaikan ukuran, antarmuka adaptif juga perlu menyesuaikan tema tampi
 
 Contoh penerapan:
 
-<CodeImport src="contoh4.dart" />
+<CodeBlock desc="Konfigurasi ThemeData" language="dart" code={contoh4Code} />
 
 Dengan konfigurasi ini:
 - Aplikasi akan otomatis beralih antara light mode dan dark mode sesuai pengaturan sistem.
@@ -185,7 +206,7 @@ Dengan konfigurasi ini:
 
 Di dalam widget, pengambilan warna atau gaya sebaiknya tidak dilakukan secara hardcode, tetapi melalui akses kontekstual:
 
-<CodeImport src="contoh5.dart" />
+<CodeBlock desc="Menggunakan ColorScheme" language="dart" code={contoh5Code} />
 
 **Observasi**
 - Theming meningkatkan konsistensi desain dan membuat aplikasi terasa native di berbagai platform.
@@ -220,7 +241,7 @@ Pendekatan pertama akan menggunakan MediaQuery untuk membaca dimensi layar secar
 
 Berikut contoh kode implementasi halaman katalog produk sederhana yang responsif menggunakan MediaQuery:
 
-<CodeImport src="contoh6.dart" />
+<CodeBlock desc="Katalog responsif dengan MediaQuery" language="dart" code={contoh6Code} />
 
 **Langkah Implementasi**
 
@@ -250,7 +271,7 @@ Berikut contoh kode implementasi halaman katalog produk sederhana yang responsif
 
 Pendekatan berikut menggunakan LayoutBuilder, bukan MediaQuery. Fokusnya adalah menciptakan komponen modular adaptif yang tidak tergantung pada ukuran layar global, melainkan ruang tempat ia diletakkan.
 
-<CodeImport src="contoh7.dart" />
+<CodeBlock desc="Grid adaptif dengan LayoutBuilder" language="dart" code={contoh7Code} />
 
 **Penjelasan Mekanisme**
 
@@ -283,7 +304,7 @@ Kita tambahkan dua kontrol interaktif:
 - Slider → mengatur jarak antar-item grid (_itemSpacing),
 - Tombol "Ubah Skala" → mengatur ukuran elemen produk (_scaleFactor).
 
-<CodeImport src="contoh8.dart" />
+<CodeBlock desc="Interaktivitas Slider & tombol" language="dart" code={contoh8Code} />
 
 **Penjelasan Mekanisme**
 
@@ -330,7 +351,7 @@ Untuk menampilkan SVG di Flutter, gunakan paket tambahan flutter_svg.
 
 **Contoh Implementasi:**
 
-<CodeImport src="contoh9.dart" />
+<CodeBlock desc="Menampilkan SVG & PNG" language="dart" code={contoh9Code} />
 
 **Observasi**
 
@@ -350,17 +371,17 @@ Jika hanya tersedia satu file PNG, gambar bisa tampak buram di layar ber-DPR tin
 
 **Struktur Rekomendasi:**
 
-<CodeImport src="struktur10.txt" />
+<CodeBlock desc="Struktur aset multi-DPR" language="plaintext" code={struktur10Txt} />
 
 Deklarasikan hanya folder dasar di pubspec.yaml:
 
-<CodeImport src="struktur11.txt" />
+<CodeBlock desc="Deklarasi aset di pubspec.yaml" language="yaml" code={struktur11Yaml} />
 
 Flutter secara otomatis akan memilih file sesuai DPR perangkat. Misalnya, di layar DPR 3.0, aplikasi akan menampilkan 3.0x/logo.png tanpa perlu pengaturan manual.
 
 **Contoh Implementasi:**
 
-<CodeImport src="contoh10.dart" />
+<CodeBlock desc="Pemilihan aset sesuai DPR" language="dart" code={contoh10Code} />
 
 **Observasi**
 
@@ -392,7 +413,7 @@ Animasi implisit digunakan ketika perubahan tampilan dapat diatur secara otomati
 
 **Contoh Implementasi:**
 
-<CodeImport src="contoh11.dart" />
+<CodeBlock desc="AnimatedContainer contoh" language="dart" code={contoh11Code} />
 
 Ketika nilai _width, _height, atau _color berubah di dalam setState(), Flutter otomatis melakukan interpolasi dari nilai lama ke nilai baru. Pendekatan ini sederhana dan efisien untuk transisi ringan seperti perubahan ukuran, warna, atau posisi elemen.
 
@@ -415,7 +436,7 @@ Untuk efek animasi yang lebih kompleks dan terkontrol, digunakan pendekatan anim
 
 **Contoh Implementasi:**
 
-<CodeImport src="contoh12.dart" />
+<CodeBlock desc="AnimationController + Tween" language="dart" code={contoh12Code} />
 
 Kemudian nilai _rotation.value digunakan di dalam Transform.rotate() agar elemen berputar secara terus-menerus.
 
