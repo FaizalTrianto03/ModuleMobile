@@ -68,7 +68,7 @@ Responsiveness, MediaQuery, LayoutBuilder, AnimatedContainer, AnimationControlle
 
 [Menambahkan Elemen Interaktif (Button & Slider) untuk Uji Skala](#menambahkan-elemen-interaktif-button--slider-untuk-uji-skala)
 
-[Rekap Materi](#rekap-materi-1)
+[Rekap Materi](#rekap-materi-implementasi)
 
 [**PENGELOLAAN ASET & MEDIA**](#pengelolaan-aset--media)
 
@@ -76,7 +76,7 @@ Responsiveness, MediaQuery, LayoutBuilder, AnimatedContainer, AnimationControlle
 
 [Optimasi Media untuk Berbagai Device (Density Tinggi vs Rendah)](#optimasi-media-untuk-berbagai-device-density-tinggi-vs-rendah)
 
-[Rekap Materi](#rekap-materi-2)
+[Rekap Materi](#rekap-materi-aset)
 
 [**DASAR ANIMASI DI FLUTTER**](#dasar-animasi-di-flutter)
 
@@ -86,7 +86,7 @@ Responsiveness, MediaQuery, LayoutBuilder, AnimatedContainer, AnimationControlle
 
 [Animasi Eksplisit dengan AnimationController](#animasi-eksplisit-dengan-animationcontroller)
 
-[Rekap Materi](#rekap-materi-3)
+[Rekap Materi](#rekap-materi-animasi)
 
 [Tugas](#tugas)
 
@@ -286,7 +286,7 @@ Kita tambahkan dua kontrol interaktif:
 | **Tombol ditekan** | Ukuran kartu berubah proporsional | Nilai _scaleFactor memengaruhi childAspectRatio, menunjukkan bagaimana parameter layout dapat diubah secara dinamis melalui state. |
 | **Tidak ada interaksi** | UI stabil dan efisien | Menunjukkan efisiensi StatefulWidget dalam mempertahankan state selama build tidak dipanggil ulang tanpa perubahan |
 
-## ***Rekap Materi***
+## ***Rekap Materi*** {#rekap-materi-implementasi}
 
 Pada Bab 2 ini, mahasiswa telah mempraktikkan penerapan desain antarmuka yang responsif menggunakan MediaQuery dan LayoutBuilder. Melalui studi kasus katalog produk, tampilan berhasil menyesuaikan jumlah kolom, ukuran elemen, dan jarak antar-item sesuai dimensi layar. Penambahan elemen interaktif seperti Slider dan Button juga memperlihatkan bagaimana perubahan state memicu rebuild UI secara efisien.
 
@@ -349,7 +349,7 @@ Flutter secara otomatis akan memilih file sesuai DPR perangkat. Misalnya, di lay
 - Tidak diperlukan logika tambahan di kode untuk menyesuaikan resolusi.
 - Aset tampil tajam di semua perangkat tanpa mempengaruhi performa.
 
-## ***Rekap Materi***
+## ***Rekap Materi*** {#rekap-materi-aset}
 
 Pada Bab 3 ini, mahasiswa telah memahami cara mengelola aset visual adaptif menggunakan format PNG dan SVG, serta mengoptimalkan kualitas gambar untuk berbagai densitas layar. Dengan konsep ini, aplikasi Flutter dapat menampilkan visual yang konsisten, tajam, dan efisien di semua perangkat.
 
@@ -401,7 +401,7 @@ Kemudian nilai _rotation.value digunakan di dalam Transform.rotate() agar elemen
 - Cocok untuk efek kompleks seperti rotasi, perbesaran, atau kombinasi multi-transisi.
 - Harus diakhiri dengan dispose() untuk membebaskan sumber daya controller.
 
-## ***Rekap Materi***
+## ***Rekap Materi*** {#rekap-materi-animasi}
 
 Pada Bab 4 ini, mahasiswa telah memahami dua pendekatan utama dalam membuat animasi di Flutter:
 
