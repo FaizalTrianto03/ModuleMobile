@@ -1,0 +1,5 @@
+assets/
+  images/
+    logo.png        ← varian 1.0x
+    2.0x/logo.png   ← varian 2.0x
+    3.0x/logo.png   ← varian 3.0x

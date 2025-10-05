@@ -1,22 +1,482 @@
----
-title: "Modul 2: Responsivitas UI dan Konsumsi Daya Animasi"
-description: "Belajar responsive design, adaptive UI untuk berbagai ukuran layar, animasi yang efisien, dan optimasi konsumsi daya di Flutter."
----
+**VERSI** 1.0  
+OKTOBER 2025
+
+# **PEMROGRAMAN MOBILE**
+
+## ***MODUL 2 - Materi***
+
+## ***Responsivitas UI dan Konsumsi Daya Animasi***
+
+**DISUSUN OLEH**:  
+Ali Sofyan Kholimi, M.Kom.   
+Faizal Qadri Trianto  
+Muhammad Hisyam Kamil
+
+# **PENDAHULUAN**
+
+## ***TUJUAN***
+
+1. Mengevaluasi dan menerapkan metode desain antarmuka yang responsif serta adaptif menggunakan MediaQuery dan LayoutBuilder.  
+2. Menganalisis dan membandingkan efisiensi animasi antara pendekatan berbasis AnimatedContainer (implisit) dan AnimationController (eksplisit).
+
+## ***TARGET MODUL***
+
+1. Mahasiswa mampu membangun dan menguji UI adaptif yang menyesuaikan tampilan pada berbagai ukuran layar dan orientasi perangkat.  
+2. Mahasiswa mampu menganalisis konsumsi sumber daya dan efisiensi animasi, khususnya dalam membedakan performa AnimatedContainer dan AnimationController.  
+3. Mahasiswa dapat menerapkan prinsip visual dinamis yang menjaga konsistensi estetika sekaligus efisiensi performa pada aplikasi Flutter.
+
+## ***PERSIAPAN***
+
+1. Emulator atau perangkat fisik dengan resolusi dan orientasi berbeda (misalnya ponsel dan tablet).  
+2. Flutter SDK ≥ 3.x serta editor (VS Code atau Android Studio).  
+3. Akses ke Flutter DevTools untuk analisis CPU/GPU dan profiling performa animasi.  
+4. Koneksi internet untuk mengunduh paket tambahan seperti flutter_svg.
+
+## ***KEYWORDS***
+
+Responsiveness, MediaQuery, LayoutBuilder, AnimatedContainer, AnimationController
+
+## ***TABLE OF CONTENTS***
+
+[**PENDAHULUAN**](#pendahuluan)
+
+[TUJUAN](#tujuan)
+
+[TARGET MODUL](#target-modul)
+
+[PERSIAPAN](#persiapan)
+
+[KEYWORDS](#keywords)
+
+[TABLE OF CONTENTS](#table-of-contents)
+
+[**KONSEP UI RESPONSIF & ADAPTIF**](#konsep-ui-responsif--adaptif)
+
+[Pentingnya Desain Responsif pada Mobile](#pentingnya-desain-responsif-pada-mobile)
+
+[Perbedaan MediaQuery dan LayoutBuilder](#perbedaan-mediaquery-dan-layoutbuilder)
+
+[Integrasi dengan Theming (Dark/Light Mode & Color Scheme Adaptif)](#integrasi-dengan-theming-darklight-mode--color-scheme-adaptif)
+
+[Rekap Materi](#rekap-materi)
+
+[**IMPLEMENTASI UI RESPONSIF**](#implementasi-ui-responsif)
+
+[Studi Kasus: Katalog Produk Responsif dengan MediaQuery](#studi-kasus-katalog-produk-responsif-dengan-mediaquery)
+
+[Alternatif Implementasi Menggunakan LayoutBuilder](#alternatif-implementasi-menggunakan-layoutbuilder)
+
+[Menambahkan Elemen Interaktif (Button & Slider) untuk Uji Skala](#menambahkan-elemen-interaktif-button--slider-untuk-uji-skala)
+
+[Rekap Materi](#rekap-materi-1)
+
+[**PENGELOLAAN ASET & MEDIA**](#pengelolaan-aset--media)
+
+[Menambahkan Gambar & Ikon Adaptif (SVG, PNG)](#menambahkan-gambar--ikon-adaptif-svg-png)
+
+[Optimasi Media untuk Berbagai Device (Density Tinggi vs Rendah)](#optimasi-media-untuk-berbagai-device-density-tinggi-vs-rendah)
+
+[Rekap Materi](#rekap-materi-2)
+
+[**DASAR ANIMASI DI FLUTTER**](#dasar-animasi-di-flutter)
+
+[Konsep Dasar](#konsep-dasar)
+
+[Animasi Implisit dengan AnimatedContainer](#animasi-implisit-dengan-animatedcontainer)
+
+[Animasi Eksplisit dengan AnimationController](#animasi-eksplisit-dengan-animationcontroller)
+
+[Rekap Materi](#rekap-materi-3)
+
+[Tugas](#tugas)
+
+[Instruksi](#instruksi)
+
+[Catatan](#catatan)
+
+[**KRITERIA & DETAIL PENILAIAN**](#kriteria--detail-penilaian)
 
 ---
 
-**VERSI** 1.0
+# **KONSEP UI RESPONSIF & ADAPTIF**
 
-AGUSTUS 2025
+## ***Pentingnya Desain Responsif pada Mobile***
+
+Dalam ekosistem aplikasi modern, pengguna mengakses antarmuka dari berbagai perangkat dengan ukuran, orientasi, dan rasio layar yang berbeda—mulai dari ponsel kecil hingga tablet, bahkan perangkat lipat. Oleh karena itu, antarmuka pengguna tidak bisa lagi dirancang secara statis.
+
+Desain responsif berarti tampilan UI mampu beradaptasi terhadap perubahan dimensi layar secara otomatis, sedangkan desain adaptif mencakup penyesuaian perilaku dan komponen UI terhadap konteks yang lebih luas, seperti tema gelap/terang, platform (Android/iOS), atau bahkan preferensi aksesibilitas pengguna.
+
+Pendekatan statis dengan ukuran yang di-hardcode (width: 300, height: 600) akan gagal saat dijalankan di perangkat dengan resolusi berbeda. Sebaliknya, antarmuka responsif mengandalkan data kontekstual—misalnya ukuran layar, orientasi, dan rasio piksel—untuk membangun tata letak yang proporsional di berbagai perangkat.
+
+Sebagai ilustrasi perbandingan sederhana:
+
+<CodeImport src="contoh1.dart" />
+
+Pada contoh pertama, ukuran Container akan tampak terlalu besar di layar kecil atau terlalu kecil di tablet. Sedangkan pada contoh kedua, ukuran Container akan otomatis menyesuaikan proporsinya dengan dimensi layar aktif.
+
+## ***Perbedaan MediaQuery dan LayoutBuilder***
+
+Flutter menyediakan dua mekanisme utama untuk membangun UI yang responsif: MediaQuery dan LayoutBuilder. Meskipun keduanya digunakan untuk mengatur layout berdasarkan ukuran, cakupan penggunaannya berbeda.
+
+***1. MediaQuery ( Mengetahui Kondisi Layar Global )***
+
+MediaQuery adalah InheritedWidget yang menyebarkan informasi tentang ukuran dan karakteristik layar global ke seluruh widget tree.
+
+Informasi ini mencakup:
+- size → dimensi layar (lebar dan tinggi),
+- orientation → mode potret atau lanskap,
+- devicePixelRatio → rasio kepadatan piksel,
+- padding → area yang dipengaruhi sistem seperti status bar atau notch.
+
+Contoh penggunaan:
+
+<CodeImport src="contoh2.dart" />
+
+**Observasi**
+- MediaQuery bergantung pada konteks global aplikasi.
+- Setiap kali ukuran layar atau orientasi berubah, Flutter akan memanggil ulang build() untuk widget yang menggunakan MediaQuery.
+- Sangat cocok untuk pengaturan layout di tingkat halaman penuh, misalnya pengaturan grid utama atau margin global.
+
+***2. LayoutBuilder ( Menentukan Layout Berdasarkan Ruang Lokal )***
+
+Jika MediaQuery membaca ukuran layar global, maka LayoutBuilder bekerja secara lokal, hanya berdasarkan constraints dari parent widget-nya.
+
+LayoutBuilder menerima parameter BoxConstraints yang berisi batas minimal dan maksimal ukuran ruang yang tersedia. Ini membuatnya ideal untuk membuat komponen yang benar-benar modular dan reusable, karena ia tidak peduli di mana widget itu ditempatkan.
+
+Contoh penggunaan:
+
+<CodeImport src="contoh3.dart" />
+
+**Observasi**
+- LayoutBuilder memungkinkan widget menyesuaikan diri terhadap ruang yang diberikan parent.
+- Ideal untuk membuat komponen adaptif, misalnya kartu produk yang lebar di layar besar dan ramping di layar kecil.
+- Tidak memerlukan konteks global aplikasi, sehingga lebih efisien untuk komponen dalam layout kompleks.
+
+**Perbandingan Singkat**
+
+| Aspek | MediaQuery | LayoutBuilder |
+|-------|------------|---------------|
+| **Cakupan** | Global (seluruh layar) | Lokal (parent container) |
+| **Data yang diakses** | MediaQueryData (size, orientation, padding, DPR) | BoxConstraints (max/min width/height) |
+| **Rebuild terjadi saat** | Ukuran layar berubah | Ukuran parent berubah |
+| **Cocok untuk** | Struktur halaman utama | Komponen modular / widget reusable |
+
+## ***Integrasi dengan Theming (Dark/Light Mode & Color Scheme Adaptif)***
+
+Selain menyesuaikan ukuran, antarmuka adaptif juga perlu menyesuaikan tema tampilan (theming). Flutter menyediakan sistem ThemeData yang memungkinkan aplikasi menyesuaikan skema warna, tipografi, dan gaya elemen berdasarkan mode sistem.
+
+Contoh penerapan:
+
+<CodeImport src="contoh4.dart" />
+
+Dengan konfigurasi ini:
+- Aplikasi akan otomatis beralih antara light mode dan dark mode sesuai pengaturan sistem.
+- Komponen seperti AppBar, Scaffold, dan Text akan menyesuaikan warna berdasarkan tema aktif.
+
+Di dalam widget, pengambilan warna atau gaya sebaiknya tidak dilakukan secara hardcode, tetapi melalui akses kontekstual:
+
+<CodeImport src="contoh5.dart" />
+
+**Observasi**
+- Theming meningkatkan konsistensi desain dan membuat aplikasi terasa native di berbagai platform.
+- Gunakan Theme.of(context) dan ColorScheme daripada warna tetap (Colors.blue) agar adaptif terhadap perubahan mode.
+
+## ***Rekap Materi***
+
+Pada Bab 1 ini, telah dipelajari konsep dasar dari desain antarmuka yang responsif dan adaptif di Flutter, meliputi:
+
+- MediaQuery digunakan untuk mendapatkan informasi global tentang ukuran dan orientasi layar.
+- LayoutBuilder digunakan untuk membuat widget yang menyesuaikan diri berdasarkan ruang lokal dari parent widget.
+- Theming digunakan untuk membuat tampilan aplikasi menyesuaikan gaya visual sistem (mode terang/gelap).
+
+Dengan memahami ketiga konsep ini, mahasiswa memiliki dasar yang kuat untuk membangun UI Flutter yang fleksibel, efisien, dan konsisten di berbagai perangkat.
+
+Pada bab berikutnya, konsep ini akan diterapkan dalam studi kasus nyata melalui implementasi katalog produk yang responsif.
 
 ---
 
-**DISUSUN OLEH**:
+# **IMPLEMENTASI UI RESPONSIF**
 
-- Ali Sofyan Kholimi, M.Kom.
-- Faizal Qadri Trianto
-- Muhammad Hisyam Kamil
+## ***Studi Kasus: Katalog Produk Responsif dengan MediaQuery***
+
+Setelah memahami konsep responsiveness dan adaptivity pada Bab 1, tahap ini berfokus pada penerapan konsep tersebut dalam sebuah studi kasus praktis. Kasus yang diangkat adalah katalog produk berbasis grid, di mana tata letak (jumlah kolom dan ukuran elemen) harus menyesuaikan ukuran layar pengguna.
+
+Pendekatan pertama akan menggunakan MediaQuery untuk membaca dimensi layar secara global. Hasil dari pembacaan ini akan menjadi dasar penentuan jumlah kolom, ukuran font, dan jarak antar-elemen.
+
+**Langkah Implementasi**
+
+Berikut contoh kode implementasi halaman katalog produk sederhana yang responsif menggunakan MediaQuery:
+
+<CodeImport src="contoh6.dart" />
+
+**Langkah Implementasi**
+
+1. Penggunaan Breakpoint Responsif  
+   Nilai 600 dan 800 digunakan sebagai batas (breakpoint) untuk menentukan berapa banyak kolom yang ditampilkan.
+
+- <600px → 2 kolom (ponsel)
+- 600–800px → 3 kolom (tablet kecil)
+- >800px → 4 kolom (layar besar)
+
+2. Adaptasi Ukuran Teks dan Spasi  
+   titleFontSize dan _itemSpacing diatur secara proporsional agar tetap nyaman dibaca di berbagai ukuran layar.
+
+3. Interaktivitas dengan Slider  
+   Penambahan Slider di bagian bawah bertujuan agar praktikan bisa mengamati efek rebuild UI secara real-time ketika state _itemSpacing berubah dan memicu pemanggilan ulang build().
+
+**Observasi**
+
+| Skenario | Hasil yang Diharapkan | Analisis |
+|----------|----------------------|----------|
+| **Aplikasi dijalankan di ponsel** | Grid tampil 2 kolom | Tata letak padat dan efisien di ruang sempit |
+| **Aplikasi dijalankan di tablet** | Grid tampil 3–4 kolom | Elemen tersebar proporsional |
+| **Slider digerakkan** | Jarak antar-item berubah langsung | Terjadi rebuild parsial, menunjukkan adaptivitas UI |
+
+## ***Alternatif Implementasi Menggunakan LayoutBuilder***
+
+Pendekatan berikut menggunakan LayoutBuilder, bukan MediaQuery. Fokusnya adalah menciptakan komponen modular adaptif yang tidak tergantung pada ukuran layar global, melainkan ruang tempat ia diletakkan.
+
+<CodeImport src="contoh7.dart" />
+
+**Penjelasan Mekanisme**
+
+1. LayoutBuilder menerima parameter constraints yang memberi tahu seberapa besar ruang tersedia untuk widget tersebut.
+
+2. Grid menyesuaikan jumlah kolom berdasarkan maxWidth dari parent container.
+
+3. Pada LayoutBuilderDemoPage, satu grid ditempatkan di container sempit (250px) dan satu lagi di area utama. Hasilnya: jumlah kolom di kedua grid berbeda, walau menggunakan widget yang sama.
+
+**Observasi**
+
+- Komponen tetap adaptif meskipun diletakkan di dua ruang dengan lebar berbeda.
+- Tidak bergantung pada ukuran layar global (MediaQuery).
+- Efektif untuk membangun widget reusable seperti dashboard panels atau card lists.
+
+## ***Menambahkan Elemen Interaktif (Button & Slider) untuk Uji Skala***
+
+Setelah layout dasar berhasil dibangun secara responsif, tahap berikutnya adalah menambahkan elemen interaktif agar mahasiswa dapat menguji dynamic rebuild dari tampilan secara langsung. Tujuannya bukan hanya sekadar membuat antarmuka yang bisa diubah-ubah, melainkan untuk memahami bagaimana perubahan state memengaruhi proses rendering (build) di Flutter.
+
+**Konsep Interaktivitas**
+
+Setiap kali pengguna berinteraksi dengan elemen seperti Slider atau ElevatedButton, Flutter akan mengeksekusi fungsi setState(). Fungsi ini menandai bahwa terjadi perubahan data (state), dan framework akan memanggil ulang metode build() hanya pada bagian tree yang terpengaruh. Dengan begitu, perubahan nilai akan langsung tercermin pada antarmuka tanpa perlu memuat ulang seluruh aplikasi.
+
+**Implementasi: Uji Skala dengan Slider dan Tombol**
+
+Berikut contoh pengembangan lanjutan dari studi kasus katalog produk pada subbab sebelumnya.
+
+Kita tambahkan dua kontrol interaktif:
+- Slider → mengatur jarak antar-item grid (_itemSpacing),
+- Tombol "Ubah Skala" → mengatur ukuran elemen produk (_scaleFactor).
+
+<CodeImport src="contoh8.dart" />
+
+**Penjelasan Mekanisme**
+
+1. Slider mengubah nilai _itemSpacing, yang memengaruhi padding, crossAxisSpacing, dan mainAxisSpacing dari grid. Setiap perubahan nilai men-trigger setState(), memanggil ulang metode build(), lalu UI menyesuaikan jarak antar-item.
+
+2. ElevatedButton digunakan untuk menguji perubahan ukuran elemen. Saat tombol ditekan, _scaleFactor berganti antara 1.0 dan 1.2, lalu diterapkan pada childAspectRatio. Hasilnya, kartu produk akan tampak melebar atau memanjang secara proporsional.
+
+3. Seluruh proses perubahan berjalan secara real-time, tanpa perlu restart atau reload manual, menunjukkan mekanisme stateful rebuild pada Flutter.
+
+**Observasi**
+
+| Aksi | Efek Visual | Analisis |
+|------|-------------|----------|
+| **Slider digerakan** | Grid meregang atau merapat | Rebuild terjadi pada seluruh GridView, tetapi efisien karena Flutter hanya menggambar ulang widget yang berubah posisi |
+| **Tombol ditekan** | Ukuran kartu berubah proporsional | Nilai _scaleFactor memengaruhi childAspectRatio, menunjukkan bagaimana parameter layout dapat diubah secara dinamis melalui state. |
+| **Tidak ada interaksi** | UI stabil dan efisien | Menunjukkan efisiensi StatefulWidget dalam mempertahankan state selama build tidak dipanggil ulang tanpa perubahan |
+
+## ***Rekap Materi***
+
+Pada Bab 2 ini, mahasiswa telah mempraktikkan penerapan desain antarmuka yang responsif menggunakan MediaQuery dan LayoutBuilder. Melalui studi kasus katalog produk, tampilan berhasil menyesuaikan jumlah kolom, ukuran elemen, dan jarak antar-item sesuai dimensi layar. Penambahan elemen interaktif seperti Slider dan Button juga memperlihatkan bagaimana perubahan state memicu rebuild UI secara efisien.
+
+Dengan pemahaman ini, mahasiswa siap melanjutkan ke Bab 3 untuk mempelajari pengelolaan aset dan media agar tampilan visual tetap tajam di berbagai perangkat.
 
 ---
 
-# COMING SOON
+# **PENGELOLAAN ASET & MEDIA**
+
+## ***Menambahkan Gambar & Ikon Adaptif (SVG, PNG)***
+
+Aset visual seperti gambar dan ikon adalah elemen penting dalam membangun kesan antarmuka aplikasi. Namun, penggunaan aset dengan ukuran tetap (fixed size) dapat menyebabkan tampilan pecah, kabur, atau tidak proporsional di berbagai perangkat. Oleh karena itu, Flutter menyediakan sistem asset bundle dan mendukung format gambar baik raster (PNG) maupun vektor (SVG).
+
+**1. Aset PNG (Raster Image)**
+
+Format PNG umum digunakan untuk gambar yang memiliki banyak warna, gradasi, atau tekstur seperti foto. Namun, PNG bersifat statis: jika diperbesar tanpa versi resolusi tinggi, kualitasnya akan menurun.
+
+**2. Aset SVG (Vector Image)**
+
+Untuk ikon atau ilustrasi ringan, disarankan menggunakan format SVG (Scalable Vector Graphics). SVG bersifat matematis, sehingga dapat diskalakan tanpa kehilangan ketajaman di berbagai ukuran layar.
+
+Untuk menampilkan SVG di Flutter, gunakan paket tambahan flutter_svg.
+
+**Contoh Implementasi:**
+
+<CodeImport src="contoh9.dart" />
+
+**Observasi**
+
+- PNG cocok untuk foto atau ilustrasi kompleks dengan banyak warna.
+- SVG cocok untuk ikon, logo, atau ilustrasi ringan karena bisa diperbesar tanpa kehilangan kualitas.
+- Flutter dapat menampilkan keduanya bersamaan tanpa konfigurasi tambahan selain deklarasi folder aset.
+
+## ***Optimasi Media untuk Berbagai Device (Density Tinggi vs Rendah)***
+
+Perangkat modern memiliki device pixel ratio (DPR) yang berbeda-beda, misalnya:
+
+- Ponsel standar: DPR = 1.0 atau 2.0
+- Layar Retina / AMOLED: DPR = 3.0 atau lebih
+
+Jika hanya tersedia satu file PNG, gambar bisa tampak buram di layar ber-DPR tinggi. Untuk menjaga ketajaman visual, Flutter mendukung varian aset resolusi berdasarkan struktur folder.
+
+**Struktur Rekomendasi:**
+
+<CodeImport src="struktur10.txt" />
+
+Deklarasikan hanya folder dasar di pubspec.yaml:
+
+<CodeImport src="struktur11.txt" />
+
+Flutter secara otomatis akan memilih file sesuai DPR perangkat. Misalnya, di layar DPR 3.0, aplikasi akan menampilkan 3.0x/logo.png tanpa perlu pengaturan manual.
+
+**Contoh Implementasi:**
+
+<CodeImport src="contoh10.dart" />
+
+**Observasi**
+
+- Flutter melakukan seleksi aset otomatis berdasarkan rasio piksel perangkat.
+- Tidak diperlukan logika tambahan di kode untuk menyesuaikan resolusi.
+- Aset tampil tajam di semua perangkat tanpa mempengaruhi performa.
+
+## ***Rekap Materi***
+
+Pada Bab 3 ini, mahasiswa telah memahami cara mengelola aset visual adaptif menggunakan format PNG dan SVG, serta mengoptimalkan kualitas gambar untuk berbagai densitas layar. Dengan konsep ini, aplikasi Flutter dapat menampilkan visual yang konsisten, tajam, dan efisien di semua perangkat.
+
+Bab selanjutnya akan membahas Dasar Animasi di Flutter untuk memperkaya interaksi dan pengalaman pengguna melalui transisi visual yang halus.
+
+---
+
+# **DASAR ANIMASI DI FLUTTER**
+
+## ***Konsep Dasar***
+
+Animasi dalam Flutter berfungsi untuk memberikan transisi visual yang halus dan memperkuat pengalaman pengguna (user experience). Dengan animasi, perubahan tampilan tidak terjadi secara mendadak, melainkan secara bertahap sehingga terasa alami dan informatif. Flutter menyediakan dua pendekatan utama dalam membuat animasi: implisit dan eksplisit.
+
+## ***Animasi Implisit dengan AnimatedContainer***
+
+Animasi implisit digunakan ketika perubahan tampilan dapat diatur secara otomatis oleh Flutter tanpa pengontrol tambahan. Widget seperti AnimatedContainer, AnimatedOpacity, dan AnimatedAlign akan mendeteksi perubahan nilai propertinya, lalu menjalankan transisi secara halus.
+
+**Contoh Implementasi:**
+
+<CodeImport src="contoh11.dart" />
+
+Ketika nilai _width, _height, atau _color berubah di dalam setState(), Flutter otomatis melakukan interpolasi dari nilai lama ke nilai baru. Pendekatan ini sederhana dan efisien untuk transisi ringan seperti perubahan ukuran, warna, atau posisi elemen.
+
+**Observasi**
+
+- Tidak memerlukan objek pengontrol animasi.
+- Sangat cocok untuk efek visual ringan dan dinamis.
+- Proses animasi sepenuhnya ditangani oleh Flutter.
+
+## ***Animasi Eksplisit dengan AnimationController***
+
+Untuk efek animasi yang lebih kompleks dan terkontrol, digunakan pendekatan animasi eksplisit. Di sini, pengembang menentukan sendiri bagaimana animasi berjalan dengan bantuan AnimationController dan Tween.
+
+**Komponen Utama:**
+
+- AnimationController → mengatur waktu, durasi, dan arah animasi.
+- Tween → menentukan rentang nilai (misalnya dari 0 ke 1, atau dari warna A ke warna B).
+- AnimatedBuilder → membangun ulang bagian UI setiap kali nilai animasi berubah.
+
+**Contoh Implementasi:**
+
+<CodeImport src="contoh12.dart" />
+
+Kemudian nilai _rotation.value digunakan di dalam Transform.rotate() agar elemen berputar secara terus-menerus.
+
+**Observasi**
+
+- Memberikan kontrol penuh atas arah dan durasi animasi.
+- Cocok untuk efek kompleks seperti rotasi, perbesaran, atau kombinasi multi-transisi.
+- Harus diakhiri dengan dispose() untuk membebaskan sumber daya controller.
+
+## ***Rekap Materi***
+
+Pada Bab 4 ini, mahasiswa telah memahami dua pendekatan utama dalam membuat animasi di Flutter:
+
+- Animasi Implisit — transisi otomatis antar nilai properti tanpa perlu controller.
+- Animasi Eksplisit — animasi terkontrol menggunakan AnimationController dan Tween.
+
+Kedua pendekatan ini menjadi dasar dalam membangun antarmuka yang dinamis, interaktif, dan profesional di Flutter.
+
+**AKSES PROJECT & REFERENSI MODUL**
+
+Sebelum memulai Codelab, silakan akses project dasar Flutter dan referensi modul yang telah disiapkan pada tautan berikut:
+
+- Repository GitHub:  
+  [**GITHUB**](https://github.com/FaizalTrianto03/Prak.Mobile-25-26)
+
+- Website Modul (untuk memudahkan menyalin contoh kode):
+  [**Website Modul**](https://mobile.faizaltrianto.com/modul/2/)
+
+**Catatan:**
+
+- Project di GitHub berisi branch untuk setiap modul (modul1, modul2, dan seterusnya).
+- Website modul dapat digunakan sebagai referensi tambahan untuk membaca dan menyalin contoh kode secara langsung.
+
+**CODELAB**
+
+## ***Tugas***
+
+Buat sebuah aplikasi Flutter sederhana bertema Katalog Produk Dinamis, yang menampilkan antarmuka responsif dan animasi sederhana.
+
+Codelab ini dirancang untuk melatih kemampuan mahasiswa dalam:
+
+1) Membangun UI adaptif menggunakan pendekatan MediaQuery dan LayoutBuilder.
+
+2) Menerapkan animasi implisit sederhana menggunakan AnimatedContainer.
+
+Buat sebuah aplikasi Flutter sederhana bertema Katalog Produk Dinamis, yang menampilkan antarmuka responsif dan animasi sederhana.
+
+## ***Instruksi***
+
+1) **Bangun satu halaman utama (misal: ProductCatalogPage).**
+
+- Tampilkan beberapa elemen (misalnya kotak atau kartu produk).
+- Pastikan tata letaknya menyesuaikan ukuran layar — misalnya 2 kolom di ponsel, 3–4 kolom di tablet.
+- Gunakan salah satu pendekatan: MediaQuery, LayoutBuilder, atau kombinasi keduanya.
+
+2) **Tambahkan efek animasi sederhana.**
+
+- Gunakan AnimatedContainer untuk memberikan transisi halus saat warna, ukuran, atau posisi elemen berubah.
+- Misalnya: ketika elemen ditekan, ukurannya membesar atau warnanya berubah secara halus.
+
+3) **Uji Responsivitas dan Animasi.**
+
+- Jalankan aplikasi di emulator dengan ukuran berbeda (ponsel dan tablet).
+- Amati perubahan tata letak ketika ukuran layar berubah.
+- Uji animasi dengan melakukan interaksi langsung pada elemen.
+
+## ***Catatan***
+
+1. **Tidak perlu membuat navigasi, data API, atau aset eksternal.**
+
+2. **Fokus pada dua kemampuan utama: adaptivitas tata letak dan transisi visual animasi.**
+
+3. **Gunakan warna kontras agar perubahan tampilan mudah diamati.**
+
+---
+
+# **KRITERIA & DETAIL PENILAIAN**
+
+| Kriteria Penilaian | Persentase Penilaian |
+|---------------------|---------------------|
+| **Codelab** |  |
+| **Codelab 1: Implementasi UI adaptif dengan MediaQuery dan LayoutBuilder** | 20% |
+| **Codelab 2: Implementasi animasi sederhana dengan AnimatedContainer** | 20% |
+| **Demo** |  |
+| **Hasil Uji Responsivitas UI pada Berbagai Device** | 5% |
+| **Implementasi Animasi dengan Dua Metode** | 15% |
+| **Analisis Konsumsi Daya animasi berbasis CPU/GPU Profiler** | 15% |
+| **Diskusi / Argumentasi** | 15% |
