@@ -118,7 +118,7 @@ Pada contoh pertama, ukuran Container akan tampak terlalu besar di layar kecil a
 
 Flutter menyediakan dua mekanisme utama untuk membangun UI yang responsif: MediaQuery dan LayoutBuilder. Meskipun keduanya digunakan untuk mengatur layout berdasarkan ukuran, cakupan penggunaannya berbeda.
 
-***1. MediaQuery ( Mengetahui Kondisi Layar Global )***
+***Satu. MediaQuery ( Mengetahui Kondisi Layar Global )***
 
 MediaQuery adalah InheritedWidget yang menyebarkan informasi tentang ukuran dan karakteristik layar global ke seluruh widget tree.
 
@@ -137,7 +137,7 @@ Contoh penggunaan:
 - Setiap kali ukuran layar atau orientasi berubah, Flutter akan memanggil ulang build() untuk widget yang menggunakan MediaQuery.
 - Sangat cocok untuk pengaturan layout di tingkat halaman penuh, misalnya pengaturan grid utama atau margin global.
 
-***2. LayoutBuilder ( Menentukan Layout Berdasarkan Ruang Lokal )***
+***Dua. LayoutBuilder ( Menentukan Layout Berdasarkan Ruang Lokal )***
 
 Jika MediaQuery membaca ukuran layar global, maka LayoutBuilder bekerja secara lokal, hanya berdasarkan constraints dari parent widget-nya.
 
@@ -300,11 +300,11 @@ Dengan pemahaman ini, mahasiswa siap melanjutkan ke Bab 3 untuk mempelajari peng
 
 Aset visual seperti gambar dan ikon adalah elemen penting dalam membangun kesan antarmuka aplikasi. Namun, penggunaan aset dengan ukuran tetap (fixed size) dapat menyebabkan tampilan pecah, kabur, atau tidak proporsional di berbagai perangkat. Oleh karena itu, Flutter menyediakan sistem asset bundle dan mendukung format gambar baik raster (PNG) maupun vektor (SVG).
 
-**1. Aset PNG (Raster Image)**
+**Satu. Aset PNG (Raster Image)**
 
 Format PNG umum digunakan untuk gambar yang memiliki banyak warna, gradasi, atau tekstur seperti foto. Namun, PNG bersifat statis: jika diperbesar tanpa versi resolusi tinggi, kualitasnya akan menurun.
 
-**2. Aset SVG (Vector Image)**
+**Dua. Aset SVG (Vector Image)**
 
 Untuk ikon atau ilustrasi ringan, disarankan menggunakan format SVG (Scalable Vector Graphics). SVG bersifat matematis, sehingga dapat diskalakan tanpa kehilangan ketajaman di berbagai ukuran layar.
 
