@@ -7,6 +7,12 @@ import { MockupWindowCode } from "/src/components/MockupWindowCode";
 import { Information } from "~/components/modul-list";
 import { CodeBlock } from "/src/components/CodeBlock";
 
+/*
+Catatan perbaikan build:
+- Hindari generics dengan tanda < > di teks biasa. Gunakan backticks: `Future<bool>` atau escape: Future&lt;bool&gt;.
+- Untuk menghindari error SSG 'contoh1Code is not defined', dua blok awal di-inline.
+  Jika file ./code tersedia, aktifkan import yang dikomentari dan ganti inline sesuai.
+*/
 
 // Jika file-file berikut SUDAH tersedia, Anda bisa aktifkan dua import di bawah.
 // import contoh1Code from "./code/apipublik.sh?raw";          // URL/API publik
