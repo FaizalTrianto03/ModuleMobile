@@ -7,15 +7,7 @@ import { MockupWindowCode } from "/src/components/MockupWindowCode";
 import { Information } from "~/components/modul-list";
 import { CodeBlock } from "/src/components/CodeBlock";
 
-{/* Catatan perbaikan build:
-   - Jangan gunakan komentar HTML atau C-style di dalam konten MDX. Gunakan komentar JSX: {/\* ... *\/}.
-   - Hindari karakter spesial seperti ! di awal baris CSS/JS (contoh: /\*! ... *\/). Jika harus ditampilkan, bungkus dalam string atau komponen.
-*/}
 
-{/* Jika file-file berikut SUDAH tersedia, Anda bisa aktifkan dua import di bawah:
-   import contoh1Code from "./code/apipublik.sh?raw";          // URL/API publik
-   import contoh2Code from "./code/response.txt?raw";          // Contoh response JSON
-*/}
 import contoh3Code from "./code/httppubspec.txt?raw";       
 import contoh4Code from "./code/contohhttp.dart?raw";       
 import contoh5Code from "./code/contohhttpui.dart?raw";     
@@ -145,7 +137,8 @@ REST API, http, Dio, async-await, callback
 <a id="pentingnya-desain-responsif-pada-mobile"></a>
 ## Pentingnya Desain Responsif pada Mobile
 
-Dalam pengembangan aplikasi modern, sebagian besar data tidak disimpan secara lokal, melainkan diambil melalui API (Application Programming Interface). API adalah jembatan yang memungkinkan aplikasi client berinteraksi dengan server untuk mengambil, mengirim, atau memperbarui data.
+Dalam dunia pengembangan modern, terdapat beberapa arsitektur komunikasi API seperti SOAP (Simple Object Access Protocol) dan GraphQL. Namun, yang paling banyak digunakan saat ini adalah REST (Representational State Transfer) dengan format data JSON (JavaScript Object Notation).
+REST memanfaatkan protokol HTTP standar untuk pertukaran data, sementara JSON dipilih karena formatnya ringan, mudah dibaca oleh manusia, dan mudah diproses oleh mesin.
 
 1. Siklus Request–Response API
 
