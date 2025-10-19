@@ -1,28 +1,27 @@
-
-
 ---
 title: "Modul 3: API Call & Async Handling"
 description: "Implementasi pemanggilan API (API Call) dan pengelolaan proses asinkron (Async Handling) menggunakan library http dan Dio di Flutter."
 ---
 
-
 import { MockupWindowCode } from "/src/components/MockupWindowCode";
 import { Information } from "~/components/modul-list";
-
 import { CodeBlock } from "/src/components/CodeBlock";
-import apiPublikSh from "./code/apipublik.sh?raw";
-import contohHttpCode from "./code/contohhttp.dart?raw";
-import contohHttpUiCode from "./code/contohhttpui.dart?raw";
-import httpPubspecTxt from "./code/httppubspec.txt?raw";
-import contohDioCode from "./code/contohdio.dart?raw";
-import dioPubspecTxt from "./code/diopubspec.txt?raw";
-import responseTxt from "./code/response.txt?raw";
-import contohFutureCode from "./code/contohfuture.dart?raw";
-import asyncAwaitCode from "./code/asyncawait.dart?raw";
-import callbackChainingCode from "./code/callbackchaining.dart?raw";
-import contohLoginCode from "./code/contohlogin.dart?raw";
-import asyncAwaitLoginCode from "./code/asyncawaitlogin.dart?raw";
-import callbackLoginCode from "./code/callbacklogin.dart?raw";
+
+// Pemetaan ke file-file yang Anda lampirkan dalam repo modul.
+// Pastikan path disesuaikan dengan struktur folder website Anda.
+import contoh1Code from "./code/apipublik.sh?raw";          // URL/API publik
+import contoh2Code from "./code/response.txt?raw";          // Contoh response JSON
+import contoh3Code from "./code/httppubspec.txt?raw";       // pubspec: http
+import contoh4Code from "./code/contohhttp.dart?raw";       // fetchCountries (http)
+import contoh5Code from "./code/contohhttpui.dart?raw";     // FutureBuilder UI
+import contoh6Code from "./code/diopubspec.txt?raw";        // pubspec: Dio
+import contoh7Code from "./code/contohdio.dart?raw";        // fetchCountries (Dio)
+import contoh8Code from "./code/contohfuture.dart?raw";     // Future sederhana
+import contoh9Code from "./code/asyncawait.dart?raw";       // async-await dasar
+import contoh10Code from "./code/callbackchaining.dart?raw";// callback chaining
+import contoh11Code from "./code/contohlogin.dart?raw";     // Future<bool> login()
+import contoh12Code from "./code/asyncawaitlogin.dart?raw"; // login async-await
+import contoh13Code from "./code/callbacklogin.dart?raw";   // login callback
 
 <Information 
   title="Informasi Penting" 
@@ -52,353 +51,310 @@ import callbackLoginCode from "./code/callbacklogin.dart?raw";
   }}
 />
 
-**VERSI** 1.0  
+VERSI 1.0  
 OKTOBER 2025
 
-# **PEMROGRAMAN MOBILE**
+# PEMROGRAMAN MOBILE
 
-## ***MODUL 3 - Materi***
+## MODUL 3 - Materi
 
-## ***API Call & Async Handling***
+## API Call & Async Handling
 
-**DISUSUN OLEH**:  
-Ali Sofyan Kholimi, M.Kom.   
+DISUSUN OLEH:  
+Ali Sofyan Kholimi, M.Kom.  
 Faizal Qadri Trianto  
 Muhammad Hisyam Kamil
 
 <a id="pendahuluan"></a>
-# **PENDAHULUAN**
+# PENDAHULUAN
 
 <a id="tujuan"></a>
-## ***TUJUAN***
+## TUJUAN
 
 1. Mengimplementasikan pemanggilan API (API Call) dan pengelolaan proses asinkron (Async Handling).
-
 2. Menilai performa library HTTP serta kemudahan proses debugging pada operasi asinkron.
 
 <a id="target-modul"></a>
-## ***TARGET MODUL***
+## TARGET MODUL
 
 1. Mahasiswa mampu membuat aplikasi sederhana yang memanfaatkan API menggunakan library http dan Dio.
-
 2. Mahasiswa mampu membandingkan implementasi proses asinkron dengan pendekatan async-await dan callback chaining.
 
 <a id="persiapan"></a>
-## ***PERSIAPAN***
+## PERSIAPAN
 
 1. Menggunakan API publik, seperti REST Countries atau OpenWeatherMap.
-
 2. Menyiapkan Stopwatch atau DevTools Profiler untuk pencatatan waktu (logging) dan pelacakan kesalahan (error trace).
 
 <a id="keywords"></a>
-## ***KEYWORDS***
+## KEYWORDS
 
 REST API, http, Dio, async-await, callback
 
-## ***TABLE OF CONTENTS*** {#table-of-contents}
+<a id="table-of-contents"></a>
+## TABLE OF CONTENTS
 
-[**PENDAHULUAN	2**](#pendahuluan)
+[ PENDAHULUAN ](#pendahuluan)
 
-[TUJUAN	2](#tujuan)
+[TUJUAN](#tujuan)
 
-[TARGET MODUL	2](#target-modul)
+[TARGET MODUL](#target-modul)
 
-[PERSIAPAN	2](#persiapan)
+[PERSIAPAN](#persiapan)
 
-[KEYWORDS	2](#keywords)
+[KEYWORDS](#keywords)
 
-[TABLE OF CONTENTS	2](#table-of-contents)
+[TABLE OF CONTENTS](#table-of-contents)
 
-[**API CALL & ASYNC HANDLING	4**](#api-call-&-async-handling)
+[ API CALL & ASYNC HANDLING ](#api-call-async-handling)
 
-[Pentingnya Desain Responsif pada Mobile	4](#pentingnya-desain-responsif-pada-mobile)
+[Pentingnya Desain Responsif pada Mobile](#pentingnya-desain-responsif-pada-mobile)
 
-[Implementasi API Call dengan http	6](#implementasi-api-call-dengan-http)
+[Implementasi API Call dengan http](#implementasi-api-call-dengan-http)
 
-[Implementasi API Call dengan Dio	9](#implementasi-api-call-dengan-dio)
+[Implementasi API Call dengan Dio](#implementasi-api-call-dengan-dio)
 
-[Dasar Asynchronous Programming	10](#dasar-asynchronous-programming)
+[Dasar Asynchronous Programming](#dasar-asynchronous-programming)
 
-[Simulasi Login (Async)	12](#simulasi-login-\(async\))
+[Simulasi Login (Async)](#simulasi-login-async)
 
-[Rekap Materi	14](#rekap-materi)
+[Rekap Materi](#rekap-materi)
 
-[**CODELAB	15**](#codelab)
+[ AKSES PROJECT & REFERENSI MODUL ](#akses-project-referensi)
 
-[Tugas	16](#tugas)
+[ CODELAB ](#codelab)
 
-[Instruksi	16](#instruksi)
+[Tugas](#tugas)
 
-[Catatan	16](#catatan)
+[Instruksi](#instruksi)
 
-[**KRITERIA & DETAIL PENILAIAN	17**](#kriteria-&-detail-penilaian)
+[Catatan](#catatan)
 
-# 
+[ KRITERIA & DETAIL PENILAIAN ](#kriteria-detail-penilaian)
 
-# **API CALL & ASYNC HANDLING** {#api-call-&-async-handling}
+---
 
-## ***Pentingnya Desain Responsif pada Mobile*** {#pentingnya-desain-responsif-pada-mobile}
+<a id="api-call-async-handling"></a>
+# API CALL & ASYNC HANDLING
 
-Dalam pengembangan aplikasi modern, sebagian besar data tidak disimpan secara lokal di perangkat, tetapi diperoleh melalui komunikasi jaringan. Komunikasi ini menggunakan API (Application Programming Interface), yaitu jembatan yang memungkinkan aplikasi client berinteraksi dengan sistem server untuk mengambil, mengirim, atau memperbarui data.
+<a id="pentingnya-desain-responsif-pada-mobile"></a>
+## Pentingnya Desain Responsif pada Mobile
 
-***1\. Siklus Request–Response API***
+Dalam pengembangan aplikasi modern, sebagian besar data tidak disimpan secara lokal, melainkan diambil melalui API (Application Programming Interface). API adalah jembatan yang memungkinkan aplikasi client berinteraksi dengan server untuk mengambil, mengirim, atau memperbarui data.
 
-Setiap komunikasi antara aplikasi Flutter dengan server mengikuti pola request–response.  
-Prosesnya dapat digambarkan dalam tiga tahap utama:
+1. Siklus Request–Response API
 
-1) Client mengirimkan request — aplikasi Flutter mengirimkan permintaan ke server menggunakan metode HTTP seperti GET, POST, PUT, atau DELETE.  
-2) Server memproses permintaan — server membaca request, menyiapkan hasilnya (misalnya data dalam format JSON).  
-3) Client menerima response — hasil tersebut diterima aplikasi, di-decode, dan ditampilkan ke antarmuka pengguna (UI).  
-   
+Tiga tahap utama:
+1) Client mengirimkan request — menggunakan metode HTTP seperti GET, POST, PUT, DELETE.  
+2) Server memproses permintaan — menyiapkan hasil (umumnya JSON).  
+3) Client menerima response — melakukan decode, lalu menampilkan ke UI.  
 
-Sebagai contoh, API publik berikut mengembalikan daftar negara:
+Contoh API publik (REST Countries):
 
-![][image2]
+<CodeBlock desc="URL API Publik" language="bash" code={contoh1Code} />
 
-Contoh hasil response:  
-![][image3]
+Contoh hasil response:
 
-Setiap objek di dalam array berisi informasi nama negara yang dapat kita tampilkan di aplikasi.
+<CodeBlock desc="Contoh Response JSON" language="plaintext" code={contoh2Code} />
 
-***2\. REST API dan Konsep Data JSON***
+Setiap objek pada array berisi informasi nama negara (common/official) yang dapat kita tampilkan.
 
-Sebagian besar komunikasi API modern menggunakan REST (Representational State Transfer) dan format JSON (JavaScript Object Notation).  
-REST memanfaatkan protokol HTTP standar, sementara JSON digunakan karena ringan dan mudah dibaca manusia maupun mesin.  
-Ciri utama REST API:
+2. REST API dan Konsep Data JSON
 
-* Menggunakan URL sebagai endpoint data (/users, /products, /countries).  
-* Menggunakan metode HTTP (GET, POST, PUT, DELETE).  
-* Mengembalikan data dalam format JSON.
+- REST memanfaatkan HTTP standar; JSON dipilih karena ringan dan mudah dibaca.  
+- Ciri utama: endpoint data, metode HTTP, response JSON.  
+- Data JSON harus di-decode (dart:convert) agar dapat diakses sebagai map/objek di Dart/Flutter.
 
-Flutter tidak membaca JSON secara langsung. Data harus di-decode menggunakan dart:convert agar bisa diakses dalam bentuk objek atau map.
+3. Perbandingan REST API dan GraphQL (sekilas)
 
-***3\. Perbandingan REST API dan GraphQL (sekilas)***
+- REST: endpoint tetap, sederhana, umum digunakan.  
+- GraphQL: query fleksibel, hanya data yang diminta, lebih kompleks (butuh server khusus).  
 
-**Perbandingan Singkat**
+Modul ini menggunakan REST API karena sederhana dan umum di Flutter.
 
-| Aspek | REST API | GraphQL |
-| ----- | ----- | ----- |
-| **Struktur** | Endpoint tetap | Query fleksibel |
-| **Volume Data** | Semua data dikirim sekaligus | Hanya data yang diminta |
-| **Kompleksitas** | Lebih sederhana | Lebih kompleks, butuh server khusus |
+<a id="implementasi-api-call-dengan-http"></a>
+## Implementasi API Call dengan http
 
-Pada pembelajaran ini, digunakan REST API karena mudah dipahami dan umum digunakan dalam proyek Flutter.
+Langkah 1: Tambahkan dependency
 
-## ***Implementasi API Call dengan http*** {#implementasi-api-call-dengan-http}
+<CodeBlock desc="Menambahkan dependency http" language="plaintext" code={contoh3Code} />
 
-***Langkah 1: Tambahkan dependency***
+Langkah 2: Buat fungsi pengambil data
 
-Tambahkan package http ke file pubspec.yaml:
+<CodeBlock desc="Fungsi fetchCountries dengan http" language="dart" code={contoh4Code} />
 
-![][image4]
+Langkah 3: Tampilkan hasil pada UI
 
-Lalu jalankan:
+<CodeBlock desc="Tampilkan data dengan FutureBuilder" language="dart" code={contoh5Code} />
 
-![][image5]
+Penjelasan Mekanisme
 
-***Langkah 2: Buat fungsi pengambil data***
+- FutureBuilder menunggu Future (fetchCountries()) dan membangun ulang UI saat hasil tersedia.  
+- Saat loading, tampilkan CircularProgressIndicator agar UI tetap responsif.  
+- snapshot.hasError menangani kondisi error (mis. koneksi gagal) dengan menampilkan pesan yang informatif.  
 
-***![][image6]***
+Observasi
 
-Kode ini membuat permintaan GET ke API publik dan mengembalikan hasil JSON dalam bentuk list dinamis.
+- Jaringan aktif: data tampil (Future sukses).  
+- Jaringan lambat: loading tetap responsif karena operasi async non-blocking.  
+- Error koneksi: tampil pesan error (handling bekerja).  
 
-***Langkah 3: Tampilkan hasil pada UI***
+<a id="implementasi-api-call-dengan-dio"></a>
+## Implementasi API Call dengan Dio
 
-***![][image7]***  
-***![][image8]***
+Dio menawarkan fitur lebih lengkap: interceptor, logging, timeout, cancel request, dsb.
 
-***Penjelasan Mekanisme***
+Langkah 1: Tambahkan dependency
 
-* FutureBuilder berfungsi sebagai jembatan UI dan data.  
-  Ia menunggu hasil Future (fetchCountries()), lalu membangun ulang tampilan ketika hasilnya sudah tersedia.  
-* Ketika proses berlangsung, Flutter menampilkan CircularProgressIndicator agar UI tetap hidup dan responsif.  
-* Bila terjadi error (misalnya tidak ada koneksi internet), blok snapshot.hasError akan menampilkan pesan kesalahan yang informatif.
+<CodeBlock desc="Menambahkan dependency Dio" language="plaintext" code={contoh6Code} />
 
-**Observasi**
+Langkah 2: Buat fungsi pengambil data
 
-| Kondisi | Dampak | Analisis |
-| ----- | ----- | ----- |
-| **Jaringan aktif** | Data tampil dalam daftar | Future sukses diselesaikan |
-| **Jaringan lambat** | Loading tetap responsif | Asynchronous mencegah UI membeku  |
-| **Error koneksi** | Muncul teks error | Penanganan snapshot berhasil bekerja |
+<CodeBlock desc="Fungsi fetchCountries dengan Dio" language="dart" code={contoh7Code} />
 
-## 
+Kelebihan Dio
 
-## ***Implementasi API Call dengan Dio*** {#implementasi-api-call-dengan-dio}
+- response.data langsung siap pakai (otomatis parsing JSON).  
+- Logging request/response mudah via interceptor.  
+- Error handling detail (timeout, status code, dsb).  
 
-Library Dio menawarkan fitur yang lebih lengkap dibanding http, seperti interceptor, logging otomatis, timeout, dan kemampuan cancel request.
+Perbandingan Singkat
 
-***Langkah 1: Tambahkan dependency***
+- Parsing: http (jsonDecode manual) vs Dio (response.data otomatis).  
+- Logging: http perlu solusi tambahan vs Dio built-in via interceptor.  
+- Error handling: http dasar vs Dio lebih kaya.  
+- Kompleksitas: http sederhana vs Dio fleksibel/powerful.  
 
-![][image9]
+<a id="dasar-asynchronous-programming"></a>
+## Dasar Asynchronous Programming
 
-***Langkah 2: Buat fungsi pengambil data***
+1. Konsep Dasar Future
 
-***![][image10]***
+Future mewakili nilai yang tersedia di masa depan. Fungsi async langsung mengembalikan Future, proses internal tetap berjalan di "belakang layar".
 
-***Kelebihan Dio***
+<CodeBlock desc="Contoh Future sederhana" language="dart" code={contoh8Code} />
 
-* Otomatis mengubah hasil response menjadi objek data (response.data).  
-* Dapat menampilkan log request dan response tanpa kode tambahan.  
-* Menangani kesalahan seperti timeout dan server error secara lebih detail.
+2. Event Loop: Jantung Asynchronous di Dart
 
-**Perbandingan**
+- UI berjalan di main thread; tugas berat dimasukkan ke event queue.  
+- Sambil menunggu hasil, UI tetap menggambar dan merespons input pengguna.  
+- Saat Future selesai, event loop mengeksekusi callback yang terkait.  
 
-| Aspek | http | Dio |
-| ----- | ----- | ----- |
-| **Cara parsing** | Manual (jsonDecode) | Otomatis (response.data) |
-| **Logging** | Perlu tambahan | Sudah tersedia |
-| **Error handling** | Dasar | Lengkap |
-| **Kompleksitas** | Sederhana | Fleksibel & powerful |
+3. async-await vs Callback
 
-## 
+a. async–await (lebih mudah dibaca, linear)
 
-## ***Dasar Asynchronous Programming*** {#dasar-asynchronous-programming}
+<CodeBlock desc="Contoh async-await" language="dart" code={contoh9Code} />
 
-Bagian ini menjelaskan bagaimana Flutter mengelola proses non-blocking agar UI tetap responsif walau ada tugas berat seperti memanggil API atau membaca file besar.
+b. callback chaining (.then/.catchError)
 
-***1\. Konsep Dasar Future***
+<CodeBlock desc="Contoh callback chaining" language="dart" code={contoh10Code} />
 
-Future di Dart adalah representasi dari nilai yang akan tersedia di masa depan. Ketika fungsi async dijalankan, ia langsung dikembalikan sebagai Future, sementara proses di dalamnya berjalan di latar belakang (background thread).
+Perbandingan
 
-Contoh sederhana:
+- Keterbacaan: async-await lebih linear dan bersih.  
+- Debugging: async-await lebih mudah dilacak.  
+- Performa: setara.  
+- Rekomendasi: gunakan async-await untuk alur menengah–kompleks.  
 
-![][image11]  
-Ketika fungsi ini dipanggil, Flutter tidak menunggu dua detik secara pasif, tetapi melanjutkan proses lain seperti menggambar UI. Begitu delay selesai, nilai dikirim kembali ke kode pemanggil.
+<a id="simulasi-login-async"></a>
+## Simulasi Login (Async)
 
-***2\. Event Loop: Jantung Asynchronous di Dart***
+Gunakan Future.delayed 2 detik untuk meniru panggilan API autentikasi.
 
-Flutter (melalui Dart runtime) menggunakan sistem event loop, yaitu antrean (queue) yang menangani tugas secara bergantian tanpa menghentikan eksekusi utama.
+<CodeBlock desc="Fungsi simulasi login" language="dart" code={contoh11Code} />
 
-Ilustrasi sederhananya:
+1. Versi async–await
 
-1) Flutter memulai *main thread* untuk menggambar UI.  
-2) Ketika ada tugas berat (misalnya API call), tugas itu dimasukkan ke **event queue**.  
-3) Sambil menunggu hasil, Flutter tetap melanjutkan tugas lain (misalnya animasi, input pengguna).  
-4) Ketika hasil Future sudah siap, event loop mengambilnya dari antrean dan menjalankan callback yang sesuai.
+<CodeBlock desc="Login dengan async-await" language="dart" code={contoh12Code} />
 
-Itulah sebabnya meski menunggu data dari server, aplikasi tidak mengalami freeze.
+2. Versi callback
 
-***3\. async-await vs Callback***
+<CodeBlock desc="Login dengan callback" language="dart" code={contoh13Code} />
 
-Dart menyediakan dua cara umum untuk mengelola Future:
+Observasi
 
-***a. Pendekatan async–await***  
-Lebih mudah dibaca, menyerupai urutan logika sinkron.
+- async–await memberikan alur yang mudah diikuti dan di-debug.  
+- Callback cocok untuk kasus sederhana; hindari nested callback pada alur kompleks.  
 
-![][image12]
+<a id="rekap-materi"></a>
+## Rekap Materi
 
-***b. Pendekatan callback chaining***  
-Menggunakan fungsi .then() dan .catchError().
+Pada bab ini Anda mempelajari:
+1) Siklus request–response API dan pemanggilan data via http serta Dio.  
+2) Cara kerja asynchronous di Dart (Future, event loop).  
+3) Perbandingan async-await dengan callback chaining.  
+4) Simulasi login yang meniru proses async di dunia nyata.  
 
-![][image13]
+Dengan bekal ini, Anda siap menerapkan API call dan async handling pada aplikasi Flutter.
 
-**Perbandingan**
+---
 
-| Aspek | async-await | Callback |
-| ----- | ----- | ----- |
-| **Keterbacaan** | Linear dan bersih | Mudah kacau jika bertingkat |
-| **Debugging** | Lebih mudah dilacak | Susah diikuti |
-| **Performa** | Setara | Setara |
-| **Umum digunakan** | Ya (kode modern) | Tidak direkomendasikan untuk kompleksitas tinggi |
-
-## 
-
-## ***Simulasi Login (Async)*** {#simulasi-login-(async)}
-
-Untuk memperkuat pemahaman, berikut contoh login simulation dengan Future.delayed untuk meniru proses API yang membutuhkan waktu 2 detik.  
-![][image14]
-
-***1\. Versi async–await***
-
-![][image15]
-
-***2\. Versi callback***
-
-***![][image16]***
-
-**Observasi**
-
-* Flutter melakukan seleksi aset otomatis berdasarkan rasio piksel perangkat.  
-* Tidak diperlukan logika tambahan di kode untuk menyesuaikan resolusi.  
-* Aset tampil tajam di semua perangkat tanpa mempengaruhi performa.
-
-## ***Rekap Materi*** {#rekap-materi}
-
-Pada bab ini, praktikan telah mempelajari:
-
-1) Siklus request–response API dan cara memanggil data menggunakan http serta Dio.  
-2) Cara kerja sistem asynchronous di Dart melalui konsep Future dan event loop.  
-3) Perbandingan antara penggunaan async-await dan callback chaining.  
-4) Simulasi login yang menggambarkan bagaimana proses asynchronous bekerja di dunia nyata.
-
-Dengan memahami seluruh konsep ini, praktikan diharapkan telah siap untuk melanjutkan ke latihan proyek dan codelab guna mengimplementasikan API call serta async handling secara langsung pada aplikasi Flutter.
-
-**AKSES PROJECT & REFERENSI MODUL![][image17]**
-
-Sebelum memulai Codelab, silakan akses project dasar Flutter dan referensi modul yang telah disiapkan pada tautan berikut:
+<a id="akses-project-referensi"></a>
+## AKSES PROJECT & REFERENSI MODUL
 
 - Repository GitHub:  
-  [**GITHUB**](https://github.com/FaizalTrianto03/Prak.Mobile-25-26)
+  [GITHUB](https://github.com/FaizalTrianto03/Prak.Mobile-25-26)
 
-- Website Modul (untuk memudahkan menyalin contoh kode):
+- Website Modul (untuk memudahkan menyalin contoh kode):  
+  [Website Modul](https://mobile.faizaltrianto.com/modul/3/)
 
-[**Website Modul**](https://mobile.faizaltrianto.com/modul/3/)
+Catatan:
+- Repositori memiliki branch per modul (modul1, modul2, modul3, ...).  
+- Website modul membantu membaca dan menyalin snippet kode secara langsung.  
 
-**Catatan:**
+---
 
-* Project di GitHub berisi branch untuk setiap modul (modul1, modul2, dan seterusnya).
+<a id="codelab"></a>
+# CODELAB
 
-* Website modul dapat digunakan sebagai referensi tambahan untuk membaca dan menyalin contoh kode secara langsung.
+<a id="tugas"></a>
+## Tugas
 
-# **CODELAB![][image17]** {#codelab}
+Jalankan dan amati aplikasi Flutter yang memanggil data dari REST Countries API menggunakan dua library berbeda: http dan Dio. Codelab ini juga dapat dipadukan dengan state management seperti GetX agar perubahan data otomatis memperbarui UI.
 
-## ***Tugas*** {#tugas}
+<a id="instruksi"></a>
+## Instruksi
 
-Praktikan diminta untuk menjalankan dan mengamati aplikasi Flutter yang memanggil data dari REST Countries API menggunakan dua library berbeda: http dan Dio.
+1) Clone Project
+- Lakukan cloning repository berikut pada branch modul3:  
+  [Project Github](https://github.com/FaizalTrianto03/Prak.Mobile-25-26)
 
-Codelab ini bertujuan untuk melatih pemahaman praktikan terhadap konsep API Call, Async Handling, dan penerapan state management dengan GetX.
+2) Jalankan Project
+- Buka project di VS Code atau Android Studio, kemudian:
+  - flutter pub get
+  - flutter run
 
-## ***Instruksi*** {#instruksi}
+3) Verifikasi API Call
+- Endpoint yang digunakan:
+  - https://restcountries.com/v3.1/all?fields=name
+- Pastikan project menyediakan dua implementasi: via http dan via Dio.
+- Pastikan data negara muncul pada UI, menampilkan setidaknya name.common dan name.official.
 
-1) **Clone Project.**
+4) (Opsional) Gunakan GetX
+- Jika menggunakan GetX untuk state management:
+  - Buat controller untuk memuat data negara (observable list).
+  - Ikat UI ke state GetX (Obx/GetBuilder) agar UI auto-rebuild saat data berubah.
+  - Bandingkan kemudahan dibanding setState().
 
-* Lakukan cloning pada repository berikut dengan branch modul3:
+<a id="catatan"></a>
+## Catatan
 
-  [***Project Github***](https://github.com/FaizalTrianto03/Prak.Mobile-25-26)
+1. Fokus utama: project berjalan dan data negara termuat dari endpoint.  
+2. Sediakan dua versi pemanggilan (http dan Dio) agar bisa dibandingkan.  
+3. Jika menerapkan GetX, jaga struktur folder (controllers, views, services) rapi.  
+4. Untuk profiling, gunakan DevTools Network/CPU untuk mengamati waktu respons dan beban pemrosesan.  
 
-2) **Jalankan Project.**
+---
 
-* Buka project di VS Code atau Android Studio, lalu jalankan dengan:
-
-  ***flutter run***
-
-3) **Verifikasi API Call.**
-
-* Pastikan data negara berhasil dimuat dari endpoint:
-
-  [***https://restcountries.com/v3.1/all?fields=name***](https://restcountries.com/v3.1/all?fields=name)
-
-* Pastikan di dalam project terdapat dua contoh pemanggilan API, yaitu menggunakan http dan Dio.
-
-4) **Gunakan GetX.**
-
-* Pastikan project menggunakan GetX untuk pengelolaan state, bukan setState().  
-* Amati bagaimana perubahan data pada controller secara otomatis memperbarui tampilan daftar negara.
-
-## ***Catatan*** {#catatan}
-
-1. **Fokus utama pada keberhasilan menjalankan project dan menampilkan data negara.**
-
-2. **Pastikan aplikasi memuat data dengan kedua library (http dan Dio) serta mengimplementasikan GetX dengan benar.**
-
-# **KRITERIA & DETAIL PENILAIAN![][image17]** {#kriteria-&-detail-penilaian}
+<a id="kriteria-detail-penilaian"></a>
+# KRITERIA & DETAIL PENILAIAN
 
 | Kriteria Penilaian | Persentase Penilaian |
-| ----- | ----- |
-| **Codelab** |  |
-| **API call berhasil memuat data** | 40% |
-| **Demo** |  |
-| **Dokumentasi hasil profiling API** | 20% |
-| **Analisis perbandingan readability asinkron** | 20% |
-| **Argumentasi dan diskusi kasus penggunaan** | 20% |
+| --- | --- |
+| Codelab |  |
+| API call berhasil memuat data | 40% |
+| Demo |  |
+| Dokumentasi hasil profiling API | 20% |
+| Analisis perbandingan readability asinkron | 20% |
+| Argumentasi dan diskusi kasus penggunaan | 20% |
