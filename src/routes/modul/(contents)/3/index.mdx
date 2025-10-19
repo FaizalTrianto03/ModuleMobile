@@ -7,10 +7,10 @@ import { MockupWindowCode } from "/src/components/MockupWindowCode";
 import { Information } from "~/components/modul-list";
 import { CodeBlock } from "/src/components/CodeBlock";
 
-// Pemetaan ke file-file yang dilampirkan dalam repo modul.
-// Pastikan path disesuaikan dengan struktur folder website Anda.
-import contoh1Code from "./code/apipublik.sh?raw";          // URL/API publik
-import contoh2Code from "./code/response.txt?raw";          // Contoh response JSON
+
+// Jika file-file berikut SUDAH tersedia, Anda bisa aktifkan dua import di bawah.
+// import contoh1Code from "./code/apipublik.sh?raw";          // URL/API publik
+// import contoh2Code from "./code/response.txt?raw";          // Contoh response JSON
 import contoh3Code from "./code/httppubspec.txt?raw";       // pubspec: http
 import contoh4Code from "./code/contohhttp.dart?raw";       // fetchCountries (http)
 import contoh5Code from "./code/contohhttpui.dart?raw";     // FutureBuilder UI
@@ -151,11 +151,16 @@ Tiga tahap utama:
 
 Contoh API publik (REST Countries):
 
-<CodeBlock desc="URL API Publik" language="bash" code={contoh1Code} />
+<!-- Inline literal agar build aman jika file belum ada -->
+<CodeBlock desc="URL API Publik" language="bash" code={`curl -s https://restcountries.com/v3.1/all?fields=name`} />
 
 Contoh hasil response:
 
-<CodeBlock desc="Contoh Response JSON" language="plaintext" code={contoh2Code} />
+<!-- Inline literal agar build aman jika file belum ada -->
+<CodeBlock desc="Contoh Response JSON" language="json" code={`[
+  { "name": { "common": "Indonesia", "official": "Republic of Indonesia" } },
+  { "name": { "common": "Japan", "official": "Japan" } }
+]`} />
 
 Setiap objek pada array berisi informasi nama negara (common/official) yang dapat kita tampilkan.
 
@@ -189,7 +194,7 @@ Langkah 3: Tampilkan hasil pada UI
 
 Penjelasan Mekanisme
 
-- FutureBuilder menunggu Future (fetchCountries()) dan membangun ulang UI saat hasil tersedia.  
+- FutureBuilder menunggu Future (`fetchCountries()`) dan membangun ulang UI saat hasil tersedia.  
 - Saat loading, tampilkan CircularProgressIndicator agar UI tetap responsif.  
 - snapshot.hasError menangani kondisi error (mis. koneksi gagal) dengan menampilkan pesan yang informatif.  
 
@@ -352,9 +357,7 @@ Jalankan dan amati aplikasi Flutter yang memanggil data dari REST Countries API 
 
 | Kriteria Penilaian | Persentase Penilaian |
 | --- | --- |
-| Codelab |  |
 | API call berhasil memuat data | 40% |
-| Demo |  |
 | Dokumentasi hasil profiling API | 20% |
 | Analisis perbandingan readability asinkron | 20% |
 | Argumentasi dan diskusi kasus penggunaan | 20% |
