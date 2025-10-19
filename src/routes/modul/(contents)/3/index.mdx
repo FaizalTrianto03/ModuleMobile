@@ -8,9 +8,9 @@ import { Information } from "~/components/modul-list";
 import { CodeBlock } from "/src/components/CodeBlock";
 
 /* Catatan perbaikan build:
-   - Gunakan komentar gaya JSX di dalam MDX: {/* contoh */} tidak boleh berisi kurung kurawal ganda.
-   - Hindari karakter spesial yang di-parse MDX secara keliru. Escape jika perlu, atau gunakan komponen.
-   - Jangan gunakan komentar HTML <!-- ... -->. Gunakan {/* ... */}.
+   - Jangan gunakan komentar HTML (<!-- ... -->) atau C-style (/* ... * /) di dalam konten MDX. Gunakan komentar JSX: {/** ... * /}.
+   - Hindari karakter spesial seperti ! di awal baris CSS/JS (contoh: /*! ... */). Jika harus ditampilkan, bungkus dalam string atau komponen.
+   - Hindari menyisipkan { /* ... */ } di dalam komentar blok ini; gunakan satu gaya komentar saja.
 */
 
 /* Jika file-file berikut SUDAH tersedia, Anda bisa aktifkan dua import di bawah:
@@ -39,26 +39,22 @@ import contoh13Code from "./code/callbacklogin.dart?raw";   // login callback
   title="Download PDF Modul"
   content="Silakan download file PDF modul lengkap untuk penjelasan detail."
   type="info"
-  link={
-    {
-      text: "Download PDF Modul",
-      url: "https://drive.google.com/drive/folders/1gN3M1QrANcIi7qtuiCTI_Ge_UPAV67Xc?usp=sharing",
-      external: true,
-    }
-  }
+  link={{
+    text: "Download PDF Modul",
+    url: "https://drive.google.com/drive/folders/1gN3M1QrANcIi7qtuiCTI_Ge_UPAV67Xc?usp=sharing",
+    external: true
+  }}
 />
 
 <Information
   title="Pengisian Data Kelompok"
   content="Silakan isi nama anggota kelompok pada link berikut ini. Data ini akan digunakan untuk Modul 2 hingga Modul 6, jadi pastikan semua anggota sudah tercantum dengan benar."
   type="warning"
-  link={
-    {
-      text: "Isi Sheet Nama Kelompok",
-      url: "https://docs.google.com/spreadsheets/d/1mbAsIngJ51xHSH3t59S4JriNnkGKTQKWB0H4wOnQ_3E/edit?usp=sharing",
-      external: true,
-    }
-  }
+  link={{
+    text: "Isi Sheet Nama Kelompok",
+    url: "https://docs.google.com/spreadsheets/d/1mbAsIngJ51xHSH3t59S4JriNnkGKTQKWB0H4wOnQ_3E/edit?usp=sharing",
+    external: true
+  }}
 />
 
 VERSI 1.0  
@@ -161,12 +157,12 @@ Tiga tahap utama:
 
 Contoh API publik (REST Countries):
 
-{/* Inline literal agar build aman jika file belum ada */}
+{/** Inline literal agar build aman jika file belum ada */}
 <CodeBlock desc="URL API Publik" language="bash" code={`curl -s https://restcountries.com/v3.1/all?fields=name`} />
 
 Contoh hasil response:
 
-{/* Inline literal agar build aman jika file belum ada */}
+{/** Inline literal agar build aman jika file belum ada */}
 <CodeBlock desc="Contoh Response JSON" language="json" code={`[
   { "name": { "common": "Indonesia", "official": "Republic of Indonesia" } },
   { "name": { "common": "Japan", "official": "Japan" } }
