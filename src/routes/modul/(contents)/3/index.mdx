@@ -7,27 +7,26 @@ import { MockupWindowCode } from "/src/components/MockupWindowCode";
 import { Information } from "~/components/modul-list";
 import { CodeBlock } from "/src/components/CodeBlock";
 
-/* Catatan perbaikan build:
-   - Jangan gunakan komentar HTML (<!-- ... -->) atau C-style (/* ... * /) di dalam konten MDX. Gunakan komentar JSX: {/** ... * /}.
-   - Hindari karakter spesial seperti ! di awal baris CSS/JS (contoh: /*! ... */). Jika harus ditampilkan, bungkus dalam string atau komponen.
-   - Hindari menyisipkan { /* ... */ } di dalam komentar blok ini; gunakan satu gaya komentar saja.
-*/
+{/* Catatan perbaikan build:
+   - Jangan gunakan komentar HTML atau C-style di dalam konten MDX. Gunakan komentar JSX: {/\* ... *\/}.
+   - Hindari karakter spesial seperti ! di awal baris CSS/JS (contoh: /\*! ... *\/). Jika harus ditampilkan, bungkus dalam string atau komponen.
+*/}
 
-/* Jika file-file berikut SUDAH tersedia, Anda bisa aktifkan dua import di bawah:
+{/* Jika file-file berikut SUDAH tersedia, Anda bisa aktifkan dua import di bawah:
    import contoh1Code from "./code/apipublik.sh?raw";          // URL/API publik
    import contoh2Code from "./code/response.txt?raw";          // Contoh response JSON
-*/
-import contoh3Code from "./code/httppubspec.txt?raw";       // pubspec: http
-import contoh4Code from "./code/contohhttp.dart?raw";       // fetchCountries (http)
-import contoh5Code from "./code/contohhttpui.dart?raw";     // FutureBuilder UI
-import contoh6Code from "./code/diopubspec.txt?raw";        // pubspec: Dio
-import contoh7Code from "./code/contohdio.dart?raw";        // fetchCountries (Dio)
-import contoh8Code from "./code/contohfuture.dart?raw";     // Future sederhana
-import contoh9Code from "./code/asyncawait.dart?raw";       // async-await dasar
-import contoh10Code from "./code/callbackchaining.dart?raw";// callback chaining
-import contoh11Code from "./code/contohlogin.dart?raw";     // Future boolean login()
-import contoh12Code from "./code/asyncawaitlogin.dart?raw"; // login async-await
-import contoh13Code from "./code/callbacklogin.dart?raw";   // login callback
+*/}
+import contoh3Code from "./code/httppubspec.txt?raw";       
+import contoh4Code from "./code/contohhttp.dart?raw";       
+import contoh5Code from "./code/contohhttpui.dart?raw";     
+import contoh6Code from "./code/diopubspec.txt?raw";        
+import contoh7Code from "./code/contohdio.dart?raw";        
+import contoh8Code from "./code/contohfuture.dart?raw";     
+import contoh9Code from "./code/asyncawait.dart?raw";       
+import contoh10Code from "./code/callbackchaining.dart?raw";
+import contoh11Code from "./code/contohlogin.dart?raw";     
+import contoh12Code from "./code/asyncawaitlogin.dart?raw"; 
+import contoh13Code from "./code/callbacklogin.dart?raw";   
 
 <Information
   title="Informasi Penting"
@@ -157,12 +156,12 @@ Tiga tahap utama:
 
 Contoh API publik (REST Countries):
 
-{/** Inline literal agar build aman jika file belum ada */}
+{/* Inline literal agar build aman jika file belum ada */}
 <CodeBlock desc="URL API Publik" language="bash" code={`curl -s https://restcountries.com/v3.1/all?fields=name`} />
 
 Contoh hasil response:
 
-{/** Inline literal agar build aman jika file belum ada */}
+{/* Inline literal agar build aman jika file belum ada */}
 <CodeBlock desc="Contoh Response JSON" language="json" code={`[
   { "name": { "common": "Indonesia", "official": "Republic of Indonesia" } },
   { "name": { "common": "Japan", "official": "Japan" } }
